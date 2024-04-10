@@ -13,8 +13,7 @@ docker-compose up -d
 # To-Dos
 
 - Async Operations
-- Pagination & Filter
-- Search: Helfer, Organisation, Zeitraum, Auftragsnummer (nicht in jedem Protokoll)
+- Pagination, Filter & Suche (Helfer, Organisation, Zeitraum, Auftragsnummer (nicht in jedem Protokoll))
 - Authentication / UserSession (Entity, Interface, Repo & Controller)
 - Services: Aktionen aus Protokollen, ...
-- Unit Tests
+- Unit & Integration Tests
