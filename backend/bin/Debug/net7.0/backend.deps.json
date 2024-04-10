@@ -10,7 +10,7 @@
         "dependencies": {
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
           "Microsoft.AspNetCore.OpenApi": "7.0.11",
-          "Microsoft.EntityFrameworkCore.Design": "7.0.17",
+          "Microsoft.EntityFrameworkCore.Design": "7.0.18",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "7.0.11",
           "Swashbuckle.AspNetCore": "6.5.0"
         },
@@ -61,53 +61,53 @@
         }
       },
       "Microsoft.CSharp/4.7.0": {},
-      "Microsoft.EntityFrameworkCore/7.0.17": {
+      "Microsoft.EntityFrameworkCore/7.0.18": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Abstractions": "7.0.17",
-          "Microsoft.EntityFrameworkCore.Analyzers": "7.0.17",
+          "Microsoft.EntityFrameworkCore.Abstractions": "7.0.18",
+          "Microsoft.EntityFrameworkCore.Analyzers": "7.0.18",
           "Microsoft.Extensions.Caching.Memory": "7.0.0",
           "Microsoft.Extensions.DependencyInjection": "7.0.0",
           "Microsoft.Extensions.Logging": "7.0.0"
         },
         "runtime": {
           "lib/net6.0/Microsoft.EntityFrameworkCore.dll": {
-            "assemblyVersion": "7.0.17.0",
-            "fileVersion": "7.0.1724.11506"
+            "assemblyVersion": "7.0.18.0",
+            "fileVersion": "7.0.1824.16810"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Abstractions/7.0.17": {
+      "Microsoft.EntityFrameworkCore.Abstractions/7.0.18": {
         "runtime": {
           "lib/net6.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {
-            "assemblyVersion": "7.0.17.0",
-            "fileVersion": "7.0.1724.11506"
+            "assemblyVersion": "7.0.18.0",
+            "fileVersion": "7.0.1824.16810"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Analyzers/7.0.17": {},
-      "Microsoft.EntityFrameworkCore.Design/7.0.17": {
+      "Microsoft.EntityFrameworkCore.Analyzers/7.0.18": {},
+      "Microsoft.EntityFrameworkCore.Design/7.0.18": {
         "dependencies": {
           "Humanizer.Core": "2.14.1",
-          "Microsoft.EntityFrameworkCore.Relational": "7.0.17",
+          "Microsoft.EntityFrameworkCore.Relational": "7.0.18",
           "Microsoft.Extensions.DependencyModel": "7.0.0",
           "Mono.TextTemplating": "2.2.1"
         },
         "runtime": {
           "lib/net6.0/Microsoft.EntityFrameworkCore.Design.dll": {
-            "assemblyVersion": "7.0.17.0",
-            "fileVersion": "7.0.1724.11506"
+            "assemblyVersion": "7.0.18.0",
+            "fileVersion": "7.0.1824.16810"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Relational/7.0.17": {
+      "Microsoft.EntityFrameworkCore.Relational/7.0.18": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "7.0.17",
+          "Microsoft.EntityFrameworkCore": "7.0.18",
           "Microsoft.Extensions.Configuration.Abstractions": "7.0.0"
         },
         "runtime": {
           "lib/net6.0/Microsoft.EntityFrameworkCore.Relational.dll": {
-            "assemblyVersion": "7.0.17.0",
-            "fileVersion": "7.0.1724.11506"
+            "assemblyVersion": "7.0.18.0",
+            "fileVersion": "7.0.1824.16810"
           }
         }
       },
@@ -197,9 +197,9 @@
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL/7.0.11": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "7.0.17",
-          "Microsoft.EntityFrameworkCore.Abstractions": "7.0.17",
-          "Microsoft.EntityFrameworkCore.Relational": "7.0.17",
+          "Microsoft.EntityFrameworkCore": "7.0.18",
+          "Microsoft.EntityFrameworkCore.Abstractions": "7.0.18",
+          "Microsoft.EntityFrameworkCore.Relational": "7.0.18",
           "Npgsql": "7.0.6"
         },
         "runtime": {
@@ -304,40 +304,40 @@
       "path": "microsoft.csharp/4.7.0",
       "hashPath": "microsoft.csharp.4.7.0.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore/7.0.17": {
+    "Microsoft.EntityFrameworkCore/7.0.18": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-bKZbiZp/eF2t7/IFTubo8ZnMGtgPj6ffy6CRuMOSS3arETcnVAIPbMyWMeobG0W67rjxWzWUF+6lWp7IqNdO0g==",
-      "path": "microsoft.entityframeworkcore/7.0.17",
-      "hashPath": "microsoft.entityframeworkcore.7.0.17.nupkg.sha512"
+      "sha512": "sha512-zk4JC8m9T55dwtqBnnXar1jtI7q4bZuSo3PI8/Iq7QbVk0D2Yrvx0mZJb/5tj8O+ghwT56XzDuN3641iumXqmg==",
+      "path": "microsoft.entityframeworkcore/7.0.18",
+      "hashPath": "microsoft.entityframeworkcore.7.0.18.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Abstractions/7.0.17": {
+    "Microsoft.EntityFrameworkCore.Abstractions/7.0.18": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Umq1ik7FekatqAspsd7O+3GJrJZVCgZNSZI4otqny5VXwXlo/hpdqEtbpN/iuVyI1m4m0dbgYyRsSKaFt/0MYw==",
-      "path": "microsoft.entityframeworkcore.abstractions/7.0.17",
-      "hashPath": "microsoft.entityframeworkcore.abstractions.7.0.17.nupkg.sha512"
+      "sha512": "sha512-KCEaYiYM6bVGKo/dLRDkXn1zZ1Vn6f4uG0nb2iis/jCju16hUOX/GAOLx1FhD2cIQcHRvtmYFZnm5/anHFdhtg==",
+      "path": "microsoft.entityframeworkcore.abstractions/7.0.18",
+      "hashPath": "microsoft.entityframeworkcore.abstractions.7.0.18.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Analyzers/7.0.17": {
+    "Microsoft.EntityFrameworkCore.Analyzers/7.0.18": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Je9eCOYnYm7TVqAbvNurZTCRMboo4sPCEBD2/h0Pq9Uow4+bHTcegeNQLEf2lraWONo/QLR2YD/PF0v7JjdnMw==",
-      "path": "microsoft.entityframeworkcore.analyzers/7.0.17",
-      "hashPath": "microsoft.entityframeworkcore.analyzers.7.0.17.nupkg.sha512"
+      "sha512": "sha512-qD7GuyGVQvndDJdYbv5UTuxJeeH/cVS1VBz3ZY72yCYKnSEx9hpiokCji1bgy9cHA1rPNjI7OA7ZrDOeojMtOA==",
+      "path": "microsoft.entityframeworkcore.analyzers/7.0.18",
+      "hashPath": "microsoft.entityframeworkcore.analyzers.7.0.18.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Design/7.0.17": {
+    "Microsoft.EntityFrameworkCore.Design/7.0.18": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-tGUDMY1ghDKfrpO/xVsSUSnQv79bGJRYI9l1iyP8f5G56XXKpyc5Owy0tyvZl3XxZhs1YnkWqARICtsDiH98PQ==",
-      "path": "microsoft.entityframeworkcore.design/7.0.17",
-      "hashPath": "microsoft.entityframeworkcore.design.7.0.17.nupkg.sha512"
+      "sha512": "sha512-4pYsUcvdY8V4i+ZH6xIM8LfX3YdaRp7kZ0QvgRdzGuJ/dneX8zRKLE0rlqFRb8xQqbw6TuFssgFBkh0c23R3oA==",
+      "path": "microsoft.entityframeworkcore.design/7.0.18",
+      "hashPath": "microsoft.entityframeworkcore.design.7.0.18.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Relational/7.0.17": {
+    "Microsoft.EntityFrameworkCore.Relational/7.0.18": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-gaPsFpz/16mibXVP7ryZKzdJhs7YtqEk5Begx6Nz1aLArA6dVVpvNU3dL7fc8BUlcI4Vgw5mxT7cixZzjbndCw==",
-      "path": "microsoft.entityframeworkcore.relational/7.0.17",
-      "hashPath": "microsoft.entityframeworkcore.relational.7.0.17.nupkg.sha512"
+      "sha512": "sha512-19T8HjEkqyvuPf6C3WPM1B0h10/ezf/+KHPFQxp8ODHN3YKjV/5tKyuZyjRULa3EcfTW4TiaOqPIfs5WSVfwYw==",
+      "path": "microsoft.entityframeworkcore.relational/7.0.18",
+      "hashPath": "microsoft.entityframeworkcore.relational.7.0.18.nupkg.sha512"
     },
     "Microsoft.Extensions.ApiDescription.Server/6.0.5": {
       "type": "package",
