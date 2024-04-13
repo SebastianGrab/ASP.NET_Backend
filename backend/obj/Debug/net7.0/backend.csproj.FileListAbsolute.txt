@@ -131,3 +131,11 @@ C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Back
 C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\obj\Debug\net7.0\backend.pdb
 C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\obj\Debug\net7.0\backend.genruntimeconfig.cache
 C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\obj\Debug\net7.0\ref\backend.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\System.IdentityModel.Tokens.Jwt.dll

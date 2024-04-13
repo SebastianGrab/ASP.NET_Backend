@@ -1,15 +1,18 @@
+using Microsoft.EntityFrameworkCore;
+
 public class PaginatedList<T> : List<T>
 {
     public int PageIndex { get; private set; }
     public int TotalPages { get; private set; }
     public int PageSize { get; private set; }
     public int TotalCount { get; private set; }
+    const int MaxPageSize = 100;
 
     public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
     {
         TotalCount = count;
         PageIndex = pageIndex;
-        PageSize = pageSize;
+        PageSize = (pageSize > MaxPageSize) ? MaxPageSize : pageSize;
         TotalPages = (int)Math.Ceiling(count / (double)pageSize);
 
         this.AddRange(items);

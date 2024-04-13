@@ -1,6 +1,7 @@
 using Data;
 using Interfaces;
 using Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {

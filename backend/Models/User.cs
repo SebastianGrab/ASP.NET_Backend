@@ -18,7 +18,7 @@ namespace Models
 
         public bool PasswordChangeRequired {
             get {
-                    return (DateTime.UtcNow - LastPasswordChangeDate).TotalDays > 365 || LastPasswordChangeDate == CreatedDate; 
+                    return (DateTime.UtcNow - LastPasswordChangeDate).TotalDays > 365 || LastPasswordChangeDate.ToString("MM/dd/yyyy HH:mm:ss") == CreatedDate.ToString("MM/dd/yyyy HH:mm:ss"); 
                 }
         }
 

@@ -93,6 +93,7 @@ namespace Data
         {
             UpdateTimestamps();
             UpdatePasswordData();
+            UpdateProtocolData();
             return base.SaveChanges();
         }
 
@@ -112,6 +113,10 @@ namespace Data
                     {
                         entity.CreatedDate = DateTime.UtcNow;
                     }
+                    else if (entityEntry.State == EntityState.Modified)
+                    {
+                        entityEntry.Property("CreatedDate").IsModified = false;
+                    }
                 }
             }
 
@@ -121,18 +126,49 @@ namespace Data
                     .Entries<User>()
                     .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
 
-                foreach (var entityEntry in entries)
-                {
-                    var entity = (User)entityEntry.Entity;
+                    foreach (var entityEntry in entries)
+                    {
+                        var entity = (User)entityEntry.Entity;
 
                     if (entityEntry.State == EntityState.Added)
                     {
-                        entity.LastPasswordChangeDate = DateTime.UtcNow;
+                        entityEntry.Entity.LastPasswordChangeDate = DateTime.UtcNow;
                     }
-
-                    if (entityEntry.State == EntityState.Modified && entityEntry.OriginalValues["Password"] != entityEntry.CurrentValues["Password"])
+                    else if (entityEntry.State == EntityState.Modified)
                     {
-                        entity.LastPasswordChangeDate = DateTime.UtcNow;
+                        if (entityEntry.Property("Password").IsModified)
+                        {
+                            entityEntry.Entity.LastPasswordChangeDate = DateTime.UtcNow;
+                        }
+                        else {
+                        entityEntry.Property("LastPasswordChangeDate").IsModified = false;
+                        }
+                    }
+                }
+            }
+
+        private void UpdateProtocolData()
+            {
+                var entries = ChangeTracker
+                    .Entries<Protocol>()
+                    .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+                foreach (var entityEntry in entries)
+                {
+                    var entity = (Protocol)entityEntry.Entity;
+
+                    if (entityEntry.State == EntityState.Added)
+                    {
+                        entity.IsClosed = false;
+                        entity.ClosedAt = null;
+                    }
+                    else if (entityEntry.State == EntityState.Modified && entityEntry.OriginalValues["IsClosed"] != entityEntry.CurrentValues["IsClosed"])
+                    {
+                        entity.ClosedAt = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        entityEntry.Property("ClosedAt").IsModified = false;
                     }
                 }
             }

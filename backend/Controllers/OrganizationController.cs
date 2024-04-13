@@ -33,14 +33,34 @@ namespace backend.Controllers
         [HttpGet]
         [Route("/api/organizations")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Organization>))]
-        public IActionResult GetOrganizations()
+        public IActionResult GetOrganizations([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
-            var organizations = _mapper.Map<List<OrganizationDto>>(_organizationRepository.GetOrganizations());
+            // var organizations = _mapper.Map<List<OrganizationDto>>(_organizationRepository.GetOrganizations()).AsQueryable();
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(organizations);
+
+            var query = _organizationRepository.GetOrganizations().AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<OrganizationDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(organizations);
+            var paginatedList = PaginatedList<OrganizationDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/organization/{id}
@@ -63,80 +83,196 @@ namespace backend.Controllers
         // GET: api/organization/{id}/protocols
         [HttpGet("{id}/protocols")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Protocol>))]
-        public IActionResult GetProtocolsByOrganization(long id)
+        public IActionResult GetProtocolsByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
-            var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByOrganization(id));
+            // var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByOrganization(id));
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(protocols);
+
+            var query = _protocolRepository.GetProtocolsByOrganization(id).AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(protocols);
+            var paginatedList = PaginatedList<ProtocolDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/organization/{id}/roles
         [HttpGet("{id}/roles")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Role>))]
-        public IActionResult GetRolesByOrganization(long id)
+        public IActionResult GetRolesByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
-            var roles = _mapper.Map<List<RoleDto>>(_roleRepository.GetRolesByOrganization(id));
+            // var roles = _mapper.Map<List<RoleDto>>(_roleRepository.GetRolesByOrganization(id));
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(roles);
+
+            var query = _roleRepository.GetRolesByOrganization(id).AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<RoleDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(roles);
+            var paginatedList = PaginatedList<RoleDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/organization/{id}/all-templates
         [HttpGet("{id}/templates")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
-        public IActionResult GetAllTemplatesByOrganization(long id)
+        public IActionResult GetAllTemplatesByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
-            var templatesShared = _mapper.Map<List<TemplateDto>>(_templateRepository.GetSharedTemplatesByOrganization(id));
-            var templatesOwned = _mapper.Map<List<TemplateDto>>(_templateRepository.GetTemplatesOwnedByOrganization(id));
+            var queryShared = _templateRepository.GetSharedTemplatesByOrganization(id).ToList().AsQueryable();
+            var queryOwned = _templateRepository.GetTemplatesOwnedByOrganization(id).ToList().AsQueryable();
+
+            var templatesShared = _mapper.Map<List<TemplateDto>>(queryShared).AsQueryable();
+            var templatesOwned = _mapper.Map<List<TemplateDto>>(queryOwned).AsQueryable();
+
+            var queryMapped = Enumerable.Concat(templatesShared, templatesOwned).ToList().DistinctBy(p => p.Id).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(Enumerable.Concat(templatesShared, templatesOwned).ToList().DistinctBy(p => p.Id));
+            var paginatedList = PaginatedList<TemplateDto>.Create(queryMapped, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/organization/{id}/shared-templates
         [HttpGet("{id}/shared-templates")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
-        public IActionResult GetSharedTemplatesByOrganization(long id)
+        public IActionResult GetSharedTemplatesByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
-            var templates = _mapper.Map<List<TemplateDto>>(_templateRepository.GetSharedTemplatesByOrganization(id));
+            // var templates = _mapper.Map<List<TemplateDto>>(_templateRepository.GetSharedTemplatesByOrganization(id));
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(templates);
+
+            var query = _templateRepository.GetSharedTemplatesByOrganization(id).AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<TemplateDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(templates);
+            var paginatedList = PaginatedList<TemplateDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/organization/{id}/owning-templates
         [HttpGet("{id}/owning-templates")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
-        public IActionResult GetTemplatesOwnedByOrganization(long id)
+        public IActionResult GetTemplatesOwnedByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
-            var templates = _mapper.Map<List<TemplateDto>>(_templateRepository.GetTemplatesOwnedByOrganization(id));
+            // var templates = _mapper.Map<List<TemplateDto>>(_templateRepository.GetTemplatesOwnedByOrganization(id));
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(templates);
+
+            var query = _templateRepository.GetTemplatesOwnedByOrganization(id).AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<RoleDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(templates);
+            var paginatedList = PaginatedList<RoleDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/organization/{id}/users
         [HttpGet("{id}/users")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
-        public IActionResult GetUsersByOrganization(long id)
+        public IActionResult GetUsersByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
-            var users = _mapper.Map<List<UserDto>>(_userRepository.GetUsersByOrganization(id));
+            // var users = _mapper.Map<List<UserDto>>(_userRepository.GetUsersByOrganization(id));
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(users);
+
+            var query = _userRepository.GetUsersByOrganization(id).AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<UserDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(users);
+            var paginatedList = PaginatedList<UserDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/organization/{id}/users/{userId}/roles

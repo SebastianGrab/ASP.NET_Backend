@@ -36,14 +36,34 @@ namespace backend.Controllers
         [HttpGet]
         [Route("/api/users")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
-        public IActionResult GetUsers()
+        public IActionResult GetUsers([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
-            var users = _mapper.Map<List<UserDto>>(_userRepository.GetUsers());
+            // var users = _mapper.Map<List<UserDto>>(_userRepository.GetUsers());
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(users);
+
+            var query = _userRepository.GetUsers().AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<UserDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(users);
+            var paginatedList = PaginatedList<UserDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/user/{id}
@@ -85,17 +105,37 @@ namespace backend.Controllers
         [Route("/api/user/{id}/creator-protocols")]
         [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
         [ProducesResponseType(400)]
-        public IActionResult GetProtocolsByUser(long id)
+        public IActionResult GetProtocolsByUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
-            var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByUser(id));
+            // var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByUser(id));
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(protocols);
+
+            var query = _protocolRepository.GetProtocolsByUser(id).AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(protocols);
+            var paginatedList = PaginatedList<ProtocolDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/user/{id}/viewer-protocols
@@ -103,17 +143,37 @@ namespace backend.Controllers
         [Route("/api/user/{id}/viewer-protocols")]
         [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
         [ProducesResponseType(400)]
-        public IActionResult GetProtocolsByAdditionalUser(long id)
+        public IActionResult GetProtocolsByAdditionalUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
-            var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByAdditionalUser(id));
+            // var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByAdditionalUser(id));
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(protocols);
+
+            var query = _protocolRepository.GetProtocolsByAdditionalUser(id).AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(protocols);
+            var paginatedList = PaginatedList<ProtocolDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: /api/user/{id}/all-protocols
@@ -121,18 +181,42 @@ namespace backend.Controllers
         [Route("/api/user/{id}/all-protocols")]
         [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
         [ProducesResponseType(400)]
-        public IActionResult GetProtocolsByUserAndAdditionalUser(long id)
+        public IActionResult GetProtocolsByUserAndAdditionalUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
-            var protocolsUser = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByUser(id));
-            var protocolsAdditionalUser = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByAdditionalUser(id));
+            // var protocolsUser = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByUser(id));
+            // var protocolsAdditionalUser = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByAdditionalUser(id));
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(Enumerable.Concat(protocolsUser, protocolsAdditionalUser).ToList().DistinctBy(p => p.Id));
+
+            var queryShared = _protocolRepository.GetProtocolsByUser(id).ToList().AsQueryable();
+            var queryOwned = _protocolRepository.GetProtocolsByAdditionalUser(id).ToList().AsQueryable();
+
+            var protocolsShared = _mapper.Map<List<ProtocolDto>>(queryShared).AsQueryable();
+            var protocolsOwned = _mapper.Map<List<ProtocolDto>>(queryOwned).AsQueryable();
+
+            var mappedQuery = Enumerable.Concat(protocolsShared, protocolsOwned).ToList().DistinctBy(p => p.Id).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(Enumerable.Concat(protocolsUser, protocolsAdditionalUser).ToList().DistinctBy(p => p.Id));
+            var paginatedList = PaginatedList<ProtocolDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/user/{id}/roles
@@ -151,14 +235,37 @@ namespace backend.Controllers
         // GET: api/user/{id}/messages
         [HttpGet("{id}/messages")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<UserMessage>))]
-        public IActionResult GetMessagesByUser(long id)
+        public IActionResult GetMessagesByUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
-            var messages = _mapper.Map<List<UserMessageDto>>(_userMessageRepository.GetMessagesByUser(id));
+            if(!_userRepository.UserExists(id))
+                return NotFound();
+
+            // var messages = _mapper.Map<List<UserMessageDto>>(_userMessageRepository.GetMessagesByUser(id));
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(messages);
+
+            var query = _userMessageRepository.GetMessagesByUser(id).AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<UserMessageDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(messages);
+            var paginatedList = PaginatedList<UserMessageDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/users/{id}/organizations/{organizationId}/roles

@@ -29,14 +29,34 @@ namespace backend.Controllers
         [HttpGet]
         [Route("/api/templates")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
-        public IActionResult GetTemplates()
+        public IActionResult GetTemplates([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
-            var templates = _mapper.Map<List<TemplateDto>>(_templateRepository.GetTemplates());
+            // var templates = _mapper.Map<List<TemplateDto>>(_templateRepository.GetTemplates());
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(templates);
+
+            var query = _templateRepository.GetTemplates().AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<TemplateDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(templates);
+            var paginatedList = PaginatedList<TemplateDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/template/{id}
@@ -60,34 +80,74 @@ namespace backend.Controllers
         [HttpGet("{id}/organizations")]
         [ProducesResponseType(200, Type = typeof(ICollection<Organization>))]
         [ProducesResponseType(400)]
-        public IActionResult GetOrganizationsByTemplate(long id)
+        public IActionResult GetOrganizationsByTemplate(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
             if(!_templateRepository.TemplateExists(id))
                 return NotFound();
 
-            var organizations = _mapper.Map<List<OrganizationDto>>(_organizationRepository.GetOrganizationsByTemplate(id));
+            // var organizations = _mapper.Map<List<OrganizationDto>>(_organizationRepository.GetOrganizationsByTemplate(id));
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(organizations);
+
+            var query = _organizationRepository.GetOrganizationsByTemplate(id).AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<OrganizationDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(organizations);
+            var paginatedList = PaginatedList<OrganizationDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/template/{id}/protocols
         [HttpGet("{id}/protocols")]
         [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
         [ProducesResponseType(400)]
-        public IActionResult GetProtocolsByTemplate(long id)
+        public IActionResult GetProtocolsByTemplate(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
             if(!_templateRepository.TemplateExists(id))
                 return NotFound();
 
-            var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByTemplate(id));
+            // var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByTemplate(id));
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(protocols);
+
+            var query = _protocolRepository.GetProtocolsByTemplate(id).AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(protocols);
+            var paginatedList = PaginatedList<ProtocolDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // POST: api/templates

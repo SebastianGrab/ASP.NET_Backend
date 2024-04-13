@@ -36,14 +36,34 @@ namespace backend.Controllers
         [HttpGet]
         [Route("/api/protocols")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Protocol>))]
-        public IActionResult GetProtocols()
+        public IActionResult GetProtocols([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
-            var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocols());
+            // var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocols());
+
+            // if(!ModelState.IsValid)
+            //     return BadRequest(ModelState);
+
+            // return Ok(protocols);
+
+            var query = _protocolRepository.GetProtocols().AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(protocols);
+            var paginatedList = PaginatedList<ProtocolDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // GET: api/protocol/{id}
