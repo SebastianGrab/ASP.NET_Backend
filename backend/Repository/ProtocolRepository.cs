@@ -48,27 +48,27 @@ namespace Repository
 
         public ICollection<Protocol> GetProtocols()
         {
-            return _context.Protocols.OrderBy(p => p.Id).ToList();
+            return _context.Protocols.OrderByDescending(p => p.Id).ToList();
         }
 
         public ICollection<Protocol> GetProtocolsByAdditionalUser(long additionalUserId)
         {
-            return _context.AdditionalUsers.Where(au => au.userId == additionalUserId).Select(p => p.Protocol).OrderBy(p => p.Id).ToList();
+            return _context.AdditionalUsers.Where(au => au.userId == additionalUserId).Select(p => p.Protocol).OrderByDescending(p => p.Id).ToList();
         }
 
         public ICollection<Protocol> GetProtocolsByOrganization(long organizationId)
         {
-            return _context.Protocols.Where(p => p.Organization.Id == organizationId).OrderBy(p => p.Id).ToList();
+            return _context.Protocols.Where(p => p.Organization.Id == organizationId).OrderByDescending(p => p.Id).ToList();
         }
 
         public ICollection<Protocol> GetProtocolsByTemplate(long templateId)
         {
-            return _context.Protocols.OrderBy(p => p.Template.Id == templateId).OrderBy(p => p.Id).ToList();
+            return _context.Protocols.OrderBy(p => p.Template.Id == templateId).OrderByDescending(p => p.Id).ToList();
         }
 
         public ICollection<Protocol> GetProtocolsByUser(long userId)
         {
-            return _context.Protocols.Where(p => p.User.Id == userId).OrderBy(p => p.Id).ToList();
+            return _context.Protocols.Where(p => p.User.Id == userId).OrderByDescending(p => p.Id).ToList();
         }
 
         public bool ProtocolExists(long id)

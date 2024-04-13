@@ -50,17 +50,17 @@ namespace Repository
 
         public ICollection<Template> GetTemplates()
         {
-            return _context.Templates.OrderBy(t => t.Id).ToList();
+            return _context.Templates.OrderByDescending(t => t.Id).ToList();
         }
 
         public ICollection<Template> GetSharedTemplatesByOrganization(long organizationId)
         {
-            return _context.TemplateOrganizations.Where(to => to.Organization.Id == organizationId).Select(t => t.Template).OrderBy(t => t.Id).ToList();
+            return _context.TemplateOrganizations.Where(to => to.Organization.Id == organizationId).Select(t => t.Template).OrderByDescending(t => t.Id).ToList();
         }
 
         public ICollection<Template> GetTemplatesOwnedByOrganization(long organizationId)
         {
-            return _context.Templates.Where(p => p.Organization.Id == organizationId).OrderBy(p => p.Id).ToList();
+            return _context.Templates.Where(p => p.Organization.Id == organizationId).OrderByDescending(t => t.Id).ToList();
         }
 
         public bool Save()

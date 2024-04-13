@@ -33,12 +33,12 @@ namespace Repository
 
         public UserMessage GetMessage(long id)
         {
-            return _context.UserMessages.OrderBy(um => um.Id == id).FirstOrDefault();
+            return _context.UserMessages.Where(u => u.Users.Id == id).FirstOrDefault();
         }
 
         public ICollection<UserMessage> GetMessages()
         {
-            return _context.UserMessages.OrderBy(um => um.Id).ToList();
+            return _context.UserMessages.OrderByDescending(um => um.Id).ToList();
         }
 
         public ICollection<UserMessage> GetMessagesByUser(long userId)

@@ -15,7 +15,7 @@ namespace Repository
 
         public ICollection<Organization> GetOrganizations()
         {
-            return _context.Organizations.OrderBy(o => o.Id).ToList();
+            return _context.Organizations.OrderByDescending(o => o.Id).ToList();
         }
 
         public Organization GetOrganization(long id)
@@ -30,12 +30,12 @@ namespace Repository
 
         public ICollection<Organization> GetOrganizationsByUser(long userId)
         {
-            return _context.UserOrganizationRoles.Where(uor => uor.User.Id == userId).Select(o => o.Organization).OrderBy(o => o.Id).ToList();
+            return _context.UserOrganizationRoles.Where(uor => uor.User.Id == userId).Select(o => o.Organization).ToList();
         }
 
         public ICollection<Organization> GetOrganizationsByTemplate(long templateId)
         {
-            return _context.TemplateOrganizations.Where(to => to.Template.Id == templateId).Select(o => o.Organization).OrderBy(o => o.Id).ToList();
+            return _context.TemplateOrganizations.Where(to => to.Template.Id == templateId).Select(o => o.Organization).ToList();
         }
 
         public Organization GetOrganizationByProtocol(long protocolId)

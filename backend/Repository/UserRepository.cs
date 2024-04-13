@@ -45,7 +45,7 @@ namespace Repository
 
         public ICollection<User> GetAdditionalUsersByProtocol(long protocolId)
         {
-            return _context.AdditionalUsers.Where(au => au.Protocol.Id == protocolId).Select(u => u.User).OrderBy(u => u.Id).ToList();
+            return _context.AdditionalUsers.Where(au => au.Protocol.Id == protocolId).Select(u => u.User).OrderByDescending(u => u.Id).ToList();
         }
 
         public ICollection<UserOrganizationRole> GetUserOrganizationRoleEntriesByUser(long id)
@@ -65,12 +65,12 @@ namespace Repository
 
         public ICollection<User> GetUsers()
         {
-            return _context.Users.OrderBy(u => u.Id).ToList();
+            return _context.Users.OrderByDescending(u => u.Id).ToList();
         }
 
         public ICollection<User> GetUsersByOrganization(long organizationId)
         {
-            return _context.UserOrganizationRoles.Where(uor => uor.Organization.Id == organizationId).Select(u => u.User).OrderBy(u => u.Id).ToList();
+            return _context.UserOrganizationRoles.Where(uor => uor.Organization.Id == organizationId).Select(u => u.User).OrderByDescending(u => u.Id).ToList();
         }
 
         public bool Save()
