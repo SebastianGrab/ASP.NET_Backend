@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Interfaces;
 using AutoMapper;
 using Dto;
+using Helper;
+using Helper.SeachObjects;
+using Helper.SearchObjects;
 
 namespace backend.Controllers
 {
@@ -33,16 +36,9 @@ namespace backend.Controllers
         [HttpGet]
         [Route("/api/organizations")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Organization>))]
-        public IActionResult GetOrganizations([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetOrganizations([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearchQuery = null)
         {
-            // var organizations = _mapper.Map<List<OrganizationDto>>(_organizationRepository.GetOrganizations()).AsQueryable();
-
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(organizations);
-
-            var query = _organizationRepository.GetOrganizations().AsQueryable();
+            var query = _organizationRepository.GetOrganizations(dateQuery, organizationSearchQuery).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<OrganizationDto>>(query.ToList()).AsQueryable();
 
@@ -83,16 +79,12 @@ namespace backend.Controllers
         // GET: api/organization/{id}/protocols
         [HttpGet("{id}/protocols")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Protocol>))]
-        public IActionResult GetProtocolsByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetProtocolsByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearch = null)
         {
-            // var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByOrganization(id));
+            if(!_organizationRepository.OrganizationExists(id))
+                return NotFound();
 
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(protocols);
-
-            var query = _protocolRepository.GetProtocolsByOrganization(id).AsQueryable();
+            var query = _protocolRepository.GetProtocolsByOrganization(id, dateQuery, protocolSearch).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
@@ -118,12 +110,8 @@ namespace backend.Controllers
         [ProducesResponseType(200, Type = typeof(IEnumerable<Role>))]
         public IActionResult GetRolesByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
-            // var roles = _mapper.Map<List<RoleDto>>(_roleRepository.GetRolesByOrganization(id));
-
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(roles);
+            if(!_organizationRepository.OrganizationExists(id))
+                return NotFound();
 
             var query = _roleRepository.GetRolesByOrganization(id).AsQueryable();
 
@@ -149,10 +137,13 @@ namespace backend.Controllers
         // GET: api/organization/{id}/all-templates
         [HttpGet("{id}/templates")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
-        public IActionResult GetAllTemplatesByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetAllTemplatesByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] TemplateSearchObject templateSearchQuery = null)
         {
-            var queryShared = _templateRepository.GetSharedTemplatesByOrganization(id).ToList().AsQueryable();
-            var queryOwned = _templateRepository.GetTemplatesOwnedByOrganization(id).ToList().AsQueryable();
+            if(!_organizationRepository.OrganizationExists(id))
+                return NotFound();
+                
+            var queryShared = _templateRepository.GetSharedTemplatesByOrganization(id, dateQuery, templateSearchQuery).ToList().AsQueryable();
+            var queryOwned = _templateRepository.GetTemplatesOwnedByOrganization(id, dateQuery, templateSearchQuery).ToList().AsQueryable();
 
             var templatesShared = _mapper.Map<List<TemplateDto>>(queryShared).AsQueryable();
             var templatesOwned = _mapper.Map<List<TemplateDto>>(queryOwned).AsQueryable();
@@ -179,16 +170,12 @@ namespace backend.Controllers
         // GET: api/organization/{id}/shared-templates
         [HttpGet("{id}/shared-templates")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
-        public IActionResult GetSharedTemplatesByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetSharedTemplatesByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] TemplateSearchObject templateSearchQuery = null)
         {
-            // var templates = _mapper.Map<List<TemplateDto>>(_templateRepository.GetSharedTemplatesByOrganization(id));
+            if(!_organizationRepository.OrganizationExists(id))
+                return NotFound();
 
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(templates);
-
-            var query = _templateRepository.GetSharedTemplatesByOrganization(id).AsQueryable();
+            var query = _templateRepository.GetSharedTemplatesByOrganization(id, dateQuery, templateSearchQuery).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<TemplateDto>>(query.ToList()).AsQueryable();
 
@@ -212,16 +199,12 @@ namespace backend.Controllers
         // GET: api/organization/{id}/owning-templates
         [HttpGet("{id}/owning-templates")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
-        public IActionResult GetTemplatesOwnedByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetTemplatesOwnedByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] TemplateSearchObject templateSearchQuery = null)
         {
-            // var templates = _mapper.Map<List<TemplateDto>>(_templateRepository.GetTemplatesOwnedByOrganization(id));
+            if(!_organizationRepository.OrganizationExists(id))
+                return NotFound();
 
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(templates);
-
-            var query = _templateRepository.GetTemplatesOwnedByOrganization(id).AsQueryable();
+            var query = _templateRepository.GetTemplatesOwnedByOrganization(id, dateQuery, templateSearchQuery).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<RoleDto>>(query.ToList()).AsQueryable();
 
@@ -245,16 +228,12 @@ namespace backend.Controllers
         // GET: api/organization/{id}/users
         [HttpGet("{id}/users")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
-        public IActionResult GetUsersByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetUsersByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] UserSearchObject userSearchQuery = null)
         {
-            // var users = _mapper.Map<List<UserDto>>(_userRepository.GetUsersByOrganization(id));
+            if(!_organizationRepository.OrganizationExists(id))
+                return NotFound();
 
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(users);
-
-            var query = _userRepository.GetUsersByOrganization(id).AsQueryable();
+            var query = _userRepository.GetUsersByOrganization(id, dateQuery, userSearchQuery).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<UserDto>>(query.ToList()).AsQueryable();
 
@@ -280,12 +259,47 @@ namespace backend.Controllers
         [ProducesResponseType(200, Type = typeof(IEnumerable<Role>))]
         public IActionResult GetRolesByUserAndOrganization(long userId, long id)
         {
+            if(!_userRepository.UserExists(userId))
+                return NotFound();
+
+            if(!_organizationRepository.OrganizationExists(id))
+                return NotFound();
+                
             var roles = _mapper.Map<List<RoleDto>>(_roleRepository.GetRolesByUserAndOrganization(userId, id));
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             return Ok(roles);
+        }
+
+        // GET: api/organization/{id}/daughter-organizations
+        [HttpGet("{id}/daughter-organizations")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Organization>))]
+        public IActionResult GetOrganizationDaughters(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearch = null)
+        {
+            if(!_organizationRepository.OrganizationExists(id))
+                return NotFound();
+
+            var query = _organizationRepository.GetOrganizationDaughters(id, dateQuery, organizationSearch).AsQueryable();
+
+            var mappedQuery = _mapper.Map<List<OrganizationDto>>(query.ToList()).AsQueryable();
+
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var paginatedList = PaginatedList<OrganizationDto>.Create(mappedQuery, pageIndex, pageSize);
+
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
+
+            return Ok(response);
         }
 
         // POST: api/organizations
@@ -298,7 +312,7 @@ namespace backend.Controllers
             if (organizationCreate == null)
                 return BadRequest(ModelState);
 
-            var organizationName = _organizationRepository.GetOrganizations()
+            var organizationName = _organizationRepository.GetOrganizations(new QueryObject(), new OrganizationSearchObject())
                 .Where(o => o.Name.Trim().ToUpper() == organizationCreate.Name.TrimEnd().ToUpper())
                 .FirstOrDefault();
 
@@ -308,7 +322,7 @@ namespace backend.Controllers
                 return StatusCode(422, ModelState);
             }
 
-            var organizationId = _organizationRepository.GetOrganizations()
+            var organizationId = _organizationRepository.GetOrganizations(new QueryObject(), new OrganizationSearchObject())
                 .Where(o => o.Id == organizationCreate.Id)
                 .FirstOrDefault();
 
@@ -338,6 +352,15 @@ namespace backend.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateUserOrganizationRole(long userId, long id, long roleId)
         {
+            if(!_organizationRepository.OrganizationExists(id))
+                return NotFound();
+                
+            if(!_userRepository.UserExists(userId))
+                return NotFound();
+                
+            if(!_roleRepository.RoleExists(roleId))
+                return NotFound();
+                
             if(_userRepository.UserOrganizationRoleExists(userId, id, roleId) == true)
             {
                 ModelState.AddModelError("", "User Role in this Organization already exists.");
@@ -379,13 +402,13 @@ namespace backend.Controllers
             }
 
             var organizationToDelete = _organizationRepository.GetOrganization(id);
-            var templateOrganizationsToDelete = _templateOrganizationRepository.GetTemplateOrganizationEntriesByOrganization(id);
-            var userOrganizationRolesToDelete = _organizationRepository.GetUserOrganizationRoleEntriesByOrganization(id);
+            var templateOrganizationsToDelete = _templateOrganizationRepository.GetTemplateOrganizationEntriesByOrganization(id).ToList();
+            var userOrganizationRolesToDelete = _organizationRepository.GetUserOrganizationRoleEntriesByOrganization(id).ToList();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!_templateOrganizationRepository.DeleteTemplateOrganizationEntries(templateOrganizationsToDelete.ToList()))
+            if (!_templateOrganizationRepository.DeleteTemplateOrganizationEntries(templateOrganizationsToDelete))
             {
                 ModelState.AddModelError("", "Something went wrong when deleting template organization.");
             }
@@ -393,6 +416,11 @@ namespace backend.Controllers
             if (!_organizationRepository.DeleteOrganization(organizationToDelete))
             {
                 ModelState.AddModelError("", "Something went wrong deleting Organization.");
+            }
+
+            if (!_userRepository.DeleteUserOrganizationRoles(userOrganizationRolesToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong deleting Organization Roles.");
             }
 
             return NoContent();
@@ -409,6 +437,9 @@ namespace backend.Controllers
             {
                 return NotFound();
             }
+
+            if(!_organizationRepository.OrganizationExists(id))
+                return NotFound();   
 
             var userOrganizationRole = _userRepository.GetUserOrganizationRole(userId, id, roleId);
 
@@ -429,6 +460,9 @@ namespace backend.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateOrganization(long id, [FromBody] OrganizationDto organizationUpdate)
         {
+            if(!_organizationRepository.OrganizationExists(id))
+                return NotFound();
+                
             if (organizationUpdate == null)
                 return BadRequest(ModelState);
 

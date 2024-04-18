@@ -139,3 +139,14 @@ C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Back
 C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.AspNetCore.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.Extensions.Hosting.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.Extensions.Logging.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.Formatting.Compact.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.Settings.Configuration.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.Sinks.Console.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.Sinks.Debug.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.Sinks.File.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.Sinks.PeriodicBatching.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.Sinks.PostgreSQL.dll

@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Interfaces;
 using AutoMapper;
 using Dto;
+using Helper;
+using Helper.SearchObjects;
+using Helper.SeachObjects;
 
 namespace backend.Controllers
 {
@@ -29,16 +32,9 @@ namespace backend.Controllers
         [HttpGet]
         [Route("/api/templates")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
-        public IActionResult GetTemplates([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetTemplates([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] TemplateSearchObject templateSearchQuery = null)
         {
-            // var templates = _mapper.Map<List<TemplateDto>>(_templateRepository.GetTemplates());
-
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(templates);
-
-            var query = _templateRepository.GetTemplates().AsQueryable();
+            var query = _templateRepository.GetTemplates(dateQuery, templateSearchQuery).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<TemplateDto>>(query.ToList()).AsQueryable();
 
@@ -80,19 +76,12 @@ namespace backend.Controllers
         [HttpGet("{id}/organizations")]
         [ProducesResponseType(200, Type = typeof(ICollection<Organization>))]
         [ProducesResponseType(400)]
-        public IActionResult GetOrganizationsByTemplate(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetOrganizationsByTemplate(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearchQuery = null)
         {
             if(!_templateRepository.TemplateExists(id))
                 return NotFound();
 
-            // var organizations = _mapper.Map<List<OrganizationDto>>(_organizationRepository.GetOrganizationsByTemplate(id));
-
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(organizations);
-
-            var query = _organizationRepository.GetOrganizationsByTemplate(id).AsQueryable();
+            var query = _organizationRepository.GetOrganizationsByTemplate(id, dateQuery, organizationSearchQuery).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<OrganizationDto>>(query.ToList()).AsQueryable();
 
@@ -117,19 +106,12 @@ namespace backend.Controllers
         [HttpGet("{id}/protocols")]
         [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
         [ProducesResponseType(400)]
-        public IActionResult GetProtocolsByTemplate(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetProtocolsByTemplate(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearchQuery = null)
         {
             if(!_templateRepository.TemplateExists(id))
                 return NotFound();
 
-            // var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByTemplate(id));
-
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(protocols);
-
-            var query = _protocolRepository.GetProtocolsByTemplate(id).AsQueryable();
+            var query = _protocolRepository.GetProtocolsByTemplate(id, dateQuery, protocolSearchQuery).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
@@ -160,7 +142,7 @@ namespace backend.Controllers
             if (templateCreate == null)
                 return BadRequest(ModelState);
 
-            var templateName = _templateRepository.GetSharedTemplatesByOrganization(organizationId)
+            var templateName = _templateRepository.GetSharedTemplatesByOrganization(organizationId, new QueryObject(), new TemplateSearchObject())
                 .Where(o => o.Name.Trim().ToUpper() == templateCreate.Name.TrimEnd().ToUpper())
                 .FirstOrDefault();
 
@@ -267,7 +249,7 @@ namespace backend.Controllers
         [ProducesResponseType(404)]
         public IActionResult RemoveTemplateFromOrganization(long id, long organizationId)
         {
-            if(_templateOrganizationRepository.TemplateOrganizationExists(id, organizationId) == false)
+            if(!_templateOrganizationRepository.TemplateOrganizationExists(id, organizationId))
             {
                 return NotFound();
             }

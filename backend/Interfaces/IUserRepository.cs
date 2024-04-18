@@ -1,15 +1,17 @@
+using Helper;
+using Helper.SearchObjects;
 using Models;
 
 namespace Interfaces
 {
     public interface IUserRepository
     {
-        ICollection<User> GetUsers();
+        ICollection<User> GetUsers(QueryObject dateQuery, UserSearchObject userSearch);
         User GetUser(long id);
         bool UserExists(long id);
-        ICollection<User> GetUsersByOrganization(long organizationId);
+        ICollection<User> GetUsersByOrganization(long organizationId, QueryObject dateQuery, UserSearchObject userSearch);
         User GetUserByProtocol(long protocolId);
-        ICollection<User> GetAdditionalUsersByProtocol(long protocolId);
+        ICollection<User> GetAdditionalUsersByProtocol(long protocolId, QueryObject dateQuery, UserSearchObject userSearch);
         ICollection<UserOrganizationRole> GetUserOrganizationRoleEntriesByUser(long id);
         UserOrganizationRole GetUserOrganizationRole(long userId, long organizationId, long roleId);
         bool CreateUser(User user);

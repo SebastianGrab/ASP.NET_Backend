@@ -1,8 +1,11 @@
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using Data;
 using Interfaces;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Repository;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddHostedService<ProtocolCleanupService>();
 
 builder.Services.AddScoped<IAdditionalUserRepository, AdditionalUserRepository>();
 builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
@@ -35,9 +40,35 @@ var configuration = builder.Configuration;
 builder.Services.AddDbContext<ProtocolContext>(options =>
     options.UseNpgsql(configuration.GetConnectionString("ConnectionString")));
 
+builder.Host.UseSerilog((context, configuration) =>
+{
+    var connectionString = context.Configuration.GetConnectionString("ConnectionString");
+
+    configuration.WriteTo.PostgreSQL(connectionString, "Logs", needAutoCreateTable: true)
+        .MinimumLevel.Information();
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("RateLimiting", policy =>
+    {
+        policy.Window = TimeSpan.FromMinutes(1);
+        policy.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        policy.QueueLimit = 0;
+        policy.PermitLimit = 100;
+    });
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseRateLimiter();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

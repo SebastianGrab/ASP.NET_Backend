@@ -4,6 +4,8 @@ using Interfaces;
 using AutoMapper;
 using Dto;
 using Microsoft.Extensions.Configuration.UserSecrets;
+using Helper;
+using Helper.SearchObjects;
 
 namespace backend.Controllers
 {
@@ -36,16 +38,9 @@ namespace backend.Controllers
         [HttpGet]
         [Route("/api/protocols")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Protocol>))]
-        public IActionResult GetProtocols([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetProtocols([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearchQuery = null)
         {
-            // var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocols());
-
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(protocols);
-
-            var query = _protocolRepository.GetProtocols().AsQueryable();
+            var query = _protocolRepository.GetProtocols(dateQuery, protocolSearchQuery).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
@@ -172,12 +167,12 @@ namespace backend.Controllers
         [HttpGet("{id}/additional-users")]
         [ProducesResponseType(200, Type = typeof(ICollection<User>))]
         [ProducesResponseType(400)]
-        public IActionResult GetAdditionalUsersByProtocol(long id)
+        public IActionResult GetAdditionalUsersByProtocol(long id, [FromQuery] QueryObject dateQuery = null, [FromQuery] UserSearchObject userSearchQuery = null)
         {
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var users = _mapper.Map<List<UserDto>>(_userRepository.GetAdditionalUsersByProtocol(id));
+            var users = _mapper.Map<List<UserDto>>(_userRepository.GetAdditionalUsersByProtocol(id, dateQuery, userSearchQuery));
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -191,6 +186,9 @@ namespace backend.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateProtocolContent(long id, [FromBody] ProtocolContentDto protocolContentCreate)
         {
+            if(!_protocolRepository.ProtocolExists(id))
+                return NotFound();
+
             if (protocolContentCreate == null)
                 return BadRequest(ModelState);
 
@@ -230,6 +228,9 @@ namespace backend.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateProtocolPdfFile(long id, [FromBody] ProtocolPdfFileDto protocolPdfFileCreate)
         {
+            if(!_protocolRepository.ProtocolExists(id))
+                return NotFound();
+                
             if (protocolPdfFileCreate == null)
                 return BadRequest(ModelState);
 
@@ -364,11 +365,11 @@ namespace backend.Controllers
             if (protocolUpdate == null)
                 return BadRequest(ModelState);
 
-            if (id != protocolUpdate.Id)
-                return BadRequest(ModelState);
-
             if (!_protocolRepository.ProtocolExists(id))
                 return NotFound();
+
+            if (id != protocolUpdate.Id)
+                return BadRequest(ModelState);
 
             if (!ModelState.IsValid)
                 return BadRequest();

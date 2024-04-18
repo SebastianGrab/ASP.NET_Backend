@@ -4,6 +4,9 @@ using Interfaces;
 using AutoMapper;
 using Dto;
 using Microsoft.Extensions.Configuration.UserSecrets;
+using Helper;
+using Helper.SeachObjects;
+using Helper.SearchObjects;
 
 namespace backend.Controllers
 {
@@ -36,16 +39,9 @@ namespace backend.Controllers
         [HttpGet]
         [Route("/api/users")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
-        public IActionResult GetUsers([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetUsers([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] UserSearchObject userSearchQuery = null)
         {
-            // var users = _mapper.Map<List<UserDto>>(_userRepository.GetUsers());
-
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(users);
-
-            var query = _userRepository.GetUsers().AsQueryable();
+            var query = _userRepository.GetUsers(dateQuery, userSearchQuery).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<UserDto>>(query.ToList()).AsQueryable();
 
@@ -87,12 +83,12 @@ namespace backend.Controllers
         [HttpGet("{id}/organizations")]
         [ProducesResponseType(200, Type = typeof(ICollection<Organization>))]
         [ProducesResponseType(400)]
-        public IActionResult GetOrganizationsByUser(long id)
+        public IActionResult GetOrganizationsByUser(long id, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearchQuery = null)
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
-            var organizations = _mapper.Map<List<OrganizationDto>>(_organizationRepository.GetOrganizationsByUser(id));
+            var organizations = _mapper.Map<List<OrganizationDto>>(_organizationRepository.GetOrganizationsByUser(id, dateQuery, organizationSearchQuery));
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -105,19 +101,12 @@ namespace backend.Controllers
         [Route("/api/user/{id}/creator-protocols")]
         [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
         [ProducesResponseType(400)]
-        public IActionResult GetProtocolsByUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetProtocolsByUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearchQuery = null)
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
-            // var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByUser(id));
-
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(protocols);
-
-            var query = _protocolRepository.GetProtocolsByUser(id).AsQueryable();
+            var query = _protocolRepository.GetProtocolsByUser(id, dateQuery, protocolSearchQuery).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
@@ -143,19 +132,12 @@ namespace backend.Controllers
         [Route("/api/user/{id}/viewer-protocols")]
         [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
         [ProducesResponseType(400)]
-        public IActionResult GetProtocolsByAdditionalUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetProtocolsByAdditionalUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearchQuery = null)
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
-            // var protocols = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByAdditionalUser(id));
-
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(protocols);
-
-            var query = _protocolRepository.GetProtocolsByAdditionalUser(id).AsQueryable();
+            var query = _protocolRepository.GetProtocolsByAdditionalUser(id, dateQuery, protocolSearchQuery).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
@@ -181,21 +163,13 @@ namespace backend.Controllers
         [Route("/api/user/{id}/all-protocols")]
         [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
         [ProducesResponseType(400)]
-        public IActionResult GetProtocolsByUserAndAdditionalUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetProtocolsByUserAndAdditionalUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearchQuery = null)
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
-            // var protocolsUser = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByUser(id));
-            // var protocolsAdditionalUser = _mapper.Map<List<ProtocolDto>>(_protocolRepository.GetProtocolsByAdditionalUser(id));
-
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(Enumerable.Concat(protocolsUser, protocolsAdditionalUser).ToList().DistinctBy(p => p.Id));
-
-            var queryShared = _protocolRepository.GetProtocolsByUser(id).ToList().AsQueryable();
-            var queryOwned = _protocolRepository.GetProtocolsByAdditionalUser(id).ToList().AsQueryable();
+            var queryShared = _protocolRepository.GetProtocolsByUser(id, dateQuery, protocolSearchQuery).ToList().AsQueryable();
+            var queryOwned = _protocolRepository.GetProtocolsByAdditionalUser(id, dateQuery, protocolSearchQuery).ToList().AsQueryable();
 
             var protocolsShared = _mapper.Map<List<ProtocolDto>>(queryShared).AsQueryable();
             var protocolsOwned = _mapper.Map<List<ProtocolDto>>(queryOwned).AsQueryable();
@@ -224,6 +198,9 @@ namespace backend.Controllers
         [ProducesResponseType(200, Type = typeof(IEnumerable<Role>))]
         public IActionResult GetRolesByUser(long id)
         {
+            if(!_userRepository.UserExists(id))
+                return NotFound();
+
             var roles = _mapper.Map<List<RoleDto>>(_roleRepository.GetRolesByUser(id));
 
             if(!ModelState.IsValid)
@@ -235,19 +212,12 @@ namespace backend.Controllers
         // GET: api/user/{id}/messages
         [HttpGet("{id}/messages")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<UserMessage>))]
-        public IActionResult GetMessagesByUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
+        public IActionResult GetMessagesByUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] UserMessageSearchObject userMessageSearchQuery = null)
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
-            // var messages = _mapper.Map<List<UserMessageDto>>(_userMessageRepository.GetMessagesByUser(id));
-
-            // if(!ModelState.IsValid)
-            //     return BadRequest(ModelState);
-
-            // return Ok(messages);
-
-            var query = _userMessageRepository.GetMessagesByUser(id).AsQueryable();
+            var query = _userMessageRepository.GetMessagesByUser(id, dateQuery, userMessageSearchQuery).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<UserMessageDto>>(query.ToList()).AsQueryable();
 
@@ -291,7 +261,7 @@ namespace backend.Controllers
             if (userCreate == null)
                 return BadRequest(ModelState);
 
-            var userMail = _userRepository.GetUsers()
+            var userMail = _userRepository.GetUsers(new QueryObject(), new UserSearchObject())
                 .Where(o => o.Email.Trim().ToUpper() == userCreate.Email.TrimEnd().ToUpper())
                 .FirstOrDefault();
 
@@ -301,7 +271,7 @@ namespace backend.Controllers
                 return StatusCode(422, ModelState);
             }
 
-            var userId = _userRepository.GetUsers()
+            var userId = _userRepository.GetUsers(new QueryObject(), new UserSearchObject())
                 .Where(o => o.Id == userCreate.Id)
                 .FirstOrDefault();
 
@@ -331,6 +301,15 @@ namespace backend.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateUserOrganizationRole(long id, long organizationId, long roleId)
         {
+            if(!_userRepository.UserExists(id))
+                return NotFound();
+
+            if(!_organizationRepository.OrganizationExists(organizationId))
+                return NotFound();
+
+            if(!_roleRepository.RoleExists(roleId))
+                return NotFound();
+                
             if(_userRepository.UserOrganizationRoleExists(id, organizationId, roleId) == true)
             {
                 ModelState.AddModelError("", "User Role in this Organization already exists.");
@@ -371,7 +350,7 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            var userMessagesToDelete = _userMessageRepository.GetMessagesByUser(id);
+            var userMessagesToDelete = _userMessageRepository.GetMessagesByUser(id, new QueryObject(), new UserMessageSearchObject());
             var userToDelete = _userRepository.GetUser(id);
             var userOrganizationRolesToDelete = _userRepository.GetUserOrganizationRoleEntriesByUser(id);
             var additionalUsersToDelete = _additionalUserRepository.GetAdditionalUserEntriesByUser(id);

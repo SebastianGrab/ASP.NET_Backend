@@ -62,6 +62,18 @@
               "target": "Package",
               "version": "[7.*, )"
             },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Serilog.Settings.Configuration": {
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Serilog.Sinks.PostgreSQL": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"

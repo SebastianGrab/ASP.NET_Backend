@@ -1,4 +1,6 @@
 using Data;
+using Helper;
+using Helper.SeachObjects;
 using Interfaces;
 using Models;
 
@@ -13,9 +15,41 @@ namespace Repository
             _context = context;
         }
 
-        public ICollection<Organization> GetOrganizations()
+        public ICollection<Organization> GetOrganizations(QueryObject? dateQuery, OrganizationSearchObject? organizationSearch)
         {
-            return _context.Organizations.OrderByDescending(o => o.Id).ToList();
+            var orgas = _context.Organizations.OrderByDescending(o => o.Id).AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minCreatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.CreatedDate >= dateQuery.minCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxCreatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.CreatedDate <= dateQuery.maxCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minUpdatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.UpdatedDate >= dateQuery.minUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxUpdatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.UpdatedDate <= dateQuery.maxUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(organizationSearch.Name))
+            {
+                orgas = orgas.Where(o => o.Name.Contains(organizationSearch.Name));
+            }
+
+            if(!string.IsNullOrWhiteSpace(organizationSearch.OrganizationType))
+            {
+                orgas = orgas.Where(o => o.OrganizationType.Contains(organizationSearch.OrganizationType));
+            }
+
+            return orgas.OrderByDescending(p => p.Id).ToList();
         }
 
         public Organization GetOrganization(long id)
@@ -28,14 +62,78 @@ namespace Repository
             return _context.Organizations.Any(o => o.Id == id);
         }
 
-        public ICollection<Organization> GetOrganizationsByUser(long userId)
+        public ICollection<Organization> GetOrganizationsByUser(long userId, QueryObject dateQuery, OrganizationSearchObject organizationSearch)
         {
-            return _context.UserOrganizationRoles.Where(uor => uor.User.Id == userId).Select(o => o.Organization).ToList();
+            var orgas = _context.UserOrganizationRoles.Where(uor => uor.User.Id == userId).Select(o => o.Organization).AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minCreatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.CreatedDate >= dateQuery.minCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxCreatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.CreatedDate <= dateQuery.maxCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minUpdatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.UpdatedDate >= dateQuery.minUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxUpdatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.UpdatedDate <= dateQuery.maxUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(organizationSearch.Name))
+            {
+                orgas = orgas.Where(o => o.Name.Contains(organizationSearch.Name));
+            }
+
+            if(!string.IsNullOrWhiteSpace(organizationSearch.OrganizationType))
+            {
+                orgas = orgas.Where(o => o.OrganizationType.Contains(organizationSearch.OrganizationType));
+            }
+
+            return orgas.OrderByDescending(p => p.Id).ToList();
         }
 
-        public ICollection<Organization> GetOrganizationsByTemplate(long templateId)
+        public ICollection<Organization> GetOrganizationsByTemplate(long templateId, QueryObject dateQuery, OrganizationSearchObject organizationSearch)
         {
-            return _context.TemplateOrganizations.Where(to => to.Template.Id == templateId).Select(o => o.Organization).ToList();
+            var orgas = _context.TemplateOrganizations.Where(to => to.Template.Id == templateId).Select(o => o.Organization).AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minCreatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.CreatedDate >= dateQuery.minCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxCreatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.CreatedDate <= dateQuery.maxCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minUpdatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.UpdatedDate >= dateQuery.minUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxUpdatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.UpdatedDate <= dateQuery.maxUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(organizationSearch.Name))
+            {
+                orgas = orgas.Where(o => o.Name.Contains(organizationSearch.Name));
+            }
+
+            if(!string.IsNullOrWhiteSpace(organizationSearch.OrganizationType))
+            {
+                orgas = orgas.Where(o => o.OrganizationType.Contains(organizationSearch.OrganizationType));
+            }
+
+            return orgas.OrderByDescending(p => p.Id).ToList();
         }
 
         public Organization GetOrganizationByProtocol(long protocolId)
@@ -75,6 +173,43 @@ namespace Repository
         public Organization GetOwningOrganizationByTemplates(long templateId)
         {
             return _context.Templates.Where(p => p.Id == templateId).Select(o => o.Organization).FirstOrDefault();
+        }
+
+        public ICollection<Organization> GetOrganizationDaughters(long organizationId, QueryObject dateQuery, OrganizationSearchObject organizationSearch)
+        {
+            var orgas = _context.Organizations.Where(o => o.parentId == organizationId).OrderByDescending(o => o.Id).AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minCreatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.CreatedDate >= dateQuery.minCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxCreatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.CreatedDate <= dateQuery.maxCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minUpdatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.UpdatedDate >= dateQuery.minUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxUpdatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.UpdatedDate <= dateQuery.maxUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(organizationSearch.Name))
+            {
+                orgas = orgas.Where(o => o.Name.Contains(organizationSearch.Name));
+            }
+
+            if(!string.IsNullOrWhiteSpace(organizationSearch.OrganizationType))
+            {
+                orgas = orgas.Where(o => o.OrganizationType.Contains(organizationSearch.OrganizationType));
+            }
+
+            return orgas.OrderByDescending(p => p.Id).ToList();
         }
     }
 }

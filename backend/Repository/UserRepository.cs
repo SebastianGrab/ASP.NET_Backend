@@ -1,4 +1,6 @@
 using Data;
+using Helper;
+using Helper.SearchObjects;
 using Interfaces;
 using Models;
 
@@ -43,9 +45,41 @@ namespace Repository
             return Save();
         }
 
-        public ICollection<User> GetAdditionalUsersByProtocol(long protocolId)
+        public ICollection<User> GetAdditionalUsersByProtocol(long protocolId, QueryObject dateQuery, UserSearchObject userSearch)
         {
-            return _context.AdditionalUsers.Where(au => au.Protocol.Id == protocolId).Select(u => u.User).OrderByDescending(u => u.Id).ToList();
+            var users = _context.AdditionalUsers.Where(au => au.Protocol.Id == protocolId).Select(u => u.User).OrderByDescending(u => u.Id).AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minCreatedDateTime.ToString()))
+            {
+                users = users.Where(o => o.CreatedDate >= dateQuery.minCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxCreatedDateTime.ToString()))
+            {
+                users = users.Where(o => o.CreatedDate <= dateQuery.maxCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minUpdatedDateTime.ToString()))
+            {
+                users = users.Where(o => o.UpdatedDate >= dateQuery.minUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxUpdatedDateTime.ToString()))
+            {
+                users = users.Where(o => o.UpdatedDate <= dateQuery.maxUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(userSearch.Email))
+            {
+                users = users.Where(o => o.Email.Contains(userSearch.Email));
+            }
+
+            if(!string.IsNullOrWhiteSpace(userSearch.Username))
+            {
+                users = users.Where(o => o.Username.Contains(userSearch.Username));
+            }
+
+            return users.OrderByDescending(p => p.Id).ToList();
         }
 
         public ICollection<UserOrganizationRole> GetUserOrganizationRoleEntriesByUser(long id)
@@ -63,14 +97,78 @@ namespace Repository
             return _context.Protocols.Where(p => p.Id == protocolId).Select(u => u.User).FirstOrDefault();
         }
 
-        public ICollection<User> GetUsers()
+        public ICollection<User> GetUsers(QueryObject dateQuery, UserSearchObject userSearch)
         {
-            return _context.Users.OrderByDescending(u => u.Id).ToList();
+            var users = _context.Users.OrderByDescending(u => u.Id).AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minCreatedDateTime.ToString()))
+            {
+                users = users.Where(o => o.CreatedDate >= dateQuery.minCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxCreatedDateTime.ToString()))
+            {
+                users = users.Where(o => o.CreatedDate <= dateQuery.maxCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minUpdatedDateTime.ToString()))
+            {
+                users = users.Where(o => o.UpdatedDate >= dateQuery.minUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxUpdatedDateTime.ToString()))
+            {
+                users = users.Where(o => o.UpdatedDate <= dateQuery.maxUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(userSearch.Email))
+            {
+                users = users.Where(o => o.Email.Contains(userSearch.Email));
+            }
+
+            if(!string.IsNullOrWhiteSpace(userSearch.Username))
+            {
+                users = users.Where(o => o.Username.Contains(userSearch.Username));
+            }
+
+            return users.OrderByDescending(p => p.Id).ToList();
         }
 
-        public ICollection<User> GetUsersByOrganization(long organizationId)
+        public ICollection<User> GetUsersByOrganization(long organizationId, QueryObject dateQuery, UserSearchObject userSearch)
         {
-            return _context.UserOrganizationRoles.Where(uor => uor.Organization.Id == organizationId).Select(u => u.User).OrderByDescending(u => u.Id).ToList();
+            var users = _context.UserOrganizationRoles.Where(uor => uor.Organization.Id == organizationId).Select(u => u.User).OrderByDescending(u => u.Id).AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minCreatedDateTime.ToString()))
+            {
+                users = users.Where(o => o.CreatedDate >= dateQuery.minCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxCreatedDateTime.ToString()))
+            {
+                users = users.Where(o => o.CreatedDate <= dateQuery.maxCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minUpdatedDateTime.ToString()))
+            {
+                users = users.Where(o => o.UpdatedDate >= dateQuery.minUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxUpdatedDateTime.ToString()))
+            {
+                users = users.Where(o => o.UpdatedDate <= dateQuery.maxUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(userSearch.Email))
+            {
+                users = users.Where(o => o.Email.Contains(userSearch.Email));
+            }
+
+            if(!string.IsNullOrWhiteSpace(userSearch.Username))
+            {
+                users = users.Where(o => o.Username.Contains(userSearch.Username));
+            }
+
+            return users.OrderByDescending(p => p.Id).ToList();
         }
 
         public bool Save()

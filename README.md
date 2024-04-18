@@ -2,7 +2,9 @@
 
 ## Run the App:
 
-docker-compose up -d
+docker-compose up -d db
+
+docker-compose up -d csharp_backend
 
 
 ## Swagger Interface:
@@ -12,8 +14,8 @@ docker-compose up -d
 
 # To-Dos
 
-- Filter/Suche (Helfer, Organisation, Zeitraum, Auftragsnummer (nicht in jedem Protokoll))
-- Authentication / UserSession (Entity, Interface, Repo & Controller)
+- Authentication (multiple Sessions allowed --> UserSession (Entity, Interface, Repo & Controller))
 - Authorization
 - Services: Aktionen aus Protokollen, ...
 - Unit & Integration Tests
+- OpenTelemetry & pgadmin

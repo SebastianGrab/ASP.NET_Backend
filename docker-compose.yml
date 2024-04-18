@@ -1,5 +1,6 @@
 version: '1'
 services:
+
   backend:
     container_name: backend
     build:
@@ -14,6 +15,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       ConnectionStrings__DefaultConnection: "Host=db;Database=postgres;Username=postgres;Password=postgres"
+
   db:
     container_name: db
     image: postgres:12
@@ -28,8 +30,26 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "15432:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: strong-password
+      PGADMIN_LISTEN_PORT: 80
+    networks:
+      - drk-network
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - db
+
 volumes:
   pgdata: {}
+  pgadmin-data: {}
 
 networks:
   drk-network:

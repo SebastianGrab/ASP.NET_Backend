@@ -1,4 +1,6 @@
 using Data;
+using Helper;
+using Helper.SearchObjects;
 using Interfaces;
 using Models;
 
@@ -33,17 +35,91 @@ namespace Repository
 
         public UserMessage GetMessage(long id)
         {
-            return _context.UserMessages.Where(u => u.Users.Id == id).FirstOrDefault();
+            return _context.UserMessages.Where(u => u.User.Id == id).FirstOrDefault();
         }
 
-        public ICollection<UserMessage> GetMessages()
+        public ICollection<UserMessage> GetMessages(QueryObject dateQuery, UserMessageSearchObject userMessageSearch)
         {
-            return _context.UserMessages.OrderByDescending(um => um.Id).ToList();
+            var userMessages = _context.UserMessages.OrderByDescending(um => um.Id).AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minCreatedDateTime.ToString()))
+            {
+                userMessages = userMessages.Where(o => o.CreatedDate >= dateQuery.minCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxCreatedDateTime.ToString()))
+            {
+                userMessages = userMessages.Where(o => o.CreatedDate <= dateQuery.maxCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minUpdatedDateTime.ToString()))
+            {
+                userMessages = userMessages.Where(o => o.UpdatedDate >= dateQuery.minUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxUpdatedDateTime.ToString()))
+            {
+                userMessages = userMessages.Where(o => o.UpdatedDate <= dateQuery.maxUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(userMessageSearch.Subject))
+            {
+                userMessages = userMessages.Where(o => o.Subject.Contains(userMessageSearch.Subject));
+            }
+
+            if(!string.IsNullOrWhiteSpace(userMessageSearch.SentFrom))
+            {
+                userMessages = userMessages.Where(o => o.SentFrom.Contains(userMessageSearch.SentFrom));
+            }
+
+            if(!string.IsNullOrWhiteSpace(userMessageSearch.MessageContent))
+            {
+                userMessages = userMessages.Where(o => o.MessageContent.Contains(userMessageSearch.MessageContent));
+            }
+
+            return userMessages.OrderByDescending(p => p.Id).ToList();
         }
 
-        public ICollection<UserMessage> GetMessagesByUser(long userId)
+        public ICollection<UserMessage> GetMessagesByUser(long userId, QueryObject dateQuery, UserMessageSearchObject userMessageSearch)
         {
-            return _context.Users.Where(u => u.Id == userId).Select(um => um.UserMessages).FirstOrDefault();
+            var userMessages = _context.UserMessages.Where(u => u.User.Id == userId).OrderByDescending(um => um.Id).AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minCreatedDateTime.ToString()))
+            {
+                userMessages = userMessages.Where(o => o.CreatedDate >= dateQuery.minCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxCreatedDateTime.ToString()))
+            {
+                userMessages = userMessages.Where(o => o.CreatedDate <= dateQuery.maxCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minUpdatedDateTime.ToString()))
+            {
+                userMessages = userMessages.Where(o => o.UpdatedDate >= dateQuery.minUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxUpdatedDateTime.ToString()))
+            {
+                userMessages = userMessages.Where(o => o.UpdatedDate <= dateQuery.maxUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(userMessageSearch.Subject))
+            {
+                userMessages = userMessages.Where(o => o.Subject.Contains(userMessageSearch.Subject));
+            }
+
+            if(!string.IsNullOrWhiteSpace(userMessageSearch.SentFrom))
+            {
+                userMessages = userMessages.Where(o => o.SentFrom.Contains(userMessageSearch.SentFrom));
+            }
+
+            if(!string.IsNullOrWhiteSpace(userMessageSearch.MessageContent))
+            {
+                userMessages = userMessages.Where(o => o.MessageContent.Contains(userMessageSearch.MessageContent));
+            }
+
+            return userMessages.OrderByDescending(p => p.Id).ToList();
         }
 
         public bool MessageExists(long id)
