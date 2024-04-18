@@ -14,8 +14,8 @@ docker-compose up -d csharp_backend
 
 # To-Dos
 
-- Authentication (multiple Sessions allowed --> UserSession (Entity, Interface, Repo & Controller))
+- Authentication (multiple Sessions allowed --> UserSession (Entity, Interface, Repo & Controller)) + Seeding
 - Authorization
 - Services: Aktionen aus Protokollen, ...
 - Unit & Integration Tests
-- OpenTelemetry & pgadmin
+- OpenTelemetry
