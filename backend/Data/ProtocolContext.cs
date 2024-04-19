@@ -85,6 +85,18 @@ namespace Data
                         new Role() { Id = 4, Name = "Kreisverbandsleiter" },
                         new Role() { Id = 5, Name = "Admin" }
                     );
+
+                    
+            modelBuilder.Entity<Organization>()
+                    .HasData(
+                        new Organization() { Id = 1, Name = "Testorganisation", OrganizationType = "Test" }
+                    );
+
+                    
+            modelBuilder.Entity<User>()
+                    .HasData(
+                        new User() { Id = 1, FirstName = "Super", LastName = "Admin", Email = "superadmin@drk.de", Password = BCrypt.Net.BCrypt.HashPassword("SuperAdminPasswort") }
+                    );
         }
 
 

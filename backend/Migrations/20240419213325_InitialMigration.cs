@@ -302,6 +302,11 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Organizations",
+                columns: new[] { "Id", "Address", "City", "CreatedDate", "Name", "OrganizationType", "PostalCode", "UpdatedDate", "parentId" },
+                values: new object[] { 1L, null, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Testorganisation", "Test", null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null });
+
+            migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
@@ -312,6 +317,11 @@ namespace backend.Migrations
                     { 4L, "Kreisverbandsleiter" },
                     { 5L, "Admin" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "CreatedDate", "Email", "FirstName", "LastName", "LastPasswordChangeDate", "Password", "UpdatedDate" },
+                values: new object[] { 1L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "superadmin@drk.de", "Super", "Admin", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "$2a$11$nxajnv6W3aO73Ld3EVHCpezOBhAzilUy3bhbITzNgbvVLzXhNwgUe", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AdditionalUsers_protocolId",
