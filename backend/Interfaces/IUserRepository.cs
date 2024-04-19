@@ -22,6 +22,7 @@ namespace Interfaces
         bool DeleteUser(User user);
         bool Save();
         bool UserOrganizationRoleExists(long userId, long organizationId, long roleId);
+        public bool VerifyUserPassword(User user, string password);
     }
 }
 

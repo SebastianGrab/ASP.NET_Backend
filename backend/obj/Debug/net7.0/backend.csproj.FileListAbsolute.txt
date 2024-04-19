@@ -150,3 +150,4 @@ C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Back
 C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.Sinks.File.dll
 C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.Sinks.PeriodicBatching.dll
 C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\Serilog.Sinks.PostgreSQL.dll
+C:\Users\SebastianGrab\OneDrive - DESIGNated Accessoires UG\Desktop\ASP.NET_Backend\backend\bin\Debug\net7.0\BCrypt.Net-Next.dll

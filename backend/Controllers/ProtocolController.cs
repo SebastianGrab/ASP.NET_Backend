@@ -6,9 +6,11 @@ using Dto;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using Helper;
 using Helper.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("/api/[controller]")]
     public class ProtocolController : ControllerBase

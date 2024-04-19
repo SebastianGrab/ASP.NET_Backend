@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "zI/MH+eIKiMOa7yF2PsndXsq/NL7Yh2Q2DlPe/yLhWgGbDNGxrpzZ+SuU42tw3HegthdpcYpLVW8jkt+EpnG4g==",
+  "dgSpecHash": "6lHp82rfrdsJWfMAJUP5SEMuJq+qwemXgjpXET1FOixWoI1E17VXWEIcKg41tWYkoqVVsoyq7kJvXMw2983Dew==",
   "success": true,
   "projectFilePath": "C:\\Users\\SebastianGrab\\OneDrive - DESIGNated Accessoires UG\\Desktop\\ASP.NET_Backend\\backend\\backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\SebastianGrab\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\SebastianGrab\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
+    "C:\\Users\\SebastianGrab\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\SebastianGrab\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\SebastianGrab\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\7.0.18\\microsoft.aspnetcore.authentication.jwtbearer.7.0.18.nupkg.sha512",
     "C:\\Users\\SebastianGrab\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.11\\microsoft.aspnetcore.openapi.7.0.11.nupkg.sha512",

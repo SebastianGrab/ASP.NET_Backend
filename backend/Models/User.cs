@@ -4,7 +4,7 @@ namespace Models
     {
         public long Id { get; set; }
 
-        public string Username 
+        public string? Username 
         {
             get {
                     return FirstName + " " + LastName; 

@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Interfaces;
 using AutoMapper;
 using Dto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("/api/[controller]")]
     public class RoleController : ControllerBase

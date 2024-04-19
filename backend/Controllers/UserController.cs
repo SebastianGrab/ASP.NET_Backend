@@ -7,9 +7,11 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 using Helper;
 using Helper.SeachObjects;
 using Helper.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("/api/[controller]")]
     public class UserController : ControllerBase
@@ -256,7 +258,7 @@ namespace backend.Controllers
         [Route("/api/users")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateUser([FromBody] UserDto userCreate)
+        public IActionResult CreateUser([FromBody] UserRegisterDto userCreate)
         {
             if (userCreate == null)
                 return BadRequest(ModelState);
@@ -268,16 +270,6 @@ namespace backend.Controllers
             if(userMail != null)
             {
                 ModelState.AddModelError("", "User E-Mail already exists.");
-                return StatusCode(422, ModelState);
-            }
-
-            var userId = _userRepository.GetUsers(new QueryObject(), new UserSearchObject())
-                .Where(o => o.Id == userCreate.Id)
-                .FirstOrDefault();
-
-            if(userId != null)
-            {
-                ModelState.AddModelError("", "User Id is already in use.");
                 return StatusCode(422, ModelState);
             }
 
@@ -407,16 +399,14 @@ namespace backend.Controllers
             return NoContent();
         }
 
+        // UPDATE: api/user/{id}
         [HttpPut("{id}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateUser(long id, [FromBody] UserDto userUpdate)
+        public IActionResult UpdateUser(long id, [FromBody] UserRegisterDto userUpdate)
         {
             if (userUpdate == null)
-                return BadRequest(ModelState);
-
-            if (id != userUpdate.Id)
                 return BadRequest(ModelState);
 
             if (!_userRepository.UserExists(id))

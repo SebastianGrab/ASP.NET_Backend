@@ -2,6 +2,7 @@ using Data;
 using Helper;
 using Helper.SearchObjects;
 using Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Models;
 
 namespace Repository
@@ -17,7 +18,15 @@ namespace Repository
 
         public bool CreateUser(User user)
         {
-            _context.Add(user);
+            var newUser = new User
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Password = BCrypt.Net.BCrypt.HashPassword(user.Password) //_passwordHasher.HashPassword(user, user.Password)
+            };
+
+            _context.Add(newUser);
             return Save();
         }
 
@@ -179,6 +188,8 @@ namespace Repository
 
         public bool UpdateUser(User user)
         {
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            
             _context.Update(user);
             return Save();
         }
@@ -196,6 +207,11 @@ namespace Repository
         public UserOrganizationRole GetUserOrganizationRole(long userId, long organizationId, long roleId)
         {
             return _context.UserOrganizationRoles.Where(u => u.User.Id == userId && u.Organization.Id == organizationId && u.Role.Id == roleId).FirstOrDefault();
+        }
+
+        public bool VerifyUserPassword(User user, string password)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, user.Password);
         }
     }
 }

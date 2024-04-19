@@ -6,9 +6,11 @@ using Dto;
 using Helper;
 using Helper.SeachObjects;
 using Helper.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("/api/[controller]")]
     public class OrganizationController : ControllerBase

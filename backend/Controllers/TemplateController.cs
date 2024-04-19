@@ -6,9 +6,11 @@ using Dto;
 using Helper;
 using Helper.SearchObjects;
 using Helper.SeachObjects;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("/api/[controller]")]
     public class TemplateController : ControllerBase

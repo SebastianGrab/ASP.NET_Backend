@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backend.Migrations
 {
     [DbContext(typeof(ProtocolContext))]
-    [Migration("20240418161252_InitialMigration")]
+    [Migration("20240419124248_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -305,10 +305,6 @@ namespace backend.Migrations
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
