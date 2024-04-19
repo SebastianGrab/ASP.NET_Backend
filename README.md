@@ -7,6 +7,11 @@ docker-compose up -d db
 docker-compose up -d csharp_backend
 
 
+Login:
+- Email: superadmin@drk.de
+- Password: SuperAdminPasswort
+
+
 ## Swagger Interface:
 
 {baseUrl}/swagger/index.html
