@@ -29,8 +29,6 @@ namespace Data
 
         public DbSet<UserOrganizationRole> UserOrganizationRoles  { get; set; }
 
-        public DbSet<UserSession> UserSessions  { get; set; }
-
         public DbSet<UserMessage> UserMessages  { get; set; }
 
 
@@ -89,13 +87,19 @@ namespace Data
                     
             modelBuilder.Entity<Organization>()
                     .HasData(
-                        new Organization() { Id = 1, Name = "Testorganisation", OrganizationType = "Test" }
+                        new Organization() { Id = 1, Name = "Deutsches Rotes Kreuz e.V.", OrganizationType = "Bundesorganisation", Address = "Carstennstraße 58", City = "Berlin", PostalCode = "12205", CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow }
                     );
 
                     
             modelBuilder.Entity<User>()
                     .HasData(
-                        new User() { Id = 1, FirstName = "Super", LastName = "Admin", Email = "superadmin@drk.de", Password = BCrypt.Net.BCrypt.HashPassword("SuperAdminPasswort") }
+                        new User() { Id = 1, FirstName = "Super", LastName = "Admin", Email = "superadmin@drk.de", Password = BCrypt.Net.BCrypt.HashPassword("SuperAdminPasswort"), CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow, LastPasswordChangeDate = DateTime.UtcNow }
+                    );
+
+                    
+            modelBuilder.Entity<UserOrganizationRole>()
+                    .HasData(
+                        new UserOrganizationRole() { Id = 1, organizationId = 1, roleId = 1, userId = 1, CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow }
                     );
         }
 

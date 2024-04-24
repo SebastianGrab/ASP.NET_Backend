@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backend.Migrations
 {
     [DbContext(typeof(ProtocolContext))]
-    [Migration("20240419213325_InitialMigration")]
+    [Migration("20240424170504_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -82,10 +82,13 @@ namespace backend.Migrations
                         new
                         {
                             Id = 1L,
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Testorganisation",
-                            OrganizationType = "Test",
-                            UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Address = "Carstennstraße 58",
+                            City = "Berlin",
+                            CreatedDate = new DateTime(2024, 4, 24, 17, 5, 4, 475, DateTimeKind.Utc).AddTicks(9954),
+                            Name = "Deutsches Rotes Kreuz e.V.",
+                            OrganizationType = "Bundesorganisation",
+                            PostalCode = "12205",
+                            UpdatedDate = new DateTime(2024, 4, 24, 17, 5, 4, 475, DateTimeKind.Utc).AddTicks(9956)
                         });
                 });
 
@@ -324,13 +327,13 @@ namespace backend.Migrations
                         new
                         {
                             Id = 1L,
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2024, 4, 24, 17, 5, 4, 738, DateTimeKind.Utc).AddTicks(7255),
                             Email = "superadmin@drk.de",
                             FirstName = "Super",
                             LastName = "Admin",
-                            LastPasswordChangeDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Password = "$2a$11$nxajnv6W3aO73Ld3EVHCpezOBhAzilUy3bhbITzNgbvVLzXhNwgUe",
-                            UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            LastPasswordChangeDate = new DateTime(2024, 4, 24, 17, 5, 4, 738, DateTimeKind.Utc).AddTicks(7259),
+                            Password = "$2a$11$4d3T2ZheRUxn6mNMEm2MRem0qik.WKQG0iWxHxsQro6KNXy.Jysri",
+                            UpdatedDate = new DateTime(2024, 4, 24, 17, 5, 4, 738, DateTimeKind.Utc).AddTicks(7258)
                         });
                 });
 
@@ -355,11 +358,16 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ReferenceObject")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("ReferenceObjectId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime>("SentAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SentFrom")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Subject")
@@ -406,30 +414,17 @@ namespace backend.Migrations
                     b.HasIndex("roleId");
 
                     b.ToTable("UserOrganizationRoles");
-                });
 
-            modelBuilder.Entity("Models.UserSession", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserSessions");
+                    b.HasData(
+                        new
+                        {
+                            userId = 1L,
+                            roleId = 1L,
+                            organizationId = 1L,
+                            CreatedDate = new DateTime(2024, 4, 24, 17, 5, 4, 738, DateTimeKind.Utc).AddTicks(7686),
+                            Id = 1L,
+                            UpdatedDate = new DateTime(2024, 4, 24, 17, 5, 4, 738, DateTimeKind.Utc).AddTicks(7689)
+                        });
                 });
 
             modelBuilder.Entity("Models.AdditionalUser", b =>
@@ -568,17 +563,6 @@ namespace backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Models.UserSession", b =>
-                {
-                    b.HasOne("Models.User", "User")
-                        .WithMany("UserSessions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Models.Organization", b =>
                 {
                     b.Navigation("Protocols");
@@ -622,8 +606,6 @@ namespace backend.Migrations
                     b.Navigation("UserMessages");
 
                     b.Navigation("UserOrganizationRoles");
-
-                    b.Navigation("UserSessions");
                 });
 #pragma warning restore 612, 618
         }

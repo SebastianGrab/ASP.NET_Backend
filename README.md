@@ -20,6 +20,8 @@ Login:
 # To-Dos
 
 - Authorization
-- Services: Aktionen aus Protokollen, ...
+- Services: Aktionen aus Protokollen, Messages (Password Change Required, Protocol reviewed,...), ...
 - Unit & Integration Tests
-- OpenTelemetry?
+- Compose: depends-on
+          db:
+             condition: service_healthy

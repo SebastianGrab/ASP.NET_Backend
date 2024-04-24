@@ -31,8 +31,6 @@ namespace Models
         
         public ICollection<AdditionalUser> AdditionalUser { get; set; }
 
-        public ICollection<UserSession> UserSessions { get; set; }
-
         public ICollection<UserMessage> UserMessages { get; set; }
 
         public ICollection<UserOrganizationRole> UserOrganizationRoles { get; set; }

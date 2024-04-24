@@ -98,8 +98,10 @@ namespace backend.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Subject = table.Column<string>(type: "text", nullable: false),
                     MessageContent = table.Column<string>(type: "text", nullable: false),
+                    ReferenceObject = table.Column<string>(type: "text", nullable: true),
+                    ReferenceObjectId = table.Column<long>(type: "bigint", nullable: true),
                     SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    SentFrom = table.Column<string>(type: "text", nullable: false),
+                    SentFrom = table.Column<string>(type: "text", nullable: true),
                     IsRead = table.Column<bool>(type: "boolean", nullable: false),
                     IsArchived = table.Column<bool>(type: "boolean", nullable: false),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
@@ -146,27 +148,6 @@ namespace backend.Migrations
                     table.ForeignKey(
                         name: "FK_UserOrganizationRoles_Users_userId",
                         column: x => x.userId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserSessions",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserSessions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserSessions_Users_UserId",
-                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -304,7 +285,7 @@ namespace backend.Migrations
             migrationBuilder.InsertData(
                 table: "Organizations",
                 columns: new[] { "Id", "Address", "City", "CreatedDate", "Name", "OrganizationType", "PostalCode", "UpdatedDate", "parentId" },
-                values: new object[] { 1L, null, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Testorganisation", "Test", null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null });
+                values: new object[] { 1L, "Carstennstraße 58", "Berlin", new DateTime(2024, 4, 24, 17, 5, 4, 475, DateTimeKind.Utc).AddTicks(9954), "Deutsches Rotes Kreuz e.V.", "Bundesorganisation", "12205", new DateTime(2024, 4, 24, 17, 5, 4, 475, DateTimeKind.Utc).AddTicks(9956), null });
 
             migrationBuilder.InsertData(
                 table: "Roles",
@@ -321,7 +302,12 @@ namespace backend.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedDate", "Email", "FirstName", "LastName", "LastPasswordChangeDate", "Password", "UpdatedDate" },
-                values: new object[] { 1L, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "superadmin@drk.de", "Super", "Admin", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "$2a$11$nxajnv6W3aO73Ld3EVHCpezOBhAzilUy3bhbITzNgbvVLzXhNwgUe", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { 1L, new DateTime(2024, 4, 24, 17, 5, 4, 738, DateTimeKind.Utc).AddTicks(7255), "superadmin@drk.de", "Super", "Admin", new DateTime(2024, 4, 24, 17, 5, 4, 738, DateTimeKind.Utc).AddTicks(7259), "$2a$11$4d3T2ZheRUxn6mNMEm2MRem0qik.WKQG0iWxHxsQro6KNXy.Jysri", new DateTime(2024, 4, 24, 17, 5, 4, 738, DateTimeKind.Utc).AddTicks(7258) });
+
+            migrationBuilder.InsertData(
+                table: "UserOrganizationRoles",
+                columns: new[] { "organizationId", "roleId", "userId", "CreatedDate", "Id", "UpdatedDate" },
+                values: new object[] { 1L, 1L, 1L, new DateTime(2024, 4, 24, 17, 5, 4, 738, DateTimeKind.Utc).AddTicks(7686), 1L, new DateTime(2024, 4, 24, 17, 5, 4, 738, DateTimeKind.Utc).AddTicks(7689) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AdditionalUsers_protocolId",
@@ -379,11 +365,6 @@ namespace backend.Migrations
                 name: "IX_UserOrganizationRoles_roleId",
                 table: "UserOrganizationRoles",
                 column: "roleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserSessions_UserId",
-                table: "UserSessions",
-                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -406,9 +387,6 @@ namespace backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserOrganizationRoles");
-
-            migrationBuilder.DropTable(
-                name: "UserSessions");
 
             migrationBuilder.DropTable(
                 name: "Protocols");

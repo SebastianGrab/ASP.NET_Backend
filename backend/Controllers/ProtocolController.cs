@@ -114,8 +114,8 @@ namespace backend.Controllers
             return Ok(content);
         }
 
-        // GET: api/protocol/{id}/pdf
-        [HttpGet("{id}/pdf")]
+        // GET: api/protocol/{id}/pdf-content
+        [HttpGet("{id}/pdf-content")]
         [ProducesResponseType(200, Type = typeof(ProtocolPdfFile))]
         [ProducesResponseType(400)]
         public IActionResult GetProtocolPdfFile(long id)
@@ -129,6 +129,26 @@ namespace backend.Controllers
                 return BadRequest(ModelState);
 
             return Ok(pdf);
+        }
+
+        // GET: api/protocol/{id}/pdf-download
+        [HttpGet("{id}/pdf-download")]
+        [ProducesResponseType(200, Type = typeof(ProtocolPdfFile))]
+        [ProducesResponseType(400)]
+        public IActionResult DownloadProtocolPdfFile(long id)
+        {
+            if(!_protocolRepository.ProtocolExists(id))
+                return NotFound();
+
+            var pdf = _mapper.Map<ProtocolPdfFileDto>(_protocolPdfFileRepository.GetProtocolPdfFile(id));
+
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            byte[] fileBytes = Convert.FromBase64String(pdf.Content);
+
+            // Return the file with a suitable filename
+            return File(fileBytes, "application/pdf", "DRK_Protocol.pdf");
         }
 
         // GET: api/protocol/{id}/template

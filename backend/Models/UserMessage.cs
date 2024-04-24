@@ -8,9 +8,13 @@ namespace Models
 
         public string MessageContent { get; set; }
 
+        public string? ReferenceObject { get; set; }
+
+        public long? ReferenceObjectId { get; set; }
+
         public DateTime SentAt { get; set; }
 
-        public string SentFrom { get; set; }
+        public string? SentFrom { get; set; }
 
         public bool IsRead { get; set; }
 
