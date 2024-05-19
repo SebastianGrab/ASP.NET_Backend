@@ -379,19 +379,28 @@ namespace backend.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!_userMessageRepository.DeleteUserMessages(userMessagesToDelete.ToList()))
+            if (userMessagesToDelete != null)
             {
-                ModelState.AddModelError("", "Something went wrong when deleting User Messages.");
+                if (!_userMessageRepository.DeleteUserMessages(userMessagesToDelete.ToList()))
+                {
+                    ModelState.AddModelError("", "Something went wrong when deleting User Messages.");
+                }
             }
 
-            if (!_userRepository.DeleteUserOrganizationRoles(userOrganizationRolesToDelete.ToList()))
+            if (userOrganizationRolesToDelete != null)
             {
-                ModelState.AddModelError("", "Something went wrong when deleting User User Roles.");
+                if (!_userRepository.DeleteUserOrganizationRoles(userOrganizationRolesToDelete.ToList()))
+                {
+                    ModelState.AddModelError("", "Something went wrong when deleting User User Roles.");
+                }
             }
 
-            if (!_additionalUserRepository.DeleteAdditionalUserEntries(additionalUsersToDelete.ToList()))
+            if (additionalUsersToDelete != null)
             {
-                ModelState.AddModelError("", "Something went wrong when deleting User as Additional User.");
+                if (!_additionalUserRepository.DeleteAdditionalUserEntries(additionalUsersToDelete.ToList()))
+                {
+                    ModelState.AddModelError("", "Something went wrong when deleting User as Additional User.");
+                }
             }
 
             if (userLoginAttemptToDelete != null)
@@ -467,21 +476,21 @@ namespace backend.Controllers
             userMap.Password = BCrypt.Net.BCrypt.HashPassword(userUpdate.Password); // SALT is created automatically by the method.
             userMap.Email = userUpdate.Email.ToLower();
 
-            if (!_userRepository.UpdateUser(userMap))
-            {
-                ModelState.AddModelError("", "Something went wrong updating User.");
-                return StatusCode(500, ModelState);
-            }
-
             var _userPasswordCheck = _userRepository.GetUser(id);
 
             if(!_userRepository.VerifyUserPassword(_userPasswordCheck, userUpdate.Password))
             {
                 if(!_emailService.SendPasswordUpdateEmail(userUpdate.FirstName + " " + userUpdate.LastName, userUpdate.Email, userUpdate.Password))
                 {
-                    ModelState.AddModelError("", "Saving was successful. Something went wrong sending the mail.");
+                    ModelState.AddModelError("", "Something went wrong sending the mail.");
                     return StatusCode(301, ModelState);
                 }
+            }
+
+            if (!_userRepository.UpdateUser(userMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating User.");
+                return StatusCode(500, ModelState);
             }
 
             return NoContent();
