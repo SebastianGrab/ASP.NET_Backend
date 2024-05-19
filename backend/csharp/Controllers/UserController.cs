@@ -442,6 +442,9 @@ namespace backend.Controllers
             if (userUpdate == null)
                 return BadRequest(ModelState);
 
+            if (!_userRepository.UserExists(id))
+                return NotFound();
+
             var userMail = _userRepository.GetUsers(new QueryObject(), new UserSearchObject())
                 .Where(o => o.Email.Trim().ToLower() == userUpdate.Email.TrimEnd().ToLower() && o.Id != id)
                 .FirstOrDefault();
@@ -469,7 +472,9 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            if(!_userRepository.VerifyUserPassword(userMail, userUpdate.Password))
+            var _userPasswordCheck = _userRepository.GetUser(id);
+
+            if(!_userRepository.VerifyUserPassword(_userPasswordCheck, userUpdate.Password))
             {
                 if(!_emailService.SendPasswordUpdateEmail(userUpdate.FirstName + " " + userUpdate.LastName, userUpdate.Email, userUpdate.Password))
                 {

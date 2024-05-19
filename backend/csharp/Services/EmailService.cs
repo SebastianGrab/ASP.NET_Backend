@@ -72,7 +72,7 @@ public class EmailService : IEmailService
         var email = new MimeMessage();
         email.From.Add(new MailboxAddress("DRK", _configuration["EmailSettings:Username"]));
         email.To.Add(MailboxAddress.Parse(to));
-        email.Subject = "subject";
+        email.Subject = "Ihr Passwort wurde zurückgesetzt";
         
         var builder = new BodyBuilder { HtmlBody = htmlBody };
         email.Body = builder.ToMessageBody();
@@ -126,7 +126,7 @@ public class EmailService : IEmailService
         var email = new MimeMessage();
         email.From.Add(new MailboxAddress("DRK", _configuration["EmailSettings:Username"]));
         email.To.Add(MailboxAddress.Parse(to));
-        email.Subject = "subject";
+        email.Subject = "Ihre Registrierung bei der DRK Protokollerfassung";
         
         var builder = new BodyBuilder { HtmlBody = htmlBody };
         email.Body = builder.ToMessageBody();
