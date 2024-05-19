@@ -394,9 +394,12 @@ namespace backend.Controllers
                 ModelState.AddModelError("", "Something went wrong when deleting User as Additional User.");
             }
 
-            if (!_userLoginAttemptRepository.DeleteUserLoginAttempt(userLoginAttemptToDelete))
+            if (userLoginAttemptToDelete != null)
             {
-                ModelState.AddModelError("", "Something went wrong deleting User Login Attempts.");
+                if (!_userLoginAttemptRepository.DeleteUserLoginAttempt(userLoginAttemptToDelete))
+                {
+                    ModelState.AddModelError("", "Something went wrong deleting User Login Attempts.");
+                }
             }
 
             if (!_userRepository.DeleteUser(userToDelete))
@@ -442,9 +445,6 @@ namespace backend.Controllers
             if (userUpdate == null)
                 return BadRequest(ModelState);
 
-            if (!_userRepository.UserExists(id))
-                return NotFound();
-
             var userMail = _userRepository.GetUsers(new QueryObject(), new UserSearchObject())
                 .Where(o => o.Email.Trim().ToLower() == userUpdate.Email.TrimEnd().ToLower() && o.Id != id)
                 .FirstOrDefault();
@@ -463,6 +463,7 @@ namespace backend.Controllers
 
             var userMap = _mapper.Map<User>(userUpdate);
             
+            userMap.Id = id;
             userMap.Password = BCrypt.Net.BCrypt.HashPassword(userUpdate.Password); // SALT is created automatically by the method.
             userMap.Email = userUpdate.Email.ToLower();
 
