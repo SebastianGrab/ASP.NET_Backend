@@ -281,6 +281,12 @@ namespace backend.Controllers
             if (userCreate == null)
                 return BadRequest(ModelState);
 
+            if(_userRepository.UserExists(userCreate.Id))
+            {
+                ModelState.AddModelError("", "User Id already exists.");
+                return StatusCode(422, ModelState);
+            }
+
             var userMail = _userRepository.GetUsers(new QueryObject(), new UserSearchObject())
                 .Where(o => o.Email.Trim().ToLower() == userCreate.Email.TrimEnd().ToLower())
                 .FirstOrDefault();
@@ -472,13 +478,10 @@ namespace backend.Controllers
 
             var userMap = _mapper.Map<User>(userUpdate);
             
-            userMap.Id = id;
             userMap.Password = BCrypt.Net.BCrypt.HashPassword(userUpdate.Password); // SALT is created automatically by the method.
             userMap.Email = userUpdate.Email.ToLower();
 
-            var _userPasswordCheck = _userRepository.GetUser(id);
-
-            if(!_userRepository.VerifyUserPassword(_userPasswordCheck, userUpdate.Password))
+            if(!_userRepository.VerifyUserPassword(userMap, userUpdate.Password))
             {
                 if(!_emailService.SendPasswordUpdateEmail(userUpdate.FirstName + " " + userUpdate.LastName, userUpdate.Email, userUpdate.Password))
                 {

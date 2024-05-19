@@ -49,9 +49,14 @@ namespace Controllers
             
             var token = _authenticationService.Login(loginObject);
             
-            if(token == null || token == string.Empty)
+            if(token == null || token == string.Empty || token == "Wrong username or password.")
             {
                 return BadRequest(new { message = "Email or Password is incorrect." });
+            }
+            
+            if(token == "Account is temporarily locked.")
+            {
+                return BadRequest(new { message = "Account is temporarily locked." });
             }
 
             var LoginUser = _userRepository.GetUserByEmail(loginObject.Email);
