@@ -305,7 +305,7 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            if(!_emailService.SendRegistrationEmail("drktest24@gmail.com", userCreate.Password))
+            if(!_emailService.SendRegistrationEmail(userCreate.FirstName + " " + userCreate.LastName, userCreate.Email, userCreate.Password))
             {
                 ModelState.AddModelError("", "Saving was successful. Something went wrong sending the mail.");
                 return StatusCode(301, ModelState);
@@ -467,6 +467,15 @@ namespace backend.Controllers
             {
                 ModelState.AddModelError("", "Something went wrong updating User.");
                 return StatusCode(500, ModelState);
+            }
+
+            if(!_userRepository.VerifyUserPassword(userMail, userUpdate.Password))
+            {
+                if(!_emailService.SendPasswordUpdateEmail(userUpdate.FirstName + " " + userUpdate.LastName, userUpdate.Email, userUpdate.Password))
+                {
+                    ModelState.AddModelError("", "Saving was successful. Something went wrong sending the mail.");
+                    return StatusCode(301, ModelState);
+                }
             }
 
             return NoContent();
