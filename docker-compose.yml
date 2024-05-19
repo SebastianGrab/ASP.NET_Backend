@@ -1,29 +1,15 @@
 version: '1'
+
 services:
 
-  backend:
-    container_name: backend
-    build:
-      context: backend
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"
-    networks:
-      - drk-network
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      ASPNETCORE_ENVIRONMENT: "Development"
-      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=postgres;Username=postgres;Password=postgres"
-
+  # Postgres DB as backend database
   db:
     container_name: db
     image: postgres:12
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+      - POSTGRES_USER=db-admin
+      - POSTGRES_PASSWORD=DRKwebapp2024_postgres
+      - POSTGRES_DB=DRK_DB
     ports:
       - "5432:5432"
     healthcheck:
@@ -36,22 +22,53 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  # C# Backend
+  csharp_backend:
+    container_name: csharp_backend
+    build:
+      context: backend/csharp
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - drk-network
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+        ASPNETCORE_ENVIRONMENT: "Development"
+        ConnectionStrings__ConnectionString: "Host=db;Database=DRK_DB;Username=db-admin;Password=DRKwebapp2024_postgres"
+
+  # DBMS System
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
     restart: always
     ports:
-      - "15432:80"
+      - "15432:81"
     environment:
-      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
-      PGADMIN_DEFAULT_PASSWORD: strong-password
-      PGADMIN_LISTEN_PORT: 80
+      PGADMIN_DEFAULT_EMAIL: superadmin@drk.de
+      PGADMIN_DEFAULT_PASSWORD: A9UZlRyKmeTxRFfGcPo6M67r
+      PGADMIN_LISTEN_PORT: 81
     networks:
       - drk-network
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     depends_on:
       - db
+
+  # JavaScript Frontend
+  # frontend:
+  #   container_name: js_frontend
+  #   build:
+  #     context: frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8081:80"
+  #   networks:
+  #     - drk-network
+  #   depends_on:
+  #     - java_backend
 
 volumes:
   pgdata: {}

@@ -1,27 +1,8 @@
-# DRK Web - API
+# Projekt Digitalisierung
 
-## Run the App:
-
-docker-compose up -d db
-
-docker-compose up -d csharp_backend
+Gitlab Repository der Projektgruppe 1 im Modul "Projekt Digitalisierung".
 
 
-Login:
-- Email: superadmin@drk.de
-- Password: SuperAdminPasswort
+## Start the App:
 
-
-## Swagger Interface:
-
-{baseUrl}/swagger/index.html
-
-
-# To-Dos
-
-- Authorization
-- Services: Aktionen aus Protokollen, Messages (Password Change Required, Protocol reviewed,...), ...
-- Unit & Integration Tests
-- Compose: depends-on
-          db:
-             condition: service_healthy
+docker-compose up -d

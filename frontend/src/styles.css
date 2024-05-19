@@ -1,0 +1,332 @@
+/* Schriftarten */
+@import url('https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@300;500&display=swap');
+
+/* Allgemeine Stile */
+body {
+    background-color: #ffffff; /* Weißer Hintergrund */
+    font-family: 'Helvetica Neue', sans-serif;
+    color: #555555; /* Dunkelgrau für Fließtext */
+}
+
+/* Überschriften */
+h1, h2, h3, h4, h5, h6 {
+    color: #e60005; /* DRK-Rot für Headlines */
+}
+
+/* Links */
+a {
+    color: #008cc9; /* Mittelblau für Links */
+}
+
+.container {
+    display: flex;
+    flex-direction: column; /* Elemente untereinander anordnen */
+    justify-content: start; /* Vertikal zentriert */
+    align-items: center; /* Horizontal zentriert */
+    height: 100vh; /* Vollständige Höhe des Viewports für vertikale Zentrierung */
+  }
+
+/* Buttons */
+.button {
+    background-color: #e60005; /* DRK-Rot für Buttons */
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.button-container {
+    display:flex;
+    justify-content: flex-end;
+}
+
+.button-scnd {
+  background-color: rgb(0 45 85); /* DRK-Rot für Buttons */
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: 450;
+  font-size:70%;
+}
+
+
+/* Formulare */
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="checkbox" ], input[type="time"],input[type="date"], textarea, select {
+    background-color: #ebf5ff; /* Hellblau für Formulare */
+    border: 1px solid #b0c5e8; /* Hellblau für Formulargrenzen */
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.5);
+}
+
+textarea {
+  text-align: left;
+}
+
+
+
+
+
+.row {
+  position: relative;
+  width: 100%;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-between; /* Gleichmäßig horizontal verteilen */
+  align-items: flex-start; /* Vertikal zentriert */
+}
+
+.row {
+  position: relative;
+  width: 100%;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-between; /* Gleichmäßig horizontal verteilen */
+  align-items: flex-start; /* Vertikal zentriert */
+}
+
+.navbar {
+    background-color: rgb(230 0 5); /* Hintergrundfarbe */
+    border-bottom: 1px solid #ccc; /* Unterstrich */
+
+    padding: 10px 20px; /* Innenabstand */
+    display: flex;
+    justify-content: space-between; /* Elemente horizontal verteilen */
+    align-items: center; /* Vertikal zentrieren */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Schatten */
+  }
+
+  .navbar-logo-box{
+    background-color: white;
+    border-radius: 10px;
+    padding:40px;
+    margin-bottom: 10px;
+  }
+
+/* Kacheln */
+.tile {
+    width: calc(83.333%); /* 10/12 der Bootstrap-Spalten */
+    margin: 20px auto; /* Zentriert */
+    background-color: #ffffff;
+    border: 1px solid #b4b4b4; /* Hellgrau als Borderfarbe */
+    border-radius: 10px; /* Abgerundete Ecken */
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Schatten */
+    display: flex;
+    justify-content: flex-start; /* Gleichmäßig horizontal verteilen */
+    align-items: center; /* Vertikal zentriert */
+}
+
+.tile-message {
+  width: calc(83.333%); /* 10/12 der Bootstrap-Spalten */
+  margin: 20px auto; /* Zentriert */
+  background-color: #ffffff;
+  border: 1px solid #b4b4b4; /* Hellgrau als Borderfarbe */
+  border-radius: 10px; /* Abgerundete Ecken */
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Schatten */
+  display: flex;
+  flex-direction: column; /* Elemente untereinander anordnen */
+  justify-content: flex-start; /* Vertikal zentriert */
+  align-items: center; /* Horizontal zentriert */
+}
+
+.message-head {
+  width: 100%;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-between; /* Gleichmäßig horizontal verteilen */
+  align-items: flex-start; /* Vertikal zentriert */
+}
+
+.tile-diagram {
+    display: grid;
+    /* 10/12 der Bootstrap-Spalten */
+    margin: 20px auto; /* Zentriert */
+    background-color: #ffffff;
+    border: 1px solid #b4b4b4; /* Hellgrau als Borderfarbe */
+    border-radius: 10px; /* Abgerundete Ecken */
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Schatten */
+    display: flex;
+    flex-direction: column; /* Elemente untereinander anordnen */
+    justify-content: flex-start; /* Vertikal an den Anfang ausrichten */
+    align-items: flex-start; /* Horizontal an den Anfang ausrichten */
+}
+
+
+.archive-body {
+    width: 100%;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between; /* Gleichmäßig horizontal verteilen */
+    align-items: flex-start; /* Vertikal zentriert */
+}
+.archive-body body {
+    margin: 0; /* Remove default margin */
+}
+
+.archive-body p {
+    margin: 0; /* Remove default margin */
+    padding: 5px 10px; /* Adjust padding */
+}
+
+.status-bad {
+  color: rgb(230 0 5)
+}
+
+.status-good {
+  color: rgb(0 230 5)
+}
+
+.message-body {
+  display: none;
+}
+
+.message-body.open {
+display: block;
+}
+
+.category-body {
+  flex-direction: column; /* Elemente untereinander anordnen */
+  justify-content: flex-start; /* Vertikal zentriert */
+  align-items: flex-end; /* Horizontal zentriert */
+  display: none;
+
+}
+
+.category-body.open {
+  width: 100%;
+  flex-direction: column; /* Elemente untereinander anordnen */
+  justify-content: flex-start; /* Vertikal zentriert */
+  align-items: flex-start; /* Horizontal zentriert */
+  display: flex;
+  padding: 20px;
+  
+}
+
+.category-buttons {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: block;
+  padding-top: 10px;
+}
+
+.category-buttons.hide {
+
+  display: none;
+}
+
+.tile > * {
+    margin-right: 20px; /* Abstand zwischen den Elementen */
+  }
+
+/* Kopfzeile */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #e60005; /* DRK-Rot für Kopfzeile */
+    color: #ffffff;
+}
+
+.back-button,
+.menu-button {
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Optimierte Handybildschirme */
+@media screen and (max-width: 767px) {
+    .tile {
+        width: calc(100% - 40px); /* Volle Breite mit Abstand */
+    }
+}
+
+.navbar-logo {
+  height: 59.3px;
+  width: 187.3px;
+}
+
+.navbar-icon {
+    color: rgb(0 45 85);
+}
+
+.edit-icon {
+  padding-right: 15px;
+}
+
+.tile-icon {
+    color: rgb(230 0 5);
+}
+
+.overlay-menu {
+    position: fixed;
+    display: flex;
+    flex-direction: column; /* Elemente untereinander anordnen */
+    justify-content: flex-start; /* Vertikal zentriert */
+    align-items: flex-end; /* Horizontal zentriert */
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    top: 8px;
+    right: -75%; 
+    width: 75%; 
+    height: 100%;
+    background-color: rgb(239 238 234); 
+  }
+  
+  .overlay-menu.open {
+    right: 0; /* Menü wird eingeblendet */
+    z-index: 9999;
+  }
+  
+  .close-menu-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: rgb(230 0 5)
+  }
+
+  .overlay-menu-link {
+    padding: 20px;
+    font-size:larger;
+    color: rgb(0 140 205);
+    border-radius: 10px;
+  }
+  
+  .overlay-menu ul {
+    padding: 20px;
+  }
+
+  .dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    border: 1px solid black;
+    padding: 20px;
+    text-align: left;
+    z-index: 1000;
+  }

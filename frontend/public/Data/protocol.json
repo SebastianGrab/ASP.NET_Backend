@@ -1,0 +1,108 @@
+{
+    "Name": "Protokollschema",
+    "Schema": [
+        {
+            "Kategorie": "Einsatzort",
+            "ID": "EINSATZORT",
+            "Inputs": [
+                {
+                    "Name": "Ort",
+                    "Element": "input",
+                    "Type": "text",
+                    "Label": "Einsatzort: ",
+                    "ID": "EINSATZORT",
+                    "Position": 1
+
+                },
+                {
+                    "Name": "Strasse",
+                    "Element": "input",
+                    "Type": "text",
+                    "Label": "Straße: ",
+                    "ID": "EINSATSSTRASSE",
+                    "Position": 2
+
+                },
+                {
+                    "Name": "Hausnummer",
+                    "Element": "input",
+                    "Type": "number",
+                    "Label": "Hausnummer: ",
+                    "ID": "EINSATZHAUSNR",
+                    "Position": 3
+
+                },
+                {
+                    "Name": "PLZ",
+                    "Element": "input",
+                    "Type": "number",
+                    "Label": "PLZ: ",
+                    "ID": "EINSATZPLZ",
+                    "Position": 4
+
+                }
+            ]
+        },
+        {
+            "Kategorie": "Einsatzhelfer",
+            "ID": "EINSATZHELFER",
+            "Inputs": [
+                {
+                    "Name": "Helfer",
+                    "Element": "dropdownHelper",
+                    "Type": "dropdown",
+                    "Options" : "/Data/DropdownHelfer.json",
+                    "Label": "Helfer: ",
+                    "ID": "HELFERNAMENDD",
+                    "Position": 1
+
+                }
+
+            ]
+        },
+        {
+            "Kategorie": "Atemwege",
+            "ID": "ATEMWEGE",
+            "Inputs": [
+                {
+                    "Name": "Frei",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "frei: ",
+                    "ID": "FREI"
+
+                },
+                {
+                    "Name": "Verlegt",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "verlegt: ",
+                    "ID": "VERLEGT"
+                }
+            ]
+        },
+        {
+            "Kategorie": "Beispiel",
+            "ID": "B",
+            "Inputs": [
+                {
+                    "Name": "Frei",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "frei: ",
+                    "ID": "FREI"
+
+                },
+                {
+                    "Name": "Verlegt",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Beipsiel ",
+                    "ID": "VERLEGT"
+                }
+            ]
+        }
+    ]
+
+
+}

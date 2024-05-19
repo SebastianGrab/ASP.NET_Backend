@@ -1,0 +1,893 @@
+{
+    "Name": "Protokollschema",
+    "Schema": [
+        {
+            "Kategorie": "Einsatzort",
+            "ID": "EINSATZORTCATEGORY",
+            "Inputs": [
+                {
+                    "Name": "Ort",
+                    "Element": "input",
+                    "Type": "text",
+                    "Label": "Einsatzort: ",
+                    "ID": "EINSATZORT",
+                    "Mandatory": 1,
+                    "Value": "Stuttgart"
+                },
+                {
+                    "Name": "Strasse",
+                    "Element": "input",
+                    "Type": "text",
+                    "Label": "Straße: ",
+                    "ID": "EINSATSSTRASSE",
+                    "Mandatory": 1,
+                    "Value": "Königstraße"
+                },
+                {
+                    "Name": "Hausnummer",
+                    "Element": "input",
+                    "Type": "number",
+                    "Label": "Hausnummer: ",
+                    "ID": "EINSATZHAUSNR",
+                    "Mandatory": 1,
+                    "Value": "12"
+                },
+                {
+                    "Name": "PLZ",
+                    "Element": "input",
+                    "Type": "number",
+                    "Label": "PLZ: ",
+                    "ID": "EINSATZPLZ",
+                    "Mandatory": 1,
+                    "Value": "46545"
+                }
+            ]
+        },
+        {
+            "Kategorie": "Einsatzhelfer",
+            "ID": "EINSATZHELFER",
+            "Inputs": [
+                {
+                    "Name": "Helfer",
+                    "Element": "dropdownHelper",
+                    "Type": "dropdown",
+                    "Options": "/Data/DropdownHelfer.json",
+                    "Label": "Helfer: ",
+                    "HelperCollection": [
+                        "HELFERNAMENDD1",
+                        "HELFERNAMENDD2",
+                        "HELFERNAMENDD3",
+                        "HELFERNAMENDD4",
+                        "HELFERNAMENDD5"
+                    ],
+                    "HelperNames": [
+                        "Mustermann, Max",
+                        "Mustermann, Max",
+                        "Smith, John",
+                        "Nguyen, Linh",
+                        "Hoffmann, Julia"
+                    ],
+                    "ID": "HELFERNAMENDD",
+                    "Location": "beim Patient",
+                    "Mandatory": 1
+                }
+            ]
+        },
+        {
+            "Kategorie": "Atemwege",
+            "ID": "ATEMWEGE",
+            "Inputs": [
+                {
+                    "Name": "Frei",
+                    "Element": "input",
+                    "Type": "radio",
+                    "RadioGroup": "atemwege",
+                    "Label": "frei: ",
+                    "ID": "FREI",
+                    "Mandatory": 1
+                },
+                {
+                    "Name": "Verlegt",
+                    "Element": "input",
+                    "Type": "radio",
+                    "RadioGroup": "atemwege",
+                    "Label": "verlegt: ",
+                    "ID": "VERLEGT",
+                    "Mandatory": 1,
+                    "Value": true
+                }
+            ]
+        },
+        {
+            "Kategorie": "Belüftung",
+            "ID": "BELUEFTUNG",
+            "Mandatory": 1,
+            "Inputs": [
+                {
+                    "Name": "unauffaellig",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "unauffällig: ",
+                    "ID": "UNAUFFAELLIG",
+                    "Mandatory": 1
+                },
+                {
+                    "Name": "Zyanose",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Zyanose: ",
+                    "ID": "ZYANOSE",
+                    "Mandatory": 1
+                },
+                {
+                    "Name": "Rasseln",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Rasseln: ",
+                    "ID": "RASSELN",
+                    "Mandatory": 1
+                },
+                {
+                    "Name": "Schnappatmung",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Schnappatmung: ",
+                    "ID": "SCHNAPPATMUNG",
+                    "Mandatory": 1
+                },
+                {
+                    "Name": "Atemnot",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Atemnot: ",
+                    "ID": "ATEMNOT"
+                },
+                {
+                    "Name": "Hyperventilation",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Hyperventilation: ",
+                    "ID": "HYPERVENTILATION"
+                },
+                {
+                    "Name": "Atemstillstand",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Atemstillstand: ",
+                    "ID": "ATEMSTILLSTAND"
+                },
+                {
+                    "Name": "Sonstiges",
+                    "Element": "input",
+                    "Type": "text",
+                    "Label": "Sonstiges: ",
+                    "ID": "SONSTIGES"
+                }
+            ]
+        },
+        {
+            "Kategorie": "Circulation",
+            "ID": "CIRCULATION",
+            "Inputs": [
+                {
+                    "Name": "Puls_Label",
+                    "Element": "label",
+                    "Label": "Puls: ",
+                    "ID": "PULS_LABEL"
+                },
+                {
+                    "Name": "regelmaeßig",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "regelmäßig: ",
+                    "ID": "REGELMAESSIG"
+                },
+                {
+                    "Name": "unregelmaeßig",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "unregelmäßig: ",
+                    "ID": "UNREGELMAESSIG"
+                },
+                {
+                    "Name": "gut_tastbar",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "gut tastbar: ",
+                    "ID": "GUT_TASTBAR"
+                },
+                {
+                    "Name": "schlecht_tastbar",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "schlecht tastbar: ",
+                    "ID": "SCHLECHT_TASTBAR"
+                },
+                {
+                    "Name": "nicht_tastbar",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "nicht tastbar: ",
+                    "ID": "NICHT_TASTBAR",
+                    "Value": true
+                },
+                {
+                    "Name": "Haut_Label",
+                    "Element": "label",
+                    "Label": "Haut: ",
+                    "ID": "HAUT_LABEL"
+                },
+                {
+                    "Name": "rosig",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "rosig: ",
+                    "ID": "ROSIG"
+                },
+                {
+                    "Name": "blass",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "blass: ",
+                    "ID": "BLASS"
+                },
+                {
+                    "Name": "blau",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "blau: ",
+                    "ID": "BLAU"
+                },
+                {
+                    "Name": "rot",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "rot: ",
+                    "ID": "ROT"
+                },
+                {
+                    "Name": "warm ",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "warm: ",
+                    "ID": "WARM",
+                    "Value": true
+                },
+                {
+                    "Name": "kalt",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "kalt: ",
+                    "ID": "KALT"
+                },
+                {
+                    "Name": "CWERTE_Label",
+                    "Element": "label",
+                    "Label": "Werte: ",
+                    "ID": "CWERTE_LABEL"
+                },
+                {
+                    "Name": "Puls",
+                    "Element": "input",
+                    "Type": "number",
+                    "Label": "Puls: ",
+                    "ID": "PULS",
+                    "Value": "45"
+                },
+                {
+                    "Name": "RR_sys",
+                    "Element": "input",
+                    "Type": "number",
+                    "Label": "RR sys.: ",
+                    "ID": "RR_SYS",
+                    "Value": "4"
+                },
+                {
+                    "Name": "RR_dia",
+                    "Element": "input",
+                    "Type": "number",
+                    "Label": "RR dia.: ",
+                    "ID": "RR_DIA",
+                    "Value": "5"
+                },
+                {
+                    "Name": "SPO2",
+                    "Element": "input",
+                    "Type": "number",
+                    "Label": "SPO²: ",
+                    "ID": "SPO2",
+                    "Value": "54"
+                },
+                {
+                    "Name": "keine_Werte",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "keine Werte: ",
+                    "ID": "KEINE_WERTE"
+                }
+            ]
+        },
+        {
+            "Kategorie": "Defizit",
+            "ID": "DEFIZIT",
+            "Inputs": [
+                {
+                    "Name": "Bewusstein",
+                    "Element": "label",
+                    "Label": "Bewusstein: ",
+                    "ID": "BEWUSSTEIN"
+                },
+                {
+                    "Name": "orientiert",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "orientiert: ",
+                    "ID": "ORIENTIERT"
+                },
+                {
+                    "Name": "desorientiert",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "desorientiert: ",
+                    "ID": "DESORIENTIERT"
+                },
+                {
+                    "Name": "getrübt",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "getrübt: ",
+                    "ID": "GETRÜBT"
+                },
+                {
+                    "Name": "bewusstlos",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "bewusstlos: ",
+                    "ID": "BEWUSSTLOS"
+                },
+                {
+                    "Name": "BZ",
+                    "Element": "input",
+                    "Type": "number",
+                    "Label": "BZ: ",
+                    "ID": "BZ"
+                },
+                {
+                    "Name": "Pupillen",
+                    "Element": "label",
+                    "Label": "Pupillen: ",
+                    "ID": "PUPILLEN"
+                },
+                {
+                    "Name": "eng",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "links",
+                        "rechts",
+                        "beidseitig"
+                    ],
+                    "Label": "eng: ",
+                    "ID": "ENG"
+                },
+                {
+                    "Name": "weit",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "links",
+                        "rechts",
+                        "beidseitig"
+                    ],
+                    "Label": "weit: ",
+                    "ID": "WEIT"
+                },
+                {
+                    "Name": "keine_Lichtreflexe",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "links",
+                        "rechts",
+                        "beidseitig"
+                    ],
+                    "Label": "keine Lichtreflexe: ",
+                    "ID": "KEINE_LICHTREFLEXE"
+                },
+                {
+                    "Name": "entrundet",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "links",
+                        "rechts",
+                        "beidseitig"
+                    ],
+                    "Label": "entrundet: ",
+                    "ID": "ENTRUNDET"
+                },
+                {
+                    "Name": "Schmerzen",
+                    "Element": "label",
+                    "Label": "Schmerzen: ",
+                    "ID": "SCHMERZEN"
+                },
+                {
+                    "Name": "keine",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "keine: ",
+                    "ID": "KEINE"
+                },
+                {
+                    "Name": "leicht",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "leicht: ",
+                    "ID": "LEICHT"
+                },
+                {
+                    "Name": "mittel",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "mittel: ",
+                    "ID": "MITTEL"
+                },
+                {
+                    "Name": "stark",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "stark: ",
+                    "ID": "STARK"
+                },
+                {
+                    "Name": "kolikartig",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "kolikartig: ",
+                    "ID": "KOLIKARTIG"
+                },
+                {
+                    "Name": "Schmerz_index",
+                    "Element": "input",
+                    "Type": "text",
+                    "Label": "Index 1 bis 10: ",
+                    "ID": "SCHMERZ_INDEX"
+                }
+            ]
+        },
+        {
+            "Kategorie": "Verletzungen",
+            "ID": "EVERLETZUNGEN",
+            "Inputs": [
+                {
+                    "Name": "unverletzt",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "unverletzt: ",
+                    "ID": "UNVERLETZT"
+                },
+                {
+                    "Name": "Schädel_Hirn",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "offen",
+                        "geschlossen",
+                        "leicht",
+                        "mittel",
+                        "schwer"
+                    ],
+                    "Label": "Schädel Hirn: ",
+                    "ID": "SCHÄDEL_HIRN"
+                },
+                {
+                    "Name": "Gesicht",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "offen",
+                        "geschlossen",
+                        "leicht",
+                        "mittel",
+                        "schwer"
+                    ],
+                    "Label": "Gesicht: ",
+                    "ID": "GESICHT"
+                },
+                {
+                    "Name": "HWS",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "offen",
+                        "geschlossen",
+                        "leicht",
+                        "mittel",
+                        "schwer"
+                    ],
+                    "Label": "HWS: ",
+                    "ID": "HWS"
+                },
+                {
+                    "Name": "Thorax",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "offen",
+                        "geschlossen",
+                        "leicht",
+                        "mittel",
+                        "schwer"
+                    ],
+                    "Label": "Thorax: ",
+                    "ID": "THORAX",
+                    "Value": "geschlossen"
+                },
+                {
+                    "Name": "Abdomen",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "offen",
+                        "geschlossen",
+                        "leicht",
+                        "mittel",
+                        "schwer"
+                    ],
+                    "Label": "Abdomen: ",
+                    "ID": "ABDOMEN",
+                    "Value": "leicht"
+                },
+                {
+                    "Name": "BWS_LWS",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "offen",
+                        "geschlossen",
+                        "leicht",
+                        "mittel",
+                        "schwer"
+                    ],
+                    "Label": "BWS / LWS: ",
+                    "ID": "BWS_LWS"
+                },
+                {
+                    "Name": "Becken",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "offen",
+                        "geschlossen",
+                        "leicht",
+                        "mittel",
+                        "schwer"
+                    ],
+                    "Label": "Becken: ",
+                    "ID": "BECKEN"
+                },
+                {
+                    "Name": "Obere_Extremität",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "offen",
+                        "geschlossen",
+                        "leicht",
+                        "mittel",
+                        "schwer"
+                    ],
+                    "Label": "Obere Extremität: ",
+                    "ID": "OBERE_EXTREMITÄT",
+                    "Value": "leicht"
+                },
+                {
+                    "Name": "Untere_Extremität",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "offen",
+                        "geschlossen",
+                        "leicht",
+                        "mittel",
+                        "schwer"
+                    ],
+                    "Label": "Untere Extremität: ",
+                    "ID": "UNTERE_EXTREMITÄT"
+                },
+                {
+                    "Name": "Weichteile",
+                    "Element": "dropdown",
+                    "Type": "dropdown",
+                    "Options": [
+                        "-",
+                        "offen",
+                        "geschlossen",
+                        "leicht",
+                        "mittel",
+                        "schwer"
+                    ],
+                    "Label": "Weichteile: ",
+                    "ID": "WEICHTEILE"
+                }
+            ]
+        },
+        {
+            "Kategorie": "Maßnahmen",
+            "ID": "MASSNAHMEN",
+            "Mandatory": 1,
+            "Inputs": [
+                {
+                    "Name": "Atemwege_freimachen",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Atemwege freimachen: ",
+                    "ID": "ATEMWEGE_FREIMACHEN",
+                    "Mandatory": 1
+                },
+                {
+                    "Name": "Larynxtubus",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Larynxtubus: ",
+                    "ID": "LARYNXTUBUS",
+                    "Mandatory": 1,
+                    "Value": true
+                },
+                {
+                    "Name": "O2_Gabe",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "O2 Gabe: ",
+                    "ID": "O2_GABE",
+                    "Mandatory": 1
+                },
+                {
+                    "Name": "l_min",
+                    "Element": "input",
+                    "Type": "number",
+                    "Label": "l/min: ",
+                    "ID": "L_MIN"
+                },
+                {
+                    "Name": "Brille_Maske_Beutel",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Brille / Maske / Beutel: ",
+                    "ID": "BRILLE_MASKE_BEUTEL",
+                    "Mandatory": 1
+                },
+                {
+                    "Name": "Sonstiges",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Sonstiges: ",
+                    "ID": "SONSTIGES"
+                },
+                {
+                    "Name": "Herzdruckmassage",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Herzdruckmassage: ",
+                    "ID": "HERZDRUCKMASSAGE",
+                    "Value": true
+                },
+                {
+                    "Name": "AED",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "AED: ",
+                    "ID": "AED"
+                },
+                {
+                    "Name": "Defibrilliert",
+                    "Element": "input",
+                    "Type": "text",
+                    "Label": "Defibrilliert: ",
+                    "ID": "DEFIBRILLIERT"
+                },
+                {
+                    "Name": "Wundversorgung",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Wundversorgung: ",
+                    "ID": "WUNDVERSORGUNG"
+                },
+                {
+                    "Name": "HWS_Fixierung",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "HWS Fixierung: ",
+                    "ID": "HWS_FIXIERUNG"
+                },
+                {
+                    "Name": "NA_Nachforderung",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "NA Nachforderung: ",
+                    "ID": "NA_NACHFORDERUNG"
+                },
+                {
+                    "Name": "Seitenlage",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Seitenlage: ",
+                    "ID": "SEITENLAGE",
+                    "Value": true
+                },
+                {
+                    "Name": "Oberkoerper_hoch_sitzend",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Oberkörper hoch/sitzend: ",
+                    "ID": "OBERKOERPER_HOCH_SITZEND"
+                },
+                {
+                    "Name": "Flachlagerung",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Flachlagerung: ",
+                    "ID": "FLACHLAGERUNG"
+                },
+                {
+                    "Name": "Schocklage",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Schocklage: ",
+                    "ID": "SCHOCKLAGE",
+                    "Value": true
+                },
+                {
+                    "Name": "Ruhigstellung_mit",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Ruhigstellung mit: ",
+                    "ID": "RUHIGSTELLUNG_MIT"
+                },
+                {
+                    "Name": "Absicherung",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Absicherung: ",
+                    "ID": "ABSICHERUNG"
+                },
+                {
+                    "Name": "Einweisung_RD",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Einweisung RD: ",
+                    "ID": "EINWEISUNG_RD"
+                },
+                {
+                    "Name": "Unterstuetzung_RD",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Unterstützung RD: ",
+                    "ID": "UNTERSTUETZUNG_RD"
+                },
+                {
+                    "Name": "NND_abwartend",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "NND abwartend: ",
+                    "ID": "NNS_ABWARTEND"
+                }
+            ]
+        },
+        {
+            "Kategorie": "Einsatzart",
+            "ID": "EINSATZART",
+            "Mandatory": 1,
+            "Inputs": [
+                {
+                    "Name": "Verkehrsunfall",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Verkehrsunfall: ",
+                    "ID": "VERKEHRSUNFALL"
+                },
+                {
+                    "Name": "Arbeitsunfall",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Arbeitsunfall: ",
+                    "ID": "ARBEITSUNFALL"
+                },
+                {
+                    "Name": "Chirurgischer_Notfall",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Chirurgischer Notfall: ",
+                    "ID": "CHIRURGISCHER_NOTFALL"
+                },
+                {
+                    "Name": "Gynaekologischer_Notfall",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Gynäkologischer Notfall: ",
+                    "ID": "GYNAEKOLOGISCHER_NOTFALL"
+                },
+                {
+                    "Name": "Internistischer_Notfall",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Internistischer Notfall: ",
+                    "ID": "INTERNISTISCHER_NOTFALL"
+                },
+                {
+                    "Name": "Fehleinsatz",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Fehleinsatz: ",
+                    "ID": "FEHLEINSATZ"
+                },
+                {
+                    "Name": "Paediatrischer_Notfall",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Pädiatrischer Notfall: ",
+                    "ID": "PAEDIATRISCHER_NOTFALL"
+                },
+                {
+                    "Name": "Sonstiges",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Sonstiges: ",
+                    "ID": "SONSTIGES"
+                }
+            ]
+        },
+        {
+            "Kategorie": "Sonstiges",
+            "ID": "SONSTIGES",
+            "Mandatory": 1,
+            "Inputs": [
+                {
+                    "Name": "Feuerwehr",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Feuerwehr: ",
+                    "ID": "FEUERWEHR",
+                    "Mandatory": 1
+                },
+                {
+                    "Name": "Polizei",
+                    "Element": "input",
+                    "Type": "checkbox",
+                    "Label": "Polizei: ",
+                    "ID": "POLIZEI",
+                    "Mandatory": 1,
+                    "Value": true
+                },
+                {
+                    "Name": "Sonstiger_Text_label",
+                    "Element": "label",
+                    "Label": "Sonstige Informationen:  ",
+                    "ID": "SONSTIGER_TEXT_LABEL"
+                },
+                {
+                    "Name": "Sonstiger_Text",
+                    "Element": "textarea",
+                    "Rows": 7,
+                    "Cols": 60,
+                    "ID": "SONSTIGER_TEXT",
+                    "Mandatory": 1
+                }
+            ]
+        }
+    ]
+}
