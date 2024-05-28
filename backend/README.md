@@ -20,7 +20,7 @@ Login:
 - Password: A9UZlRyKmeTxRFfGcPo6M67r
 
 
-## 2.1 C# Backend: Sebastian
+## 2. C# Backend: Sebastian
 
 ### Run the app:
 
@@ -36,4 +36,9 @@ Login:
 - Password: SuperAdminPasswort
 
 
-## 2.2 Java Backend: Benedict
+## To-Do's
+
+- Email basierend auf Protokoll senden
+- Statistiken
+- Auth für GET-Endpunkte (Welche?) + Testen
+- Seeding anpassen

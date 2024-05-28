@@ -8,6 +8,8 @@ using Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using MailKit.Search;
+using Helper.SeachObjects;
 
 namespace Services
 {
@@ -15,12 +17,16 @@ namespace Services
     {
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
+        private readonly IRoleRepository _roleRepository;
+        private readonly IOrganizationRepository _organizationRepository;
         private readonly IUserLoginAttemptRepository _userLoginAttemptRepository;
 
-        public AuthenticationService(IConfiguration configuration, IUserRepository userRepository, IUserLoginAttemptRepository userLoginAttemptRepository)
+        public AuthenticationService(IConfiguration configuration, IOrganizationRepository organizationRepository, IUserRepository userRepository, IRoleRepository roleRepository, IUserLoginAttemptRepository userLoginAttemptRepository)
         {
             _configuration = configuration;
             _userRepository = userRepository;
+            _roleRepository = roleRepository;
+            _organizationRepository = organizationRepository;
             _userLoginAttemptRepository = userLoginAttemptRepository;
         }
 
@@ -57,19 +63,60 @@ namespace Services
             currentUserLoginAttempt.LastLoginAttempt = DateTime.UtcNow;
             _userLoginAttemptRepository.UpdateUserLoginAttempt(currentUserLoginAttempt);
 
+            
+            var claims = new List<Claim>
+            {
+                new Claim("Id", Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, LoginUser.Username),
+                new Claim(JwtRegisteredClaimNames.Email, LoginUser.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, LoginUser.Id.ToString()),
+                new Claim("UserId", LoginUser.Id.ToString())
+            };
+
+            var roles = _roleRepository.GetRolesByUser(LoginUser.Id);
+
+            foreach (var role in roles.Distinct())
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role.Name));
+            }
+
+            var organizations = _organizationRepository.GetOrganizationsByUser(LoginUser.Id, new QueryObject(), new OrganizationSearchObject());
+
+            List<string> organizationIds = new List<string> {};
+
+            foreach (var organization in organizations)
+            {
+                organizationIds.Add(organization.Id.ToString());
+                organizationIds.Distinct();
+            }
+
+            foreach (var organization in organizations)
+            {
+                var daughterOrgas = _organizationRepository.GetAllOrganizationDaughters(organization.Id, new QueryObject(), new OrganizationSearchObject());
+                if (daughterOrgas != null) 
+                {
+                    foreach (var daughter in daughterOrgas)
+                    {
+                        organizationIds.Add(daughter.Id.ToString());
+                    }
+                }
+                organizationIds.Distinct();
+            }
+
+
+            foreach (var organizationId in organizationIds)
+            {
+                claims.Add(new Claim("Organization", organizationId));
+            }
+
+
             var issuer = _configuration["Jwt:Issuer"];
             var audience = _configuration["Jwt:Audience"];
             var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                // Subject = new ClaimsIdentity(new[]
-                // {
-                //     new Claim("Id", Guid.NewGuid().ToString()),
-                //     new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                //     new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                //     new Claim(JwtRegisteredClaimNames.Jti,
-                //     Guid.NewGuid().ToString())
-                // }),
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddMinutes(90),
                 Issuer = issuer,
                 Audience = audience,

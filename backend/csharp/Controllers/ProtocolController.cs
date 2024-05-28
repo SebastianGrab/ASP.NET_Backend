@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 using Helper;
 using Helper.SearchObjects;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 namespace backend.Controllers
 {
@@ -65,6 +66,7 @@ namespace backend.Controllers
 
         // GET: api/protocol/{id}
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(Protocol))]
         [ProducesResponseType(400)]
         public IActionResult GetProtocol(long id)
@@ -82,6 +84,7 @@ namespace backend.Controllers
 
         // GET: api/protocol/{id}/organization
         [HttpGet("{id}/organization")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(Organization))]
         [ProducesResponseType(400)]
         public IActionResult GetOrganizationByProtocol(long id)
@@ -99,6 +102,7 @@ namespace backend.Controllers
 
         // GET: api/protocol/{id}/content
         [HttpGet("{id}/content")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(ProtocolContent))]
         [ProducesResponseType(400)]
         public IActionResult GetProtocolContent(long id)
@@ -116,6 +120,7 @@ namespace backend.Controllers
 
         // GET: api/protocol/{id}/pdf-content
         [HttpGet("{id}/pdf-content")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(ProtocolPdfFile))]
         [ProducesResponseType(400)]
         public IActionResult GetProtocolPdfFile(long id)
@@ -133,6 +138,7 @@ namespace backend.Controllers
 
         // GET: api/protocol/{id}/pdf-download
         [HttpGet("{id}/pdf-download")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(ProtocolPdfFile))]
         [ProducesResponseType(400)]
         public IActionResult DownloadProtocolPdfFile(long id)
@@ -152,6 +158,7 @@ namespace backend.Controllers
 
         // GET: api/protocol/{id}/template
         [HttpGet("{id}/template")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(Template))]
         [ProducesResponseType(400)]
         public IActionResult GetTemplateByProtocol(long id)
@@ -169,6 +176,7 @@ namespace backend.Controllers
 
         // GET: api/protocol/{id}/user
         [HttpGet("{id}/user")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(User))]
         [ProducesResponseType(400)]
         public IActionResult GetUserByProtocol(long id)
@@ -186,6 +194,7 @@ namespace backend.Controllers
 
         // GET: api/protocol/{id}/additional-users
         [HttpGet("{id}/additional-users")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(ICollection<User>))]
         [ProducesResponseType(400)]
         public IActionResult GetAdditionalUsersByProtocol(long id, [FromQuery] QueryObject dateQuery = null, [FromQuery] UserSearchObject userSearchQuery = null)
@@ -203,6 +212,7 @@ namespace backend.Controllers
 
         // POST: api/protocol/{id}/content
         [HttpPost("{id}/content")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         public IActionResult CreateProtocolContent(long id, [FromBody] ProtocolContentDto protocolContentCreate)
@@ -210,12 +220,23 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
+            var protocolUser = _userRepository.GetUserByProtocol(id);
+
+            var roles = User.GetRoles();
+            var userId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (userId.ToString().IsNullOrEmpty() || userId.ToString() != protocolUser.Id.ToString())
+                {
+                    return Unauthorized();
+                }
+            }
+
             if (protocolContentCreate == null)
                 return BadRequest(ModelState);
 
-            var protocolContent = _protocolContentRepository.GetProtocolContent(id);
-
-            if (protocolContent != null)
+            if (_protocolContentRepository.ProtocolContentExists(id))
             {
                 ModelState.AddModelError("", "Content for selected Protocol already exists.");
                 return StatusCode(422, ModelState);
@@ -233,6 +254,7 @@ namespace backend.Controllers
             var protocolContentMap = _mapper.Map<ProtocolContent>(protocolContentCreate);
 
             protocolContentMap.Protocol = _protocolRepository.GetProtocol(id);
+            protocolContentMap.protocolId = id;
 
             if (!_protocolContentRepository.CreateProtocolContent(protocolContentMap))
             {
@@ -240,15 +262,31 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok("Successfully created.");
+            var protocolContentToReturn = _mapper.Map<ProtocolContentDto>(protocolContentMap);
+
+            return Ok(protocolContentToReturn);
         }
 
         // POST: api/protocol/{id}/pdf
         [HttpPost("{id}/pdf")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         public IActionResult CreateProtocolPdfFile(long id, [FromBody] ProtocolPdfFileDto protocolPdfFileCreate)
         {
+            var protocolUser = _userRepository.GetUserByProtocol(id);
+
+            var roles = User.GetRoles();
+            var userId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (userId.ToString().IsNullOrEmpty() || userId.ToString() != protocolUser.Id.ToString())
+                {
+                    return Unauthorized();
+                }
+            }
+
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
                 
@@ -269,6 +307,7 @@ namespace backend.Controllers
             var protocolPdfFileMap = _mapper.Map<ProtocolPdfFile>(protocolPdfFileCreate);
 
             protocolPdfFileMap.Protocol = _protocolRepository.GetProtocol(id);
+            protocolPdfFileMap.protocolId = id;
 
             if (!_protocolPdfFileRepository.CreateProtocolPdfFile(protocolPdfFileMap))
             {
@@ -276,16 +315,31 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok("Successfully created.");
+            var protocolPdfFileToReturn = _mapper.Map<ProtocolPdfFileDto>(protocolPdfFileMap);
+
+            return Ok(protocolPdfFileToReturn);
         }
 
         // POST: api/protocols
         [HttpPost]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [Route("/api/protocols")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         public IActionResult CreateProtocol([FromQuery] long templateId, [FromQuery] long organizationId, [FromQuery] long userId, [FromQuery] List<long> additionalUserIds, [FromBody] ProtocolDto protocolCreate)
         {
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(organizationId.ToString()) || userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != userId.ToString())
+                {
+                    return Unauthorized();
+                }
+            }
+
             if (protocolCreate == null)
                 return BadRequest(ModelState);
 
@@ -293,6 +347,21 @@ namespace backend.Controllers
                 return BadRequest(ModelState);
 
             var protocolMap = _mapper.Map<Protocol>(protocolCreate);
+            
+            if(!_templateRepository.TemplateExists(templateId))
+                return NotFound();
+                
+            if(!_userRepository.UserExists(userId))
+                return NotFound();
+                
+            if(!_organizationRepository.OrganizationExists(organizationId))
+                return NotFound();
+
+            foreach (var additionalUserId in additionalUserIds)
+            {
+                if(!_userRepository.UserExists(additionalUserId))
+                    return NotFound();
+            }
 
             protocolMap.Template = _templateRepository.GetTemplate(templateId);
             protocolMap.Organization = _organizationRepository.GetOrganization(organizationId);
@@ -321,6 +390,7 @@ namespace backend.Controllers
 
         // DELETE: api/protocol/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -329,6 +399,18 @@ namespace backend.Controllers
             if (!_protocolRepository.ProtocolExists(id))
             {
                 return NotFound();
+            }
+
+            var protocolUser = _userRepository.GetUserByProtocol(id);
+            var roles = User.GetRoles();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (protocolUser == null || userClaimId.ToString() == null || userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != protocolUser.Id.ToString())
+                {
+                    return Unauthorized();
+                }
             }
 
             var protocolContentToDelete = _protocolContentRepository.GetProtocolContent(id);
@@ -340,19 +422,25 @@ namespace backend.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!_protocolContentRepository.DeleteProtocolContent(protocolContentToDelete))
-            {
-                ModelState.AddModelError("", "Something went wrong when deleting Protocol Content.");
+            if (protocolContentToDelete != null) {
+                if (!_protocolContentRepository.DeleteProtocolContent(protocolContentToDelete))
+                {
+                    ModelState.AddModelError("", "Something went wrong when deleting Protocol Content.");
+                }
             }
 
-            if (!_protocolPdfFileRepository.DeleteProtocolPdfFile(protocolPdfFileToDelete))
-            {
-                ModelState.AddModelError("", "Something went wrong when deleting Protocol Pdf File.");
+            if (protocolPdfFileToDelete != null) { 
+                if (!_protocolPdfFileRepository.DeleteProtocolPdfFile(protocolPdfFileToDelete))
+                {
+                    ModelState.AddModelError("", "Something went wrong when deleting Protocol Pdf File.");
+                }
             }
 
-            if (!_additionalUserRepository.DeleteAdditionalUserEntries(additionalUsersToDelete.ToList()))
-            {
-                ModelState.AddModelError("", "Something went wrong when deleting User as Additional User.");
+            if (additionalUsersToDelete != null) {
+                if (!_additionalUserRepository.DeleteAdditionalUserEntries(additionalUsersToDelete.ToList()))
+                {
+                    ModelState.AddModelError("", "Something went wrong when deleting User as Additional User.");
+                }
             }
 
             if (!_protocolRepository.DeleteProtocol(protocolRolesToDelete))
@@ -365,6 +453,7 @@ namespace backend.Controllers
 
         // DELETE: api/protocol/{id}/additional-users/{additionaluserId}
         [HttpDelete]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [Route("/api/protocol/{id}/additional-users/{additionaluserId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
@@ -374,6 +463,18 @@ namespace backend.Controllers
             if(_additionalUserRepository.AdditionalUserExists(additionalUserId, id) == false)
             {
                 return NotFound();
+            }
+            
+            var protocolUser = _userRepository.GetUserByProtocol(id);
+            var roles = User.GetRoles();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != protocolUser.Id.ToString())
+                {
+                    return Unauthorized();
+                }
             }
 
             var additionalUserToDelete = _additionalUserRepository.GetAdditionalUser(additionalUserId, id);
@@ -390,16 +491,47 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateProtocol(long id, [FromQuery] long closingUserId, [FromQuery] List<long> additionalUserIds, [FromBody] ProtocolDto protocolUpdate)
+        public IActionResult UpdateProtocol(long id, [FromQuery] List<long> additionalUserIds, [FromBody] ProtocolDto protocolUpdate)
         {
+            var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var closingUserId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (protocolOrga.Id.ToString().IsNullOrEmpty() || orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(protocolOrga.Id.ToString()))
+                {
+                    return Unauthorized();
+                }
+            }
             if (protocolUpdate == null)
                 return BadRequest(ModelState);
 
             if (!_protocolRepository.ProtocolExists(id))
                 return NotFound();
+
+            if (!protocolUpdate.IsClosed && closingUserId.ToString() == null)
+            {
+                ModelState.AddModelError("", "Closing user Id required.");
+                return StatusCode(500, ModelState);
+            }
+            
+            if (additionalUserIds.Count() >= 1)
+            {
+                foreach (var additionalUserId in additionalUserIds)
+                {
+                    if (!additionalUserId.ToString().IsNullOrEmpty())
+                    {
+                        if(!_userRepository.UserExists(additionalUserId))
+                            return NotFound();
+                    }
+                }
+            }
 
             if (id != protocolUpdate.Id)
                 return BadRequest(ModelState);
@@ -409,20 +541,23 @@ namespace backend.Controllers
 
             var protocolMap = _mapper.Map<Protocol>(protocolUpdate);
 
-            var currentProtocol =  _protocolRepository.GetProtocol(id);
-            
-            if (currentProtocol.IsClosed == true)
-            {
-                ModelState.AddModelError("", "Protocol is already closed. Changes are not possible.");
-                return StatusCode(422, ModelState);
-            }
+            var protocolOrganisation = _organizationRepository.GetOrganizationByProtocol(id);
+            var protocolUser = _userRepository.GetUserByProtocol(id);
+            var protocolTemplate = _templateRepository.GetTemplateByProtocol(id);
+
+            protocolMap.Organization = protocolOrganisation;
+            protocolMap.User = protocolUser;
+            protocolMap.Template = protocolTemplate;
 
             var additionalUsersToDelete =  _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id);
             
-            if (!_additionalUserRepository.DeleteAdditionalUserEntries(additionalUsersToDelete.ToList()))
+            if (additionalUsersToDelete.Count() != 0)
             {
-                ModelState.AddModelError("", "Something went wrong updating additional users.");
-                return StatusCode(500, ModelState);
+                if (!_additionalUserRepository.DeleteAdditionalUserEntries(additionalUsersToDelete.ToList()))
+                {
+                    ModelState.AddModelError("", "Something went wrong updating additional users.");
+                    return StatusCode(500, ModelState);
+                }
             }
 
             if (!_protocolRepository.UpdateProtocol(closingUserId, additionalUserIds, protocolMap))
@@ -435,19 +570,35 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id}/content")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public IActionResult UpdateProtocolContent(long id, [FromBody] ProtocolContentDto protocolContentUpdate)
         {
+            if (!_protocolRepository.ProtocolExists(id))
+                return NotFound();
+
+            if (!_protocolContentRepository.ProtocolContentExists(id))
+                return NotFound();
+
+            var protocolUser = _userRepository.GetUserByProtocol(id);
+            var roles = User.GetRoles();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != protocolUser.Id.ToString())
+                {
+                    return Unauthorized();
+                }
+            }
+
             if (protocolContentUpdate == null)
                 return BadRequest(ModelState);
 
             if (id != protocolContentUpdate.protocolId)
                 return BadRequest(ModelState);
-
-            if (!_protocolContentRepository.ProtocolContentExists(id))
-                return NotFound();
 
             if (!JsonValidationService.IsValidJson(protocolContentUpdate.Content))
             {
@@ -470,11 +621,30 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id}/pdf")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public IActionResult UpdateProtocolPdfFile(long id, [FromBody] ProtocolPdfFileDto protocolPdfFileUpdate)
         {
+            if (!_protocolRepository.ProtocolExists(id))
+                return NotFound();
+
+            if (!_protocolContentRepository.ProtocolContentExists(id))
+                return NotFound();
+
+            var protocolUser = _userRepository.GetUserByProtocol(id);
+            var roles = User.GetRoles();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != protocolUser.Id.ToString())
+                {
+                    return Unauthorized();
+                }
+            }
+            
             if (protocolPdfFileUpdate == null)
                 return BadRequest(ModelState);
 

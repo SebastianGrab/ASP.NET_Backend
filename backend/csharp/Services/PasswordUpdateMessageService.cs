@@ -48,6 +48,7 @@ public class PasswordUpdateMessageService : BackgroundService
                     SentFrom = "System",
                     IsRead = false,
                     IsArchived = false,
+                    userId = userToUpdate.Id,
                     User = userToUpdate
                 };
 

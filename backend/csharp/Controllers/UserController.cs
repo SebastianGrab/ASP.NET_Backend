@@ -9,6 +9,7 @@ using Helper.SeachObjects;
 using Helper.SearchObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace backend.Controllers
 {
@@ -44,6 +45,7 @@ namespace backend.Controllers
 
         // GET: api/users
         [HttpGet]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [Route("/api/users")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
         public IActionResult GetUsers([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] UserSearchObject userSearchQuery = null)
@@ -71,6 +73,7 @@ namespace backend.Controllers
 
         // GET: api/user/{id}
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(User))]
         [ProducesResponseType(400)]
         public IActionResult GetUser(long id)
@@ -88,6 +91,7 @@ namespace backend.Controllers
 
         // GET: api/user/{id}/organizations
         [HttpGet("{id}/organizations")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(ICollection<Organization>))]
         [ProducesResponseType(400)]
         public IActionResult GetOrganizationsByUser(long id, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearchQuery = null)
@@ -105,6 +109,7 @@ namespace backend.Controllers
 
         // GET: api/user/{id}/protocols
         [HttpGet]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [Route("/api/user/{id}/creator-protocols")]
         [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
         [ProducesResponseType(400)]
@@ -136,6 +141,7 @@ namespace backend.Controllers
 
         // GET: api/user/{id}/viewer-protocols
         [HttpGet]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [Route("/api/user/{id}/viewer-protocols")]
         [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
         [ProducesResponseType(400)]
@@ -167,6 +173,7 @@ namespace backend.Controllers
 
         // GET: /api/user/{id}/all-protocols
         [HttpGet]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [Route("/api/user/{id}/all-protocols")]
         [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
         [ProducesResponseType(400)]
@@ -202,6 +209,7 @@ namespace backend.Controllers
 
         // GET: api/user/{id}/roles
         [HttpGet("{id}/roles")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Role>))]
         public IActionResult GetRolesByUser(long id)
         {
@@ -218,11 +226,23 @@ namespace backend.Controllers
 
         // GET: api/user/{id}/messages
         [HttpGet("{id}/messages")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<UserMessage>))]
         public IActionResult GetMessagesByUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] UserMessageSearchObject userMessageSearchQuery = null)
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
+
+            var userId = User.GetUserId();
+            var roles = User.GetRoles();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (userId.ToString().IsNullOrEmpty() || id.ToString() != userId.ToString())
+                {
+                    return Unauthorized();
+                }
+            }
 
             var query = _userMessageRepository.GetMessagesByUser(id, dateQuery, userMessageSearchQuery).AsQueryable();
 
@@ -247,6 +267,7 @@ namespace backend.Controllers
 
         // GET: api/user/{id}/no-of-unread-messages
         [HttpGet("{id}/no-of-unread-messages")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(int))]
         public IActionResult GetNumberOfProtocolsPerUser(long id)
         {
@@ -255,11 +276,23 @@ namespace backend.Controllers
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var userId = User.GetUserId();
+            var roles = User.GetRoles();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (userId.ToString().IsNullOrEmpty() || id.ToString() != userId.ToString())
+                {
+                    return Unauthorized();
+                }
+            }
+
             return Ok(numberOfUnreadMessagesPerUser);
         }
 
         // GET: api/users/{id}/organizations/{organizationId}/roles
         [HttpGet("{id}/organizations/{organizationId}/roles")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Role>))]
         public IActionResult GetRolesByUserAndOrganization(long id, long organizationId)
         {
@@ -273,6 +306,7 @@ namespace backend.Controllers
 
         // POST: api/users
         [HttpPost]
+        [Authorize(Roles = "Admin,Leiter")]
         [Route("/api/users")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -317,15 +351,30 @@ namespace backend.Controllers
                 return StatusCode(301, ModelState);
             }
 
-            return Ok("Successfully created.");
+            var userToReturn = _mapper.Map<UserDto>(userMap);
+
+            return Ok(userToReturn);
         }
 
         // POST: api/user/{id}/organizations/{organizationId}/role
         [HttpPost("{id}/organization/{organizationId}/role/{roleId}")]
+        [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         public IActionResult CreateUserOrganizationRole(long id, long organizationId, long roleId)
         {
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(organizationId.ToString()))
+                {
+                    return Unauthorized();
+                }
+            }
+            
+
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
@@ -360,11 +409,12 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok("Successfully created.");
+            return Ok("Successfully added.");
         }
 
         // DELETE: api/user/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -373,6 +423,17 @@ namespace backend.Controllers
             if (!_userRepository.UserExists(id))
             {
                 return NotFound();
+            }
+
+            var roles = User.GetRoles();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != id.ToString())
+                {
+                    return Unauthorized();
+                }
             }
 
             var userMessagesToDelete = _userMessageRepository.GetMessagesByUser(id, new QueryObject(), new UserMessageSearchObject());
@@ -427,6 +488,7 @@ namespace backend.Controllers
 
         // DELETE: api/user/{id}/organization/{organizationId}/role/{roleId}
         [HttpDelete("{id}/organization/{organizationId}/role/{roleId}")]
+        [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -435,6 +497,17 @@ namespace backend.Controllers
             if (!_userRepository.UserOrganizationRoleExists(id, organizationId, roleId))
             {
                 return NotFound();
+            }
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(organizationId.ToString()))
+                {
+                    return Unauthorized();
+                }
             }
 
             var userOrganizationRole = _userRepository.GetUserOrganizationRole(id, organizationId, roleId);
@@ -452,11 +525,26 @@ namespace backend.Controllers
 
         // UPDATE: api/user/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public IActionResult UpdateUser(long id, [FromBody] UserRegisterDto userUpdate)
         {
+            if (!_userRepository.UserExists(id))
+                return NotFound();
+
+            var roles = User.GetRoles();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != id.ToString())
+                {
+                    return Unauthorized();
+                }
+            }
+
             if (userUpdate == null)
                 return BadRequest(ModelState);
 
@@ -470,9 +558,6 @@ namespace backend.Controllers
                 return StatusCode(422, ModelState);
             }
 
-            if (!_userRepository.UserExists(id))
-                return NotFound();
-
             if (!ModelState.IsValid)
                 return BadRequest();
 
@@ -480,15 +565,6 @@ namespace backend.Controllers
             
             userMap.Password = BCrypt.Net.BCrypt.HashPassword(userUpdate.Password); // SALT is created automatically by the method.
             userMap.Email = userUpdate.Email.ToLower();
-
-            if(!_userRepository.VerifyUserPassword(userMap, userUpdate.Password))
-            {
-                if(!_emailService.SendPasswordUpdateEmail(userUpdate.FirstName + " " + userUpdate.LastName, userUpdate.Email, userUpdate.Password))
-                {
-                    ModelState.AddModelError("", "Something went wrong sending the mail.");
-                    return StatusCode(301, ModelState);
-                }
-            }
 
             if (!_userRepository.UpdateUser(userMap))
             {

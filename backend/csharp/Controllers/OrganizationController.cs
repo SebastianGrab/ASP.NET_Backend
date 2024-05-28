@@ -7,6 +7,7 @@ using Helper;
 using Helper.SeachObjects;
 using Helper.SearchObjects;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 namespace backend.Controllers
 {
@@ -36,6 +37,7 @@ namespace backend.Controllers
 
         // GET: api/organizations
         [HttpGet]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [Route("/api/organizations")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Organization>))]
         public IActionResult GetOrganizations([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearchQuery = null)
@@ -63,6 +65,7 @@ namespace backend.Controllers
 
         // GET: api/organization/{id}
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(Organization))]
         [ProducesResponseType(400)]
         public IActionResult GetOrganization(long id)
@@ -80,6 +83,7 @@ namespace backend.Controllers
 
         // GET: api/organization/{id}/protocols
         [HttpGet("{id}/protocols")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Protocol>))]
         public IActionResult GetProtocolsByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearch = null)
         {
@@ -109,6 +113,7 @@ namespace backend.Controllers
 
         // GET: api/organization/{id}/roles
         [HttpGet("{id}/roles")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Role>))]
         public IActionResult GetRolesByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
         {
@@ -138,6 +143,7 @@ namespace backend.Controllers
 
         // GET: api/organization/{id}/all-templates
         [HttpGet("{id}/templates")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
         public IActionResult GetAllTemplatesByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] TemplateSearchObject templateSearchQuery = null)
         {
@@ -171,6 +177,7 @@ namespace backend.Controllers
 
         // GET: api/organization/{id}/shared-templates
         [HttpGet("{id}/shared-templates")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
         public IActionResult GetSharedTemplatesByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] TemplateSearchObject templateSearchQuery = null)
         {
@@ -200,6 +207,7 @@ namespace backend.Controllers
 
         // GET: api/organization/{id}/owning-templates
         [HttpGet("{id}/owning-templates")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
         public IActionResult GetTemplatesOwnedByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] TemplateSearchObject templateSearchQuery = null)
         {
@@ -229,6 +237,7 @@ namespace backend.Controllers
 
         // GET: api/organization/{id}/users
         [HttpGet("{id}/users")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
         public IActionResult GetUsersByOrganization(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] UserSearchObject userSearchQuery = null)
         {
@@ -258,6 +267,7 @@ namespace backend.Controllers
 
         // GET: api/organization/{id}/users/{userId}/roles
         [HttpGet("{id}/users/{userId}/roles")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Role>))]
         public IActionResult GetRolesByUserAndOrganization(long userId, long id)
         {
@@ -277,6 +287,7 @@ namespace backend.Controllers
 
         // GET: api/organization/{id}/daughter-organizations
         [HttpGet("{id}/daughter-organizations")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Organization>))]
         public IActionResult GetOrganizationDaughters(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearch = null)
         {
@@ -306,6 +317,7 @@ namespace backend.Controllers
 
         // GET: api/organization/{id}/all-daughter-organizations
         [HttpGet("{id}/all-daughter-organizations")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Organization>))]
         public IActionResult GetAllOrganizationDaughters(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearch = null)
         {
@@ -335,6 +347,7 @@ namespace backend.Controllers
 
         // POST: api/organizations
         [HttpPost]
+        [Authorize(Roles = "Admin,Leiter")]
         [Route("/api/organizations")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -374,15 +387,29 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok("Successfully created.");
+            var organization = _mapper.Map<OrganizationDto>(organizationMap);
+
+            return Ok(organization);
         }
 
         // POST: api/organizations/{id}/user/{userId}/role
         [HttpPost("{id}/user/{userId}/role/{roleId}")]
+        [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         public IActionResult CreateUserOrganizationRole(long userId, long id, long roleId)
         {
+            var orgaIds = User.GetOrganizationIds();
+            var roles = User.GetRoles();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(id.ToString()))
+                {
+                    return Unauthorized();
+                }
+            }
+            
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
                 
@@ -417,11 +444,12 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok("Successfully created.");
+            return Ok(uor);
         }
 
         // DELETE: api/organization/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -439,9 +467,12 @@ namespace backend.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!_templateOrganizationRepository.DeleteTemplateOrganizationEntries(templateOrganizationsToDelete))
+            if(templateOrganizationsToDelete != null)
             {
-                ModelState.AddModelError("", "Something went wrong when deleting template organization.");
+                if (!_templateOrganizationRepository.DeleteTemplateOrganizationEntries(templateOrganizationsToDelete))
+                {
+                    ModelState.AddModelError("", "Something went wrong when deleting template organization.");
+                }
             }
 
             if (!_organizationRepository.DeleteOrganization(organizationToDelete))
@@ -449,9 +480,12 @@ namespace backend.Controllers
                 ModelState.AddModelError("", "Something went wrong deleting Organization.");
             }
 
-            if (!_userRepository.DeleteUserOrganizationRoles(userOrganizationRolesToDelete))
+            if(userOrganizationRolesToDelete != null)
             {
-                ModelState.AddModelError("", "Something went wrong deleting Organization Roles.");
+                if (!_userRepository.DeleteUserOrganizationRoles(userOrganizationRolesToDelete))
+                {
+                    ModelState.AddModelError("", "Something went wrong deleting Organization Roles.");
+                }
             }
 
             return NoContent();
@@ -459,11 +493,23 @@ namespace backend.Controllers
 
         // DELETE: api/organization/{id}/user/{userId}/role/{roleId}
         [HttpDelete("{id}/user/{userId}/role/{roleId}")]
+        [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public IActionResult Delete(long id, long userId, long roleId)
         {
+            var orgaIds = User.GetOrganizationIds();
+            var roles = User.GetRoles();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(id.ToString()))
+                {
+                    return Unauthorized();
+                }
+            }
+            
             if (!_userRepository.UserOrganizationRoleExists(userId, id, roleId))
             {
                 return NotFound();
@@ -486,6 +532,7 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]

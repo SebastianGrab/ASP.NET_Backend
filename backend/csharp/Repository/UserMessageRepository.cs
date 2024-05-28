@@ -35,7 +35,7 @@ namespace Repository
 
         public UserMessage GetMessage(long id)
         {
-            return _context.UserMessages.Where(u => u.User.Id == id).FirstOrDefault();
+            return _context.UserMessages.Where(u => u.userId == id).FirstOrDefault();
         }
 
         public ICollection<UserMessage> GetMessages(QueryObject dateQuery, UserMessageSearchObject userMessageSearch)
@@ -92,7 +92,7 @@ namespace Repository
 
         public ICollection<UserMessage> GetMessagesByUser(long userId, QueryObject dateQuery, UserMessageSearchObject userMessageSearch)
         {
-            var userMessages = _context.UserMessages.Where(u => u.User.Id == userId).OrderByDescending(um => um.Id).AsQueryable();
+            var userMessages = _context.UserMessages.Where(u => u.userId == userId).OrderByDescending(um => um.Id).AsQueryable();
 
             if(!string.IsNullOrWhiteSpace(dateQuery.minCreatedDateTime.ToString()))
             {
@@ -144,7 +144,7 @@ namespace Repository
 
         public int GetNumberOfUnreadMessagesPerUser(long userId)
         {
-            return _context.UserMessages.Where(um => um.User.Id == userId).Count();
+            return _context.UserMessages.Where(um => um.userId == userId).Count();
         }
 
         public bool MessageExists(long id)

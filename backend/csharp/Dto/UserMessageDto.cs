@@ -16,6 +16,8 @@ namespace Dto
 
         public bool IsArchived { get; set; }
 
+        public long userId { get; set; }
+
         public DateTime CreatedDate { get; set; }
         
         public DateTime UpdatedDate { get; set; } 

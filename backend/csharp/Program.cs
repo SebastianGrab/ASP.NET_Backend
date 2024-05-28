@@ -93,8 +93,6 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new RoleRequirement("Helfer")));
 });
 
-builder.Services.AddScoped<IAuthorizationHandler, RoleHandler>();
-
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

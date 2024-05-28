@@ -7,6 +7,7 @@ using Helper;
 using Helper.SearchObjects;
 using Helper.SeachObjects;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 namespace backend.Controllers
 {
@@ -32,6 +33,7 @@ namespace backend.Controllers
 
         // GET: api/templates
         [HttpGet]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [Route("/api/templates")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
         public IActionResult GetTemplates([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] TemplateSearchObject templateSearchQuery = null)
@@ -59,6 +61,7 @@ namespace backend.Controllers
 
         // GET: api/template/{id}
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(Template))]
         [ProducesResponseType(400)]
         public IActionResult GetTemplate(long id)
@@ -76,6 +79,7 @@ namespace backend.Controllers
 
         // GET: api/template/{id}/organizations
         [HttpGet("{id}/organizations")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(ICollection<Organization>))]
         [ProducesResponseType(400)]
         public IActionResult GetOrganizationsByTemplate(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearchQuery = null)
@@ -106,6 +110,7 @@ namespace backend.Controllers
 
         // GET: api/template/{id}/protocols
         [HttpGet("{id}/protocols")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
         [ProducesResponseType(400)]
         public IActionResult GetProtocolsByTemplate(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearchQuery = null)
@@ -136,11 +141,23 @@ namespace backend.Controllers
 
         // POST: api/templates
         [HttpPost]
+        [Authorize(Roles = "Admin,Leiter")]
         [Route("/api/templates")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         public IActionResult CreateTemplate([FromQuery] long organizationId, [FromBody] TemplateDto templateCreate)
         {
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(organizationId.ToString()))
+                {
+                    return Unauthorized();
+                }
+            }
+
             if (templateCreate == null)
                 return BadRequest(ModelState);
 
@@ -159,6 +176,9 @@ namespace backend.Controllers
                 ModelState.AddModelError("", "JSON Content is not formatted properly.");
                 return StatusCode(400, ModelState);
             }
+                
+            if(!_organizationRepository.OrganizationExists(organizationId))
+                return NotFound();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -173,11 +193,14 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok("Successfully created.");
+            var templateToReturn = _mapper.Map<TemplateDto>(templateMap);
+
+            return Ok(templateToReturn);
         }
 
         // POST: api/template/{id}/add-to-organization/{organizationId}
         [HttpPost]
+        [Authorize(Roles = "Admin,Leiter")]
         [Route("/api/template/{id}/add-to-organization/{organizationId}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -213,6 +236,7 @@ namespace backend.Controllers
 
         // DELETE: api/template/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -226,13 +250,32 @@ namespace backend.Controllers
             var templateOrganizationsToDelete = _templateOrganizationRepository.GetTemplateOrganizationEntriesByTemplate(id);
             var templateToDelete = _templateRepository.GetTemplate(id);
 
+            if (templateOrganizationsToDelete.Count() > 0)
+            {
+                ModelState.AddModelError("", "Template is still assigend to some organizations.");
+            }
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(templateToDelete.organizationId.ToString()))
+                {
+                    return Unauthorized();
+                }
+            }
+            
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!_templateOrganizationRepository.DeleteTemplateOrganizationEntries(templateOrganizationsToDelete.ToList()))
+            if (templateOrganizationsToDelete != null)
             {
-                ModelState.AddModelError("", "Something went wrong when deleting template organization.");
+                if (!_templateOrganizationRepository.DeleteTemplateOrganizationEntries(templateOrganizationsToDelete.ToList()))
+                {
+                    ModelState.AddModelError("", "Something went wrong when deleting template organization.");
+                }
             }
 
             if (!_templateRepository.DeleteTemplate(templateToDelete))
@@ -245,6 +288,7 @@ namespace backend.Controllers
 
         // DELETE: api/template/{id}/remove-from-organization/{organizationId}
         [HttpDelete]
+        [Authorize(Roles = "Admin,Leiter")]
         [Route("/api/template/{id}/remove-from-organization/{organizationId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
@@ -254,6 +298,17 @@ namespace backend.Controllers
             if(!_templateOrganizationRepository.TemplateOrganizationExists(id, organizationId))
             {
                 return NotFound();
+            }
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(organizationId.ToString()))
+                {
+                    return Unauthorized();
+                }
             }
 
             if (!ModelState.IsValid)
@@ -268,6 +323,7 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -281,6 +337,22 @@ namespace backend.Controllers
 
             if (!_templateRepository.TemplateExists(id))
                 return NotFound();
+            
+            var templateOrganization = _organizationRepository.GetOwningOrganizationByTemplates(id);
+
+            if (!_organizationRepository.OrganizationExists(templateOrganization.Id))
+                return NotFound();
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(templateOrganization.Id.ToString()))
+                {
+                    return Unauthorized();
+                }
+            }
 
             if (!JsonValidationService.IsValidJson(templateUpdate.TemplateContent))
             {
@@ -298,7 +370,8 @@ namespace backend.Controllers
                 return BadRequest();
 
             var templateMap = _mapper.Map<Template>(templateUpdate);
-            templateMap.Organization = _organizationRepository.GetOrganization(_templateRepository.GetTemplate(id).Organization.Id);
+
+            templateMap.Organization = templateOrganization;
 
             if (!_templateRepository.UpdateTemplate(templateMap))
             {

@@ -2,6 +2,7 @@ using Data;
 using Helper;
 using Helper.SearchObjects;
 using Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Repository
@@ -116,6 +117,26 @@ namespace Repository
             {
                 protocols = protocols.Where(o => o.IsDraft == protocolSearch.IsDraft);
             }
+
+            // if (claimRoles.Contains("Admin"))
+            // {
+            //     protocols = protocols;
+            // }
+            // else if (claimRoles.Contains("Leiter"))
+            // {
+            //     protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+            // }
+            // else if (claimRoles.Contains("Helfer"))
+            // {
+            //     var protocolsFromUserId = protocols.Where(p => p.User.Id == claimUserId);
+            //     var protocolIdsFromAdditionalUserId = _context.AdditionalUsers.Where(p => p.userId == claimUserId).Select(p => p.protocolId).AsQueryable().ToList().Distinct();
+            //     var protocolsFromAdditionalUserId = protocols.Where(p => protocolIdsFromAdditionalUserId.Contains(p.Id));
+            //     protocols = protocolsFromUserId.Append(protocolsFromAdditionalUserId);
+            // }
+            // else
+            // {
+            //     protocols = null;
+            // }
 
             return protocols.OrderByDescending(p => p.Id).ToList();
         }
@@ -401,6 +422,13 @@ namespace Repository
 
         public bool UpdateProtocol(long closingUserId, List<long> additionalUserIds, Protocol protocol)
         {
+            var oldProtocolData = _context.Protocols.AsNoTracking().FirstOrDefault(p => p.Id == protocol.Id);
+
+            if (oldProtocolData.IsClosed)
+            {
+                throw new InvalidOperationException("Cannot update a closed protocol.");
+            }
+
             foreach(var additionalUserId in additionalUserIds)
             {
                 var additionalUserEntity = _context.Users.Where(a => a.Id == additionalUserId).FirstOrDefault();
@@ -416,7 +444,6 @@ namespace Repository
                 _context.Add(additionalUser);
             }
             
-            var oldProtocolData = _context.Protocols.Where(p => p.Id == protocol.Id).FirstOrDefault();
             var closingUser = _context.Users.Where(u => u.Id == closingUserId).FirstOrDefault();
 
             if (oldProtocolData.IsClosed == false && protocol.IsClosed == true)
@@ -424,14 +451,15 @@ namespace Repository
                 var closedUserMessage = new UserMessage()
                 {
                     Subject = "Protokoll wurde überprüft und bestätigt.",
-                    MessageContent = "Das versendete Protokoll " + oldProtocolData.Name + " vom " + oldProtocolData.CreatedDate.ToString("dd.MM.yyyy") + " wurde von " + closingUser.Username + " überprüft und bestätigt.",
+                    MessageContent = "Das versendete Protokoll " + protocol.Name + " vom " + protocol.CreatedDate.ToString("dd.MM.yyyy") + " wurde von " + closingUser.Username + " überprüft und bestätigt.",
                     ReferenceObject = "Protocol",
-                    ReferenceObjectId = oldProtocolData.Id,
+                    ReferenceObjectId = protocol.Id,
                     SentAt = DateTime.UtcNow,
                     SentFrom = closingUser.Username,
                     IsRead = false,
                     IsArchived = false,
-                    User = oldProtocolData.User
+                    userId = protocol.User.Id,
+                    User = protocol.User,
                 };
 
                 _context.Add(closedUserMessage);
@@ -441,14 +469,15 @@ namespace Repository
                 var errorUserMessage = new UserMessage()
                 {
                     Subject = "Protokoll enthält Fehler.",
-                    MessageContent = "Das versendete Protokoll " + oldProtocolData.Name + " vom " + oldProtocolData.CreatedDate.ToString("dd.MM.yyyy") + " wurde von " + closingUser.Username + " überprüft und enthält Fehler." ,
+                    MessageContent = "Das versendete Protokoll " + protocol.Name + " vom " + protocol.CreatedDate.ToString("dd.MM.yyyy") + " wurde von " + closingUser.Username + " überprüft und enthält Fehler." ,
                     ReferenceObject = "Protocol",
-                    ReferenceObjectId = oldProtocolData.Id,
+                    ReferenceObjectId = protocol.Id,
                     SentAt = DateTime.UtcNow,
                     SentFrom = closingUser.Username,
                     IsRead = false,
                     IsArchived = false,
-                    User = oldProtocolData.User
+                    userId = protocol.User.Id,
+                    User = protocol.User
                 };
 
                 _context.Add(errorUserMessage);

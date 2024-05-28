@@ -23,6 +23,7 @@ namespace backend.Controllers
 
         // GET: api/statistics/number-of-organizations
         [HttpGet("number-of-organizations")]
+        [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(200, Type = typeof(int))]
         public IActionResult GetNumberOfOrganizations()
         {
@@ -36,6 +37,7 @@ namespace backend.Controllers
 
         // GET: api/statistics/number-of-protocols
         [HttpGet("number-of-protocols")]
+        [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(200, Type = typeof(int))]
         public IActionResult GetNumberOfProtocols()
         {
@@ -49,6 +51,7 @@ namespace backend.Controllers
 
         // GET: api/statistics/number-of-protocols-per-user/{userId}
         [HttpGet("number-of-protocols-per-user/{userId}")]
+        [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(200, Type = typeof(int))]
         public IActionResult GetNumberOfProtocolsPerUser(long userId)
         {

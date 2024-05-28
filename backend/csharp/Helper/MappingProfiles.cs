@@ -14,6 +14,7 @@ namespace PokemonReviewApp.Helper
             CreateMap<ProtocolPdfFile, ProtocolPdfFileDto>().ReverseMap();
             CreateMap<Role, RoleDto>().ReverseMap();
             CreateMap<Template, TemplateDto>().ReverseMap();
+            CreateMap<UserMessage, UserMessageDto>().ReverseMap();
             CreateMap<User, UserDto>();
             CreateMap<UserRegisterDto, User>();
         }
