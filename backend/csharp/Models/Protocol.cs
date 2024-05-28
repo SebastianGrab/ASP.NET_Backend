@@ -14,6 +14,12 @@ namespace Models
 
         public DateTime? ClosedAt { get; set; }
 
+        public bool? sendEmail { get; set; }
+
+        public string? emailSubject { get; set; }
+
+        public string? emailContent { get; set; }
+
         public required User User { get; set; }
 
         public required Template Template { get; set; }

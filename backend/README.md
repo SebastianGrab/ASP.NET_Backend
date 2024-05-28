@@ -38,7 +38,10 @@ Login:
 
 ## To-Do's
 
-- Email basierend auf Protokoll senden
+- Email basierend auf Protokoll senden --> Testen
 - Statistiken
 - Auth für GET-Endpunkte (Welche?) + Testen
+
+Nach Fertigstellung:
 - Seeding anpassen
+- Environment zu Production

@@ -14,6 +14,12 @@ namespace Dto
 
         public DateTime? ClosedAt { get; set; }
 
+        public bool? sendEmail { get; set; }
+
+        public string? emailSubject { get; set; }
+
+        public string? emailContent { get; set; }
+
         public DateTime CreatedDate { get; set; }
         
         public DateTime UpdatedDate { get; set; } 

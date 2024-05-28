@@ -233,5 +233,10 @@ namespace Repository
         {
             return _context.Users.Where(u => u.Email.ToLower() == email.ToLower()).FirstOrDefault();
         }
+
+        public List<User> GetUsersByOrganizationAndRole(long organizationId, long roleId)
+        {
+            return _context.UserOrganizationRoles.Where(au => au.organizationId == organizationId && au.roleId == roleId).Select(au => au.User).ToList();
+        }
     }
 }

@@ -23,9 +23,10 @@ namespace backend.Controllers
         private readonly ITemplateRepository _templateRepository;
         private readonly IUserRepository _userRepository;
         private readonly IAdditionalUserRepository _additionalUserRepository;
+        private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
 
-        public ProtocolController(IProtocolRepository protocolRepository, IOrganizationRepository organizationRepository, IProtocolContentRepository protocolContentRepository, IProtocolPdfFileRepository protocolPdfFileRepository, ITemplateRepository templateRepository, IUserRepository userRepository, IAdditionalUserRepository additionalUserRepository, IMapper mapper)
+        public ProtocolController(IProtocolRepository protocolRepository, IOrganizationRepository organizationRepository, IProtocolContentRepository protocolContentRepository, IProtocolPdfFileRepository protocolPdfFileRepository, ITemplateRepository templateRepository, IUserRepository userRepository, IAdditionalUserRepository additionalUserRepository, IEmailService emailService, IMapper mapper)
         {
             _protocolRepository = protocolRepository;
             _organizationRepository = organizationRepository;
@@ -34,6 +35,7 @@ namespace backend.Controllers
             _templateRepository = templateRepository;
             _userRepository = userRepository;
             _additionalUserRepository = additionalUserRepository;
+            _emailService = emailService;
             _mapper = mapper;
         }
 
@@ -373,6 +375,14 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
+            if (!protocolMap.IsDraft && !protocolMap.IsClosed && protocolMap.emailSubject != null && protocolMap.emailContent != null)
+            {
+                var mailReceivers = _userRepository.GetUsersByOrganizationAndRole(protocolMap.Organization.Id, 2);
+                List<string> Emails = mailReceivers.Select(u => u.Email).ToList();
+
+                _emailService.SendEmailFromProtocol(Emails, protocolMap.emailSubject, protocolMap.emailContent);
+            }
+
             try 
             {
                 var protocolToReturn = _mapper.Map<ProtocolDto>(_protocolRepository.GetProtocol(protocolMap.Id));
@@ -564,6 +574,14 @@ namespace backend.Controllers
             {
                 ModelState.AddModelError("", "Something went wrong updating protocol.");
                 return StatusCode(500, ModelState);
+            }
+
+            if (!protocolMap.IsDraft && !protocolMap.IsClosed && protocolMap.emailSubject != null && protocolMap.emailContent != null)
+            {
+                var mailReceivers = _userRepository.GetUsersByOrganizationAndRole(protocolMap.Organization.Id, 2);
+                List<string> Emails = mailReceivers.Select(u => u.Email).ToList();
+
+                _emailService.SendEmailFromProtocol(Emails, protocolMap.emailSubject, protocolMap.emailContent);
             }
 
             return NoContent();

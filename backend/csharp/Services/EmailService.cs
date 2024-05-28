@@ -13,11 +13,14 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public bool SendEmailFromProtocol(string to, string subject, string content)
+    public bool SendEmailFromProtocol(List<string> to, string subject, string content)
     {
         var email = new MimeMessage();
         email.From.Add(new MailboxAddress("DRK", _configuration["EmailSettings:Username"]));
-        email.To.Add(MailboxAddress.Parse(to));
+        foreach (var item in to)
+        {
+            email.Bcc.Add(MailboxAddress.Parse(item));
+        }
         email.Subject = subject;
         
         var builder = new BodyBuilder { TextBody = content };
