@@ -45,7 +45,7 @@ namespace backend.Controllers
         [ProducesResponseType(200, Type = typeof(IEnumerable<Protocol>))]
         public IActionResult GetProtocols([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearchQuery = null)
         {
-            var query = _protocolRepository.GetProtocols(dateQuery, protocolSearchQuery).AsQueryable();
+            var query = _protocolRepository.GetProtocols(dateQuery, protocolSearchQuery, User).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
@@ -76,7 +76,7 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var protocol = _mapper.Map<ProtocolDto>(_protocolRepository.GetProtocol(id));
+            var protocol = _mapper.Map<ProtocolDto>(_protocolRepository.GetProtocol(id, User));
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -112,7 +112,7 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var content = _mapper.Map<ProtocolContentDto>(_protocolContentRepository.GetProtocolContent(id));
+            var content = _mapper.Map<ProtocolContentDto>(_protocolContentRepository.GetProtocolContent(id, User));
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -130,7 +130,7 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var pdf = _mapper.Map<ProtocolPdfFileDto>(_protocolPdfFileRepository.GetProtocolPdfFile(id));
+            var pdf = _mapper.Map<ProtocolPdfFileDto>(_protocolPdfFileRepository.GetProtocolPdfFile(id, User));
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -148,7 +148,7 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var pdf = _mapper.Map<ProtocolPdfFileDto>(_protocolPdfFileRepository.GetProtocolPdfFile(id));
+            var pdf = _mapper.Map<ProtocolPdfFileDto>(_protocolPdfFileRepository.GetProtocolPdfFile(id, User));
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -212,6 +212,21 @@ namespace backend.Controllers
             return Ok(users);
         }
 
+        // GET: api/no-of-protocols-to-review
+        [HttpGet]
+        [Route("/api/no-of-protocols-to-review")]
+        [Authorize(Roles = "Admin,Leiter")]
+        [ProducesResponseType(200, Type = typeof(int))]
+        public IActionResult GetNumberOfProtocolsToReview(long id)
+        {
+            var numberOfProtocolsToReview = _protocolRepository.GetNumberOfProtocolsToReview(User);
+
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return Ok(numberOfProtocolsToReview);
+        }
+
         // POST: api/protocol/{id}/content
         [HttpPost("{id}/content")]
         [Authorize(Roles = "Admin,Leiter,Helfer")]
@@ -255,7 +270,7 @@ namespace backend.Controllers
 
             var protocolContentMap = _mapper.Map<ProtocolContent>(protocolContentCreate);
 
-            protocolContentMap.Protocol = _protocolRepository.GetProtocol(id);
+            protocolContentMap.Protocol = _protocolRepository.GetProtocol(id, User);
             protocolContentMap.protocolId = id;
 
             if (!_protocolContentRepository.CreateProtocolContent(protocolContentMap))
@@ -295,7 +310,7 @@ namespace backend.Controllers
             if (protocolPdfFileCreate == null)
                 return BadRequest(ModelState);
 
-            var protocolPdfFile = _protocolPdfFileRepository.GetProtocolPdfFile(id);
+            var protocolPdfFile = _protocolPdfFileRepository.GetProtocolPdfFile(id, User);
 
             if (protocolPdfFile != null)
             {
@@ -308,7 +323,7 @@ namespace backend.Controllers
 
             var protocolPdfFileMap = _mapper.Map<ProtocolPdfFile>(protocolPdfFileCreate);
 
-            protocolPdfFileMap.Protocol = _protocolRepository.GetProtocol(id);
+            protocolPdfFileMap.Protocol = _protocolRepository.GetProtocol(id, User);
             protocolPdfFileMap.protocolId = id;
 
             if (!_protocolPdfFileRepository.CreateProtocolPdfFile(protocolPdfFileMap))
@@ -385,7 +400,7 @@ namespace backend.Controllers
 
             try 
             {
-                var protocolToReturn = _mapper.Map<ProtocolDto>(_protocolRepository.GetProtocol(protocolMap.Id));
+                var protocolToReturn = _mapper.Map<ProtocolDto>(_protocolRepository.GetProtocol(protocolMap.Id, User));
 
                 if(!ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -423,9 +438,9 @@ namespace backend.Controllers
                 }
             }
 
-            var protocolContentToDelete = _protocolContentRepository.GetProtocolContent(id);
-            var protocolPdfFileToDelete = _protocolPdfFileRepository.GetProtocolPdfFile(id);
-            var protocolRolesToDelete = _protocolRepository.GetProtocol(id);
+            var protocolContentToDelete = _protocolContentRepository.GetProtocolContent(id, User);
+            var protocolPdfFileToDelete = _protocolPdfFileRepository.GetProtocolPdfFile(id, User);
+            var protocolsToDelete = _protocolRepository.GetProtocol(id, User);
             var additionalUsersToDelete = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id);
 
 
@@ -453,7 +468,7 @@ namespace backend.Controllers
                 }
             }
 
-            if (!_protocolRepository.DeleteProtocol(protocolRolesToDelete))
+            if (!_protocolRepository.DeleteProtocol(protocolsToDelete))
             {
                 ModelState.AddModelError("", "Something went wrong deleting Protocol.");
             }

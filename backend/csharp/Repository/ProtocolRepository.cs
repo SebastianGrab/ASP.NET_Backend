@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Data;
 using Helper;
 using Helper.SearchObjects;
@@ -44,17 +45,65 @@ namespace Repository
             return Save();
         }
 
-        public int GetNumberOfProtocolsToReview()
+        public int GetNumberOfProtocolsToReview(ClaimsPrincipal claimUser)
         {
-            return _context.Protocols.Where(p => p.IsDraft == false && p.IsClosed == false).Count();
+            var protocols = _context.Protocols.Where(p => p.IsDraft == false && p.IsClosed == false).AsQueryable();
+
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+
+            if (claimRoles.Contains("Admin"))
+            {
+                protocols = protocols;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+            }
+            else
+            {
+                protocols = null;
+            }
+
+            return protocols.Count();
         }
 
-        public Protocol GetProtocol(long id)
+        public Protocol GetProtocol(long id, ClaimsPrincipal claimUser)
         {
-            return _context.Protocols.Where(p => p.Id == id).FirstOrDefault();
+            var protocols = _context.Protocols.Where(p => p.Id == id).AsQueryable();
+
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+
+            if (claimRoles.Contains("Admin"))
+            {
+                protocols = protocols;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+            }
+            else
+            {
+                protocols = null;
+            }
+
+            return protocols.FirstOrDefault();
         }
 
-        public ICollection<Protocol> GetProtocols(QueryObject dateQuery, ProtocolSearchObject protocolSearch)
+        public ICollection<Protocol> GetProtocols(QueryObject dateQuery, ProtocolSearchObject protocolSearch, ClaimsPrincipal claimUser)
         {
             var protocols = _context.Protocols.OrderByDescending(p => p.Id).AsQueryable();
 
@@ -118,30 +167,32 @@ namespace Repository
                 protocols = protocols.Where(o => o.IsDraft == protocolSearch.IsDraft);
             }
 
-            // if (claimRoles.Contains("Admin"))
-            // {
-            //     protocols = protocols;
-            // }
-            // else if (claimRoles.Contains("Leiter"))
-            // {
-            //     protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
-            // }
-            // else if (claimRoles.Contains("Helfer"))
-            // {
-            //     var protocolsFromUserId = protocols.Where(p => p.User.Id == claimUserId);
-            //     var protocolIdsFromAdditionalUserId = _context.AdditionalUsers.Where(p => p.userId == claimUserId).Select(p => p.protocolId).AsQueryable().ToList().Distinct();
-            //     var protocolsFromAdditionalUserId = protocols.Where(p => protocolIdsFromAdditionalUserId.Contains(p.Id));
-            //     protocols = protocolsFromUserId.Append(protocolsFromAdditionalUserId);
-            // }
-            // else
-            // {
-            //     protocols = null;
-            // }
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+
+            if (claimRoles.Contains("Admin"))
+            {
+                protocols = protocols;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+            }
+            else
+            {
+                protocols = null;
+            }
 
             return protocols.OrderByDescending(p => p.Id).ToList();
         }
 
-        public ICollection<Protocol> GetProtocolsByAdditionalUser(long additionalUserId, QueryObject dateQuery, ProtocolSearchObject protocolSearch)
+        public ICollection<Protocol> GetProtocolsByAdditionalUser(long additionalUserId, QueryObject dateQuery, ProtocolSearchObject protocolSearch, ClaimsPrincipal claimUser)
         {
             var protocols = _context.AdditionalUsers.Where(au => au.userId == additionalUserId).Select(p => p.Protocol).AsQueryable();
 
@@ -205,10 +256,32 @@ namespace Repository
                 protocols = protocols.Where(o => o.IsDraft == protocolSearch.IsDraft);
             }
 
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+
+            if (claimRoles.Contains("Admin"))
+            {
+                protocols = protocols;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+            }
+            else
+            {
+                protocols = null;
+            }
+
             return protocols.OrderByDescending(p => p.Id).ToList();
         }
 
-        public ICollection<Protocol> GetProtocolsByOrganization(long organizationId, QueryObject dateQuery, ProtocolSearchObject protocolSearch)
+        public ICollection<Protocol> GetProtocolsByOrganization(long organizationId, QueryObject dateQuery, ProtocolSearchObject protocolSearch, ClaimsPrincipal claimUser)
         {
             var protocols = _context.Protocols.Where(p => p.Organization.Id == organizationId).OrderByDescending(p => p.Id).AsQueryable();
 
@@ -272,10 +345,32 @@ namespace Repository
                 protocols = protocols.Where(o => o.IsDraft == protocolSearch.IsDraft);
             }
 
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+
+            if (claimRoles.Contains("Admin"))
+            {
+                protocols = protocols;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+            }
+            else
+            {
+                protocols = null;
+            }
+
             return protocols.OrderByDescending(p => p.Id).ToList();
         }
 
-        public ICollection<Protocol> GetProtocolsByTemplate(long templateId, QueryObject dateQuery, ProtocolSearchObject protocolSearch)
+        public ICollection<Protocol> GetProtocolsByTemplate(long templateId, QueryObject dateQuery, ProtocolSearchObject protocolSearch, ClaimsPrincipal claimUser)
         {
             var protocols = _context.Protocols.OrderBy(p => p.Template.Id == templateId).OrderByDescending(p => p.Id).AsQueryable();
 
@@ -339,10 +434,32 @@ namespace Repository
                 protocols = protocols.Where(o => o.IsDraft == protocolSearch.IsDraft);
             }
 
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+
+            if (claimRoles.Contains("Admin"))
+            {
+                protocols = protocols;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+            }
+            else
+            {
+                protocols = null;
+            }
+
             return protocols.OrderByDescending(p => p.Id).ToList();
         }
 
-        public ICollection<Protocol> GetProtocolsByUser(long userId, QueryObject dateQuery, ProtocolSearchObject protocolSearch)
+        public ICollection<Protocol> GetProtocolsByUser(long userId, QueryObject dateQuery, ProtocolSearchObject protocolSearch, ClaimsPrincipal claimUser)
         {
             var protocols = _context.Protocols.Where(p => p.User.Id == userId).OrderByDescending(p => p.Id).AsQueryable();
 
@@ -404,6 +521,28 @@ namespace Repository
             if(!string.IsNullOrWhiteSpace(protocolSearch.IsDraft.ToString()))
             {
                 protocols = protocols.Where(o => o.IsDraft == protocolSearch.IsDraft);
+            }
+
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+
+            if (claimRoles.Contains("Admin"))
+            {
+                protocols = protocols;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+            }
+            else
+            {
+                protocols = null;
             }
 
             return protocols.OrderByDescending(p => p.Id).ToList();

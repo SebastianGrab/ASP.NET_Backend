@@ -39,7 +39,7 @@ Login:
 ## To-Do's
 
 - Statistiken
-- Auth für GET-Endpunkte (Welche?) + Testen
+- Authentication für Protokolle testen
 
 Nach Fertigstellung:
 - Seeding anpassen

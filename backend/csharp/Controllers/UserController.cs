@@ -107,7 +107,7 @@ namespace backend.Controllers
             return Ok(organizations.DistinctBy(o => o.Id));
         }
 
-        // GET: api/user/{id}/protocols
+        // GET: api/user/{id}/creator-protocols
         [HttpGet]
         [Authorize(Roles = "Admin,Leiter,Helfer")]
         [Route("/api/user/{id}/creator-protocols")]
@@ -118,7 +118,7 @@ namespace backend.Controllers
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
-            var query = _protocolRepository.GetProtocolsByUser(id, dateQuery, protocolSearchQuery).AsQueryable();
+            var query = _protocolRepository.GetProtocolsByUser(id, dateQuery, protocolSearchQuery, User).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
@@ -150,7 +150,7 @@ namespace backend.Controllers
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
-            var query = _protocolRepository.GetProtocolsByAdditionalUser(id, dateQuery, protocolSearchQuery).AsQueryable();
+            var query = _protocolRepository.GetProtocolsByAdditionalUser(id, dateQuery, protocolSearchQuery, User).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 
@@ -172,40 +172,40 @@ namespace backend.Controllers
         }
 
         // GET: /api/user/{id}/all-protocols
-        [HttpGet]
-        [Authorize(Roles = "Admin,Leiter,Helfer")]
-        [Route("/api/user/{id}/all-protocols")]
-        [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
-        [ProducesResponseType(400)]
-        public IActionResult GetProtocolsByUserAndAdditionalUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearchQuery = null)
-        {
-            if(!_userRepository.UserExists(id))
-                return NotFound();
+        // [HttpGet]
+        // [Authorize(Roles = "Admin,Leiter,Helfer")]
+        // [Route("/api/user/{id}/all-protocols")]
+        // [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
+        // [ProducesResponseType(400)]
+        // public IActionResult GetProtocolsByUserAndAdditionalUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearchQuery = null)
+        // {
+        //     if(!_userRepository.UserExists(id))
+        //         return NotFound();
 
-            var queryShared = _protocolRepository.GetProtocolsByUser(id, dateQuery, protocolSearchQuery).ToList().AsQueryable();
-            var queryOwned = _protocolRepository.GetProtocolsByAdditionalUser(id, dateQuery, protocolSearchQuery).ToList().AsQueryable();
+        //     var queryShared = _protocolRepository.GetProtocolsByUser(id, dateQuery, protocolSearchQuery, User).ToList().AsQueryable();
+        //     var queryOwned = _protocolRepository.GetProtocolsByAdditionalUser(id, dateQuery, protocolSearchQuery, User).ToList().AsQueryable();
 
-            var protocolsShared = _mapper.Map<List<ProtocolDto>>(queryShared).AsQueryable();
-            var protocolsOwned = _mapper.Map<List<ProtocolDto>>(queryOwned).AsQueryable();
+        //     var protocolsShared = _mapper.Map<List<ProtocolDto>>(queryShared).AsQueryable();
+        //     var protocolsOwned = _mapper.Map<List<ProtocolDto>>(queryOwned).AsQueryable();
 
-            var mappedQuery = Enumerable.Concat(protocolsShared, protocolsOwned).ToList().DistinctBy(p => p.Id).AsQueryable();
+        //     var mappedQuery = Enumerable.Concat(protocolsShared, protocolsOwned).ToList().DistinctBy(p => p.Id).AsQueryable();
 
-            if(!ModelState.IsValid)
-                return BadRequest(ModelState);
+        //     if(!ModelState.IsValid)
+        //         return BadRequest(ModelState);
 
-            var paginatedList = PaginatedList<ProtocolDto>.Create(mappedQuery, pageIndex, pageSize);
+        //     var paginatedList = PaginatedList<ProtocolDto>.Create(mappedQuery, pageIndex, pageSize);
 
-            var response = new
-            {
-                totalCount = paginatedList.TotalCount,
-                totalPages = paginatedList.TotalPages,
-                currentPage = paginatedList.PageIndex,
-                pageSize = paginatedList.PageSize,
-                items = paginatedList
-            };
+        //     var response = new
+        //     {
+        //         totalCount = paginatedList.TotalCount,
+        //         totalPages = paginatedList.TotalPages,
+        //         currentPage = paginatedList.PageIndex,
+        //         pageSize = paginatedList.PageSize,
+        //         items = paginatedList
+        //     };
 
-            return Ok(response);
-        }
+        //     return Ok(response);
+        // }
 
         // GET: api/user/{id}/roles
         [HttpGet("{id}/roles")]
@@ -551,6 +551,12 @@ namespace backend.Controllers
             var userMail = _userRepository.GetUsers(new QueryObject(), new UserSearchObject())
                 .Where(o => o.Email.Trim().ToLower() == userUpdate.Email.TrimEnd().ToLower() && o.Id != id)
                 .FirstOrDefault();
+
+            if(id != userUpdate.Id)
+            {
+                ModelState.AddModelError("", "IDs do not match.");
+                return StatusCode(422, ModelState);
+            }
 
             if(userMail != null)
             {

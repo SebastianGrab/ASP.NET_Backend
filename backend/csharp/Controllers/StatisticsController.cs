@@ -41,7 +41,7 @@ namespace backend.Controllers
         [ProducesResponseType(200, Type = typeof(int))]
         public IActionResult GetNumberOfProtocols()
         {
-            var numberOfProtocols = _statisticsRepository.GetNumberOfProtocols();
+            var numberOfProtocols = _statisticsRepository.GetNumberOfProtocols(User);
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);

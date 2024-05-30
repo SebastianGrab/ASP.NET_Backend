@@ -90,7 +90,7 @@ namespace backend.Controllers
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
 
-            var query = _protocolRepository.GetProtocolsByOrganization(id, dateQuery, protocolSearch).AsQueryable();
+            var query = _protocolRepository.GetProtocolsByOrganization(id, dateQuery, protocolSearch, User).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 

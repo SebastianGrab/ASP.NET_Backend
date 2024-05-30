@@ -40,22 +40,22 @@ services:
         ConnectionStrings__ConnectionString: "Host=db;Database=DRK_DB;Username=db-admin;Password=DRKwebapp2024_postgres"
 
   # DBMS System
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    restart: always
-    ports:
-      - "15432:81"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: superadmin@drk.de
-      PGADMIN_DEFAULT_PASSWORD: A9UZlRyKmeTxRFfGcPo6M67r
-      PGADMIN_LISTEN_PORT: 81
-    networks:
-      - drk-network
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    depends_on:
-      - db
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: pgadmin
+  #   restart: always
+  #   ports:
+  #     - "15432:81"
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: superadmin@drk.de
+  #     PGADMIN_DEFAULT_PASSWORD: A9UZlRyKmeTxRFfGcPo6M67r
+  #     PGADMIN_LISTEN_PORT: 81
+  #   networks:
+  #     - drk-network
+  #   volumes:
+  #     - pgadmin-data:/var/lib/pgadmin
+  #   depends_on:
+  #     - db
 
   # JavaScript Frontend
   # frontend:
@@ -68,7 +68,7 @@ services:
   #   networks:
   #     - drk-network
   #   depends_on:
-  #     - java_backend
+  #     - csharp_backend
 
 volumes:
   pgdata: {}

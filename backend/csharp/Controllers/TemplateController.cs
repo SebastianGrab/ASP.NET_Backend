@@ -118,7 +118,7 @@ namespace backend.Controllers
             if(!_templateRepository.TemplateExists(id))
                 return NotFound();
 
-            var query = _protocolRepository.GetProtocolsByTemplate(id, dateQuery, protocolSearchQuery).AsQueryable();
+            var query = _protocolRepository.GetProtocolsByTemplate(id, dateQuery, protocolSearchQuery, User).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
 

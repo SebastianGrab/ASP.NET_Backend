@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Data;
 using Interfaces;
 using Models;
@@ -18,14 +19,14 @@ namespace Repository
             return _context.Organizations.OrderBy(o => o.Id).Count();
         }
 
-        public int GetNumberOfProtocols()
-        {
-            return _context.Protocols.OrderBy(p => p.Id).Count();
-        }
-
         public int GetNumberOfProtocolsPerUser(long userId)
         {
             return _context.Protocols.Where(p => p.User.Id == userId).Count();
+        }
+
+        public int GetNumberOfProtocols(ClaimsPrincipal claimsPrincipal)
+        {
+            return 0;
         }
     }
 }

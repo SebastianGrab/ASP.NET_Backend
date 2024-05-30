@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Data;
 using Interfaces;
 using Models;
@@ -25,8 +26,48 @@ namespace Repository
             return Save();
         }
 
-        public ProtocolContent GetProtocolContent(long protocolId)
+        public ProtocolContent GetProtocolContent(long protocolId, ClaimsPrincipal claimUser)
         {
+            var protocols = _context.Protocols.Where(p => p.Id == protocolId).AsQueryable();
+
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+            var protocolOrganization = _context.Protocols.Where(p => p.Id == protocolId).Select(p => p.Organization.Id).FirstOrDefault();
+            var protocolUserId = _context.Protocols.Where(p => p.Id == protocolId).Select(p => p.User.Id).FirstOrDefault();
+            var returnProtocolContent = false;
+
+            if (claimRoles.Contains("Admin"))
+            {
+                returnProtocolContent = true;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                if ( claimOrganizationIds.Contains(protocolOrganization.ToString()))
+                {
+                    returnProtocolContent = true;
+                }
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var additionalUserIds = _context.AdditionalUsers.Where(au => au.protocolId == protocolId).Select(p => p.userId).ToList();
+                if (protocolUserId.ToString() == claimUserId.ToString() || additionalUserIds.Contains(claimUserId))
+                {
+                    returnProtocolContent = true;
+                }
+            }
+            else
+            {
+                returnProtocolContent = false;
+            }
+
+            var protocolIdClaimed = protocols.Select(p => p.Id).FirstOrDefault();
+            
+            if (!returnProtocolContent)
+            {
+                return null;
+            }
+
             return _context.ProtocolContents.Where(pc => pc.protocolId == protocolId).FirstOrDefault();
         }
 
