@@ -1,12 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export default function Tile({ pagePath, icon, description }) {
+export default function Tile({ pagePath, icon, description, payload }) {
 
     const navigate = useNavigate();
 
     function clickHandler() {
-        navigate(pagePath);
+        if(payload === null){
+            navigate(pagePath);
+        } else {
+            navigate(pagePath, { state: {payload}});
+        }
+
     }
 
 

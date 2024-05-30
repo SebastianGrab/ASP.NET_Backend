@@ -1,10 +1,11 @@
 // api.js
-import baseURL from './baseURL';
+import baseURL from '../baseURL';
 
 export const saveProtocol = async (protocolData, handleSave) => {
   try {
     const response = await fetch(`${baseURL}/api/protocols`, {
       method: 'POST',
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
       },

@@ -1,4 +1,4 @@
-import baseURL from './baseURL';
+import baseURL from '../baseURL';
 
 export const getAllProtocolsInProgress = async () => {
     try {

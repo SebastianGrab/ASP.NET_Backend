@@ -166,7 +166,6 @@
         {
             "Kategorie": "Belüftung",
             "ID": "BELUEFTUNG",
-            "Mandatory": 1,
             "Inputs": [
                 {
                     "Name": "unauffaellig",
@@ -681,7 +680,6 @@
         {
             "Kategorie": "Maßnahmen",
             "ID": "MASSNAHMEN",
-            "Mandatory": 1,
             "Inputs": [
                 {
                     "Name": "Atemwege_freimachen",
@@ -835,7 +833,6 @@
         {
             "Kategorie": "Einsatzart",
             "ID": "EINSATZART",
-            "Mandatory": 1,
             "Inputs": [
                 {
                     "Name": "Verkehrsunfall",
@@ -898,7 +895,6 @@
         {
             "Kategorie": "Sonstiges",
             "ID": "SONSTIGES",
-            "Mandatory": 1,
             "Inputs": [
                 {
                     "Name": "Feuerwehr",

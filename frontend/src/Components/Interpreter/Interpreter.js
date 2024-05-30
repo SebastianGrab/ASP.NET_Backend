@@ -1,15 +1,10 @@
 import Tile from '../Tile';
 import InputElement from './InputElement';
 import TileCategory from './TileCategory';
-import { saveProtocol } from '../../API/saveProtocol';
+import { saveProtocol } from '../../API/archive/saveProtocol';
 import { useState, useEffect } from "react";
 
 export default function Interpreter({ schema }) {
-
-    const [showDialog, setShowDialog] = useState(false);
-
-
-
 
     const renderCategories = (categories) => {
 

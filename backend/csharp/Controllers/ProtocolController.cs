@@ -378,9 +378,9 @@ namespace backend.Controllers
             if (!protocolMap.IsDraft && !protocolMap.IsClosed && protocolMap.emailSubject != null && protocolMap.emailContent != null)
             {
                 var mailReceivers = _userRepository.GetUsersByOrganizationAndRole(protocolMap.Organization.Id, 2);
-                List<string> Emails = mailReceivers.Select(u => u.Email).ToList();
+                List<User> emailUsers = mailReceivers.Where(p => p.Id != userClaimId).ToList();
 
-                _emailService.SendEmailFromProtocol(Emails, protocolMap.emailSubject, protocolMap.emailContent);
+                _emailService.SendEmailFromProtocol(emailUsers, protocolMap.emailSubject, protocolMap.emailContent, protocolMap.Id);
             }
 
             try 
@@ -579,9 +579,9 @@ namespace backend.Controllers
             if (!protocolMap.IsDraft && !protocolMap.IsClosed && protocolMap.emailSubject != null && protocolMap.emailContent != null)
             {
                 var mailReceivers = _userRepository.GetUsersByOrganizationAndRole(protocolMap.Organization.Id, 2);
-                List<string> Emails = mailReceivers.Select(u => u.Email).ToList();
+                List<User> emailUsers = mailReceivers.Where(p => p.Id != closingUserId).ToList();
 
-                _emailService.SendEmailFromProtocol(Emails, protocolMap.emailSubject, protocolMap.emailContent);
+                _emailService.SendEmailFromProtocol(emailUsers, protocolMap.emailSubject, protocolMap.emailContent, id);
             }
 
             return NoContent();

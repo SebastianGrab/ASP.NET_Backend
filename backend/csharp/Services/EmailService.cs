@@ -1,6 +1,7 @@
 using MailKit;
 using MailKit.Net.Smtp;
 using MimeKit;
+using Models;
 
 public class EmailService : IEmailService
 {
@@ -13,39 +14,43 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public bool SendEmailFromProtocol(List<string> to, string subject, string content)
+    public bool SendEmailFromProtocol(List<User> to, string subject, string content, long protocolId)
     {
         var email = new MimeMessage();
         email.From.Add(new MailboxAddress("DRK", _configuration["EmailSettings:Username"]));
-        foreach (var item in to)
+        foreach (var user in to)
         {
-            email.Bcc.Add(MailboxAddress.Parse(item));
-        }
-        email.Subject = subject;
-        
-        var builder = new BodyBuilder { TextBody = content };
-        email.Body = builder.ToMessageBody();
+            email.Bcc.Add(MailboxAddress.Parse(user.Email));
+            email.Subject = subject;
 
-        using var smtp = new SmtpClient();
-        smtp.Connect(_configuration["EmailSettings:Host"], 
-                                int.Parse(_configuration["EmailSettings:Port"]), 
-                                bool.Parse(_configuration["EmailSettings:UseSsl"]));
-        smtp.Authenticate(_configuration["EmailSettings:Username"],
-                                    _configuration["EmailSettings:Password"]);
+            var appendToBody = @"
+            
+            Protokoll abrufbar unter: " + _configuration["EmailSettings:FrontendUrl"] + "/" + user.Id.ToString() + "/protocols/" + protocolId.ToString() + @"
+            ";
+            
+            var builder = new BodyBuilder { TextBody = content };
+            email.Body = builder.ToMessageBody();
 
-        try
-        {
-            smtp.Send(email);
-            _logger.LogInformation("E-Mail sent successfully to user " + email.To.ToString() + ".");
-            smtp.Disconnect(true);
-            return true;
+            using var smtp = new SmtpClient();
+            smtp.Connect(_configuration["EmailSettings:Host"], 
+                                    int.Parse(_configuration["EmailSettings:Port"]), 
+                                    bool.Parse(_configuration["EmailSettings:UseSsl"]));
+            smtp.Authenticate(_configuration["EmailSettings:Username"],
+                                        _configuration["EmailSettings:Password"]);
+
+            try
+            {
+                smtp.Send(email);
+                _logger.LogInformation("E-Mail sent successfully to user " + email.To.ToString() + ".");
+                smtp.Disconnect(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                smtp.Disconnect(true);
+            }
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.ToString());
-            smtp.Disconnect(true);
-            return false;
-        }
+        return true;
     }
     
     public bool SendRegistrationEmail(string name, string to, string password)

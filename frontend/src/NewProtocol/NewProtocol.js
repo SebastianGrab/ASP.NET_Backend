@@ -1,96 +1,91 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import schema from "../Resources/Data/protocol2.json";
-
-import { saveProtocol } from '../API/saveProtocol';
-import { Routes, Route, Outlet, Link } from "react-router-dom";
-import Interpreter from '../Components/Interpreter/Interpreter';
-import SuccesDialog from '../Components/SuccesDialog';
-
+import AuthContext from "../API/AuthProvider";
+import { postCall } from "../API/postCall";
+import { useParams, useLocation } from "react-router-dom";
+import Interpreter from "../Components/Interpreter/Interpreter";
+import SuccesDialog from "../Components/SuccesDialog";
+import { getData } from "./getProtocolData";
+import { protocol, genericQuery } from "../API/endpoints";
 
 export default function NewProtocol() {
+    const { token, userID, orgaID} = useContext(AuthContext);
+  const { template } = useParams();
+  const location = useLocation();
+  const templateData = location.state?.payload;
+  const templateContent = JSON.parse(templateData.templateContent);
+  const templateID = templateData.id;
 
-    const [showDialog, setShowDialog] = useState(false);
+    const temp = JSON.parse(templateContent);
 
-    const [Schema, setSchema] = useState({});
-    const [serverUrl, setServerUrl] = useState("/Data/protocol.json");
-    let SchemaData = schema;
+  const initialPostBody = {
+    "name": "string",
+    "isDraft": true,
+    "reviewComment": "string",
+    "isClosed": true
+  };
 
-    useEffect(() => {
-        fetch(serverUrl)
-            .then((response) => response.json())
-            .then((data) => setSchema(data))
-            .catch((error) => console.error('Error fetching data: ', error));
-    }, [serverUrl]);
+  
+  const [showDialog, setShowDialog] = useState(false);
 
 
-    const handleSave = () => {
-        const inputValues = {};
-        let helpers = 1;
+  const handleSave = () => {
 
-        // Durchgehe alle Inputs in einer Kategorie aus JSON
-        SchemaData.Schema.forEach((category) => {
-            if (category.ID === "EINSATZHELFER") {
-                const inputCategory = document.getElementById(category.ID);
-                helpers = inputCategory.children.length - 2;
-            }
-            category.Inputs.forEach((input) => {
-                //Prüfung ob es sich um KEIN Label handelt --> Labels haben kein .type
-                if (input.Element !== "label" && input.Element !== "dropdownHelper") {
-                    const inputElement = document.getElementById(input.ID);
+    //postCall(initialPostBody, protocol.ep + genericQuery.templateID + templateID + genericQuery.orgaID + orgaID + genericQuery.userID + userID, protocol.errMsgPostProtocol, token)
+    postCall(initialPostBody, "/api/protocols?templateId=" + templateID + "&organizationId=" + orgaID + "&userId=" + userID, "Error posting a new protocol", token)
+      .then((response) => {
+        saveProtocolContent(response);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
-                    // Füge den Wert des Inputs dem Objekt inputValues hinzu
-                    if ((inputElement.type === "checkbox" || inputElement.type === "radio") && inputElement.checked) {
-                        input.Value = true;
-                        inputValues[input.ID] = inputElement.checked
-                    } else if ((inputElement.type === "text" || inputElement.type === "number" || inputElement.type === "time" || inputElement.type === "date") && inputElement.value) {
-                        input.Value = inputElement.value;
-                        inputValues[input.ID] = inputElement.value
-                    } else if (inputElement.name === "dropdown" && inputElement.value !== "-") {
-                        input.Value = inputElement.value;
-                    }
-                }
+    //postCall(protocolData, endpoint2, errMsg2, token);
+    //setShowDialog(true);
+  };
 
-                if (input.Element === "dropdownHelper") {
-                    input.HelperCollection = [];
-                    input.HelperNames = []
+  const saveProtocolContent = (protocolMetadata) => {
+    const protocolData = getData(temp);
+    const parsedProtocolData = JSON.stringify(protocolData);
+    const body = {
+        "protocolId": protocolMetadata.id,
+        "content":  parsedProtocolData,
+        "createdDate": "2024-05-24T15:39:41.807Z",
+        "updatedDate": "2024-05-24T15:39:41.807Z"
+    };
 
-                    for (let i = 1; i < helpers +1 ; i++) {
-                        const inputHelper = document.getElementById(input.ID + i)
-                        input.HelperCollection.push(inputHelper.id);
-                        input.HelperNames.push(inputHelper.value);
-                    }
-                }
-    
+    postCall(body, "/api/protocol/" + protocolMetadata.id + "/content", protocol.errMsgPostProtocol, token)
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 
-            })
+  }
 
-        });
-
-        console.log(inputValues);
-        console.log(SchemaData);
-        saveProtocol(SchemaData);
-        setShowDialog(true);
-    }
+  return (
+    <>
+      <h1>Neues Protokoll!</h1>
+      <Interpreter schema={temp} />
 
 
 
+      <div className="row">
+        <input
+          className="button"
+          value="Protokoll speichern"
+          type="button"
+          onClick={handleSave}
+        ></input>
+      </div>
 
-    return (
-
-        <>
-
-            <h1>Neues Protokoll!</h1>
-
-                <Interpreter schema={schema} />
-
-                <div className="row">
-                <input className="button" value="Protokoll speichern" type="button" onClick={handleSave}></input>
-
-            </div>
-
-                {showDialog && <SuccesDialog header="Protokoll wurde erfoglreich gespeichert!" text="Protokoll wurde erfoglreich gespeichert!"/>}
-
-                
-        </>
-    )
+      {showDialog && (
+        <SuccesDialog
+          header="Protokoll wurde erfoglreich gespeichert!"
+          text="Protokoll wurde erfoglreich gespeichert!"
+        />
+      )}
+    </>
+  );
 }
