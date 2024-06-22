@@ -4,13 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using System.Security.Cryptography;
+using csharp.Interfaces;
 
 namespace csharp.Services
 {
-    public class PasswordGenerator
+    public class PasswordGenerator : IPasswordGenerator
     {
 
-        public static string GetRandomAlphanumericString(int length)
+        public string GetRandomAlphanumericString(int length)
         {
             const string alphanumericCharacters =
                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
@@ -19,28 +20,19 @@ namespace csharp.Services
             return GetRandomString(length, alphanumericCharacters);
         }
 
-        public static string GetRandomString(int length, IEnumerable<char> characterSet)
-        {
-            if (length < 0)
-                throw new ArgumentException("length must not be negative", "length");
-            if (length > int.MaxValue / 8)
-                throw new ArgumentException("length is too big", "length");
-            if (characterSet == null)
-                throw new ArgumentNullException("characterSet");
-            var characterArray = characterSet.Distinct().ToArray();
-            if (characterArray.Length == 0)
-                throw new ArgumentException("characterSet must not be empty", "characterSet");
+        private static readonly Random _random = new Random();
 
-            var bytes = new byte[length * 8];
-            new RNGCryptoServiceProvider().GetBytes(bytes);
-            var result = new char[length];
+        public string GetRandomString(int length, IEnumerable<char> characterSet)
+        {
+            var characterArray = characterSet.Distinct().ToArray();
+
+            var result = "";
             for (int i = 0; i < length; i++)
             {
-                ulong value = BitConverter.ToUInt64(bytes, i * 8);
-                result[i] = characterArray[value % (uint)characterArray.Length];
+                result += characterArray[_random.Next(characterArray.Length)];
             }
-            return new string(result);
+
+            return result;
         }
-        
     }
 }

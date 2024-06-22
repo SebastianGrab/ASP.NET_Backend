@@ -8,20 +8,16 @@ public class JsonValidationService
         if (string.IsNullOrWhiteSpace(strInput)) return false;
         
         strInput = strInput.Trim();
-        if ((strInput.StartsWith("{") && strInput.EndsWith("}")) || // For object
-            (strInput.StartsWith("[") && strInput.EndsWith("]"))) // For array
+        
+        try
         {
-            try
-            {
-                JsonDocument.Parse(strInput);
-                return true;
-            }
-            catch (JsonException)
-            {
-                // Invalid JSON format
-                return false;
-            }
+            JsonDocument.Parse(strInput);
+            return true;
         }
-        return false;
+        catch (JsonException)
+        {
+            // Invalid JSON format
+            return false;
+        }
     }
 }

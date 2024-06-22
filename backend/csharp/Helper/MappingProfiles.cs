@@ -15,7 +15,7 @@ namespace PokemonReviewApp.Helper
             CreateMap<Role, RoleDto>().ReverseMap();
             CreateMap<Template, TemplateDto>().ReverseMap();
             CreateMap<UserMessage, UserMessageDto>().ReverseMap();
-            CreateMap<User, UserDto>();
+            CreateMap<User, UserDto>().ReverseMap();
             CreateMap<UserRegisterDto, User>();
         }
     }

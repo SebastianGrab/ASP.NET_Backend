@@ -1,18 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import AuthContext from "../../API/AuthProvider";
+import { getCall } from "../../API/getCall";
 
-
-export default function DropdownElementHelper({ schemaObject }) {
+export const DropdownElementHelper = ({ schemaObject }) => {
+    const { token, userID, orgaID, setRefreshHandler} = useContext(AuthContext);
 
     const [HelferList, setHelferList] = useState({});
     const [AnzahlHelfer, setAnzahlHelfer] = useState(schemaObject.HelperCollection.length);
     const [DropdownCollection, setDropdwonCollection] = useState(schemaObject.HelperCollection);
 
+
     useEffect(() => {
-        fetch(schemaObject.Options)
-            .then((response) => response.json())
-            .then((data) => setHelferList(data))
-            .catch((error) => console.error('Error fetching data: ', error));
-    }, []);
+        const getHelpers = async () => {
+            const response = await getCall(`/api/organization/${orgaID}/users?pageIndex=1&pageSize=100`, token, "Error getting Users")
+            setHelferList(response);
+        }
+
+        getHelpers();
+    }, [token, orgaID]);
 
 
     function handelAddHelper() {
@@ -37,9 +42,7 @@ export default function DropdownElementHelper({ schemaObject }) {
 
         }
 
-
     }
-
 
 
 
@@ -49,11 +52,11 @@ export default function DropdownElementHelper({ schemaObject }) {
 
                 <div className="row" key={valD}>
                     <label htmlFor={valD}>{schemaObject.Label}</label>
-                    {HelferList.Helfer ? (
+                    {HelferList.items ? (
 
                         <select id={valD} name={schemaObject.Element} {...(schemaObject.HelperNames && {value: schemaObject.HelperNames[ parseInt(valD.match(/\d+$/)[0])-1]})}>
-                            {HelferList.Helfer.map((val) => (
-                                <option key={val} value={val}>{val}</option>
+                            {HelferList.items.map((val) => (
+                                <option key={val.id} value={val.username}>{val.username}</option>
                             ))}
                         </select>
                     ) : (

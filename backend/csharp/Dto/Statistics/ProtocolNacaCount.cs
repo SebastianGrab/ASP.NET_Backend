@@ -1,0 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Models;
+
+namespace csharp.Dto.Statistics
+{
+    public class ProtocolNacaCount
+    {
+        public string Naca { get; set; }
+        public int Count { get; set; }        
+    }
+}

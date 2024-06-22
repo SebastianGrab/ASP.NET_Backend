@@ -12,4 +12,3 @@ export const getAllProtocolsInProgress = async () => {
       return null;
     }
   };
-  

@@ -11,6 +11,7 @@ namespace Interfaces
         bool UpdateProtocolContent(ProtocolContent protocolContent);
         bool DeleteProtocolContent(ProtocolContent protocolContent);
         bool Save();
+        string GetProtocolNumber(long protocolId);
     }
 }
 

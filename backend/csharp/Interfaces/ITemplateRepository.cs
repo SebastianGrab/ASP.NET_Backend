@@ -11,6 +11,7 @@ namespace Interfaces
         bool TemplateExists(long id);
         ICollection<Template> GetSharedTemplatesByOrganization(long organizationId, QueryObject dateQuery, TemplateSearchObject templateSearch);
         ICollection<Template> GetTemplatesOwnedByOrganization(long organizationId, QueryObject dateQuery, TemplateSearchObject templateSearch);
+        ICollection<Template> GetTemplatesOwnedByOrganizations(List<long> organizationId, QueryObject dateQuery, TemplateSearchObject templateSearch);
         Template GetTemplateByProtocol(long protocolId);
         bool CreateTemplate(long organizationId, Template template);
         bool UpdateTemplate(Template template);

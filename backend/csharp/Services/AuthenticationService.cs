@@ -32,7 +32,7 @@ namespace Services
 
         public string Login(LoginObject loginObject)
         {
-            User LoginUser = _userRepository.GetUsers(new QueryObject(), new UserSearchObject()).Where(x => x.Email.ToLower() == loginObject.Email.ToLower()).FirstOrDefault();
+            User LoginUser = _userRepository.GetUserByEmail(loginObject.Email.ToLower());
 
             if(LoginUser == null)
             {

@@ -13,6 +13,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #e60005; /* DRK-Rot für Headlines */
 }
 
+
 /* Links */
 a {
     color: #008cc9; /* Mittelblau für Links */
@@ -37,6 +38,11 @@ a {
     text-transform: uppercase;
     font-weight: 500;
 }
+.button:disabled {
+    background-color: #ccc; /* Graue Hintergrundfarbe für deaktivierte Buttons */
+    color: #666; /* Graue Textfarbe für deaktivierte Buttons */
+    cursor: not-allowed; /* Ändere den Cursor für deaktivierte Buttons */
+}
 
 .button-container {
     display:flex;
@@ -57,7 +63,7 @@ a {
 
 
 /* Formulare */
-input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="checkbox" ], input[type="time"],input[type="date"], textarea, select {
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="checkbox" ], input[type="time"],input[type="date"],input[type="file"], textarea, select {
     background-color: #ebf5ff; /* Hellblau für Formulare */
     border: 1px solid #b0c5e8; /* Hellblau für Formulargrenzen */
     border-radius: 5px;
@@ -65,6 +71,21 @@ input[type="text"], input[type="email"], input[type="password"], input[type="num
     margin-bottom: 10px;
     text-align: right;
 }
+
+
+.MuiTextField-root input
+.MuiPickersDay-root,
+.MuiInputBase-input,
+.MuiOutlinedInput-root,
+.MuiOutlinedInput-notchedOutline {
+    background-color: #ebf5ff !important; /* Entfernt die Hintergrundfarbe */
+    border: 1px solid #b0c5e8 !important; /* Entfernt den Rand */
+    padding-top: 5 !important; /* Entfernt das Padding */
+    margin-bottom: 0 !important; /* Entfernt den unteren Rand */
+    text-align: left !important; /* Setzt die Textausrichtung zurück */
+}
+
+
 
 input[type="checkbox"] {
   transform: scale(1.5);
@@ -74,6 +95,29 @@ textarea {
   text-align: left;
 }
 
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.button-row {
+    margin-top: 20px;
+    text-align: right;
+}
 
 
 
@@ -84,23 +128,15 @@ textarea {
   background-color: #ffffff;
   display: flex;
   justify-content: space-between; /* Gleichmäßig horizontal verteilen */
-  align-items: flex-start; /* Vertikal zentriert */
+  align-items: center; /* Vertikal zentriert */
 }
 
-.row {
-  position: relative;
-  width: 100%;
-  background-color: #ffffff;
-  display: flex;
-  justify-content: space-between; /* Gleichmäßig horizontal verteilen */
-  align-items: flex-start; /* Vertikal zentriert */
-}
 
 .navbar {
     background-color: rgb(230 0 5); /* Hintergrundfarbe */
     border-bottom: 1px solid #ccc; /* Unterstrich */
 
-    padding: 10px 20px; /* Innenabstand */
+    padding: 10px 20px; 
     display: flex;
     justify-content: space-between; /* Elemente horizontal verteilen */
     align-items: center; /* Vertikal zentrieren */
@@ -109,8 +145,8 @@ textarea {
 
   .navbar-logo-box{
     background-color: white;
-    border-radius: 10px;
-    padding:40px;
+    border-radius: 7px;
+    padding:20px;
     margin-bottom: 10px;
   }
 
@@ -127,12 +163,30 @@ textarea {
     justify-content: flex-start; /* Gleichmäßig horizontal verteilen */
     align-items: center; /* Vertikal zentriert */
 }
+.tile.highlight {
+    border-color: #e60005; /* Roter Rahmen für Hervorhebung */
+    box-shadow: 0 0 10px #e60005; /* Beispielhervorhebung */
+}
 
 .tile-message {
   width: calc(83.333%); /* 10/12 der Bootstrap-Spalten */
   margin: 20px auto; /* Zentriert */
   background-color: #ffffff;
   border: 1px solid #b4b4b4; /* Hellgrau als Borderfarbe */
+  border-radius: 10px; /* Abgerundete Ecken */
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Schatten */
+  display: flex;
+  flex-direction: column; /* Elemente untereinander anordnen */
+  justify-content: flex-start; /* Vertikal zentriert */
+  align-items: center; /* Horizontal zentriert */
+}
+
+.tile-message-marking {
+  width: calc(83.333%); /* 10/12 der Bootstrap-Spalten */
+  margin: 20px auto; /* Zentriert */
+  background-color: #ffffff;
+  border: 3px solid #e60005; /* Hellgrau als Borderfarbe */
   border-radius: 10px; /* Abgerundete Ecken */
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Schatten */
@@ -149,11 +203,18 @@ textarea {
   justify-content: space-between; /* Gleichmäßig horizontal verteilen */
   align-items: flex-start; /* Vertikal zentriert */
 }
+.envelope-icon {
+    margin-right: 10px;
+    font-size: 1.5rem; /* Justiere die Größe des Icons nach Bedarf */
+    color: #000; /* Farbe des Icons anpassen */
+}
+
+.tile-message.clicked .envelope-icon {
+    color: #f00; /* Farbe ändern, wenn die TileMessages-Komponente angeklickt wurde */
+}
 
 .tile-diagram {
-    display: grid;
-    /* 10/12 der Bootstrap-Spalten */
-    margin: 20px auto; /* Zentriert */
+    margin: 10px auto; /* Zentriert */
     background-color: #ffffff;
     border: 1px solid #b4b4b4; /* Hellgrau als Borderfarbe */
     border-radius: 10px; /* Abgerundete Ecken */
@@ -163,6 +224,52 @@ textarea {
     flex-direction: column; /* Elemente untereinander anordnen */
     justify-content: flex-start; /* Vertikal an den Anfang ausrichten */
     align-items: flex-start; /* Horizontal an den Anfang ausrichten */
+}
+
+.tile-diagram-fullscreen {
+    display:flex;
+    margin: 5px auto;
+    position: relative; /* Positionierung absolut, um innerhalb des tile-diagram zu platzieren */
+    top: 0px; /* Positionierung vom unteren Rand des tile-diagram */
+    left: 20px; /* Positionierung vom linken Rand des tile-diagram */
+    right: 20px;
+    transform: translateY(20px); /* Versatz, um Überlappung zu vermeiden */
+    background-color: #ffffff;
+    border: 1px solid #b4b4b4; /* Hellgrau als Borderfarbe */
+    border-radius: 10px; /* Abgerundete Ecken */
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Schatten */
+    flex-direction: column; /* Elemente untereinander anordnen */
+    justify-content: space-around; /* Vertikal an den Anfang ausrichten */
+    align-items: center; /* Horizontal an den Anfang ausrichten */
+}
+
+.chart-title {
+    color: black;
+    text-decoration: white;
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'Helvetica Neue', sans-serif;
+}
+
+.react-datepicker {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff; /* Weißer Hintergrund */
+    border: 1px solid #ced4da; /* Randfarbe */
+    border-radius: 4px; /* Abgerundete Ecken */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Schatten */
+}
+
+/* CSS für den Datepicker-Kalender */
+.react-datepicker__calendar {
+    border: none; /* Kein Rahmen um den Kalender */
+}
+
+/* CSS für den Header des Datepicker-Kalenders */
+.react-datepicker__header {
+    background-color: #f0f0f0; /* Hintergrundfarbe des Headers */
+    border-bottom: 1px solid #ced4da; /* Unterer Rand */
+    padding-top: 8px; /* Oberer Innenabstand */
 }
 
 
@@ -192,10 +299,14 @@ textarea {
 
 .message-body {
   display: none;
+    text-align: left;
+    align-items: flex-start;
+
 }
 
 .message-body.open {
 display: block;
+text-align: left;
 }
 
 .category-body {
@@ -243,6 +354,40 @@ display: block;
     color: #ffffff;
 }
 
+.button-notfixed {
+    display: flex;
+    top: 0px;
+    left: 0;
+
+    background-color: #fff;
+    justify-content: flex-end;
+    padding: 10px;
+}
+.button-fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    z-index: 1000;
+    padding: 10px;
+    justify-content: flex-end;
+    display: flex;
+}
+
+.button-fixed .row, .button-notfixed .row {
+    display: flex;
+    justify-content: flex-end; /* Inhalte am rechten Rand ausrichten */
+    align-items: center; /* Inhalte vertikal zentrieren */
+
+
+
+}
+
+.main-content {
+    margin-top: 70px; /* Adjust based on the height of your header */
+}
+
 .back-button,
 .menu-button {
     background-color: transparent;
@@ -265,7 +410,11 @@ display: block;
 }
 
 .navbar-icon {
-    color: rgb(0 45 85);
+    color: #ffffff;
+}
+
+.mgmt-icon {
+  color: rgb(0 45 85)
 }
 
 .edit-icon {
@@ -330,3 +479,4 @@ display: block;
     text-align: left;
     z-index: 1000;
   }
+

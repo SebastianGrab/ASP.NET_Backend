@@ -24,7 +24,7 @@ namespace backend.Controllers
         // GET: api/roles
         [HttpGet]
         [Route("/api/roles")]
-        [Authorize(Roles = "Admin,Leiter")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Role>))]
         public IActionResult GetRoles()
         {
@@ -38,7 +38,7 @@ namespace backend.Controllers
 
         // GET: api/role/{id}
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,Leiter")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(Role))]
         [ProducesResponseType(400)]
         public IActionResult GetRole(long id)

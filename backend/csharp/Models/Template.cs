@@ -1,3 +1,5 @@
+using csharp.Models;
+
 namespace Models
 {
     public class Template : ITimestampEntity
@@ -15,6 +17,8 @@ namespace Models
         public Organization Organization { get; set; }
 
         public ICollection<TemplateOrganization> TemplateOrganizations { get; set; }
+
+        public ICollection<TemplateVersions> TemplateVersions { get; set; }
 
         public ICollection<Protocol> Protocols { get; set; }
 

@@ -35,6 +35,7 @@ namespace Repository
             var claimUserId = claimUser.GetUserId(); 
             var protocolOrganization = _context.Protocols.Where(p => p.Id == protocolId).Select(p => p.Organization.Id).FirstOrDefault();
             var protocolUserId = _context.Protocols.Where(p => p.Id == protocolId).Select(p => p.User.Id).FirstOrDefault();
+            var protocolUpdateDate = _context.Protocols.Where(p => p.Id == protocolId).Select(p => p.UpdatedDate).FirstOrDefault();
             var returnProtocolPdf = false;
 
             if (claimRoles.Contains("Admin"))
@@ -43,7 +44,7 @@ namespace Repository
             }
             else if (claimRoles.Contains("Leiter"))
             {
-                if ( claimOrganizationIds.Contains(protocolOrganization.ToString()))
+                if ( claimOrganizationIds.Contains(protocolOrganization))
                 {
                     returnProtocolPdf = true;
                 }
@@ -51,9 +52,14 @@ namespace Repository
             else if (claimRoles.Contains("Helfer"))
             {
                 var additionalUserIds = _context.AdditionalUsers.Where(au => au.protocolId == protocolId).Select(p => p.userId).ToList();
-                if (protocolUserId.ToString() == claimUserId.ToString() || additionalUserIds.Contains(claimUserId))
+                if (protocolUserId == claimUserId || additionalUserIds.Contains(claimUserId))
                 {
                     returnProtocolPdf = true;
+                }
+
+                if (protocolUpdateDate < DateTime.UtcNow.AddDays(-42))
+                {
+                    returnProtocolPdf = false;
                 }
             }
             else

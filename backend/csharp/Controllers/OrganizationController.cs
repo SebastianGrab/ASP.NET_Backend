@@ -37,7 +37,7 @@ namespace backend.Controllers
 
         // GET: api/organizations
         [HttpGet]
-        [Authorize(Roles = "Admin,Leiter,Helfer")]
+        [Authorize(Roles = "Admin,Leiter")]
         [Route("/api/organizations")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Organization>))]
         public IActionResult GetOrganizations([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearchQuery = null)
@@ -72,6 +72,21 @@ namespace backend.Controllers
         {
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (roles.IsNullOrEmpty() || !roles.Contains("Leiter"))
+                {
+                    if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(id))
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
 
             var organization = _mapper.Map<OrganizationDto>(_organizationRepository.GetOrganization(id));
 
@@ -120,6 +135,18 @@ namespace backend.Controllers
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
 
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(id))
+                {
+                    return Unauthorized();
+                }
+            }
+
             var query = _roleRepository.GetRolesByOrganization(id).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<RoleDto>>(query.ToList()).AsQueryable();
@@ -141,7 +168,7 @@ namespace backend.Controllers
             return Ok(response);
         }
 
-        // GET: api/organization/{id}/all-templates
+        // GET: api/organization/{id}/templates
         [HttpGet("{id}/templates")]
         [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
@@ -149,14 +176,30 @@ namespace backend.Controllers
         {
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(id))
+                {
+                    return Unauthorized();
+                }
+            }
                 
+            var mothers = _organizationRepository.GetAllOrganizationMothers(id, new QueryObject(), new OrganizationSearchObject()).Select(m => m.Id).ToList();
+
             var queryShared = _templateRepository.GetSharedTemplatesByOrganization(id, dateQuery, templateSearchQuery).ToList().AsQueryable();
             var queryOwned = _templateRepository.GetTemplatesOwnedByOrganization(id, dateQuery, templateSearchQuery).ToList().AsQueryable();
+            // var queryOwnedByMothers = _templateRepository.GetTemplatesOwnedByOrganizations(mothers, dateQuery, templateSearchQuery).ToList().AsQueryable();
 
             var templatesShared = _mapper.Map<List<TemplateDto>>(queryShared).AsQueryable();
             var templatesOwned = _mapper.Map<List<TemplateDto>>(queryOwned).AsQueryable();
+            // var templatesOwnedByMothers = _mapper.Map<List<TemplateDto>>(queryOwnedByMothers).AsQueryable();
 
-            var queryMapped = Enumerable.Concat(templatesShared, templatesOwned).ToList().DistinctBy(p => p.Id).AsQueryable();
+            var queryMapped = Enumerable.Concat(templatesOwned, templatesShared).ToList().DistinctBy(p => p.Id).OrderByDescending(p => p.Id).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -183,6 +226,18 @@ namespace backend.Controllers
         {
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(id))
+                {
+                    return Unauthorized();
+                }
+            }
 
             var query = _templateRepository.GetSharedTemplatesByOrganization(id, dateQuery, templateSearchQuery).AsQueryable();
 
@@ -214,14 +269,26 @@ namespace backend.Controllers
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
 
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(id))
+                {
+                    return Unauthorized();
+                }
+            }
+
             var query = _templateRepository.GetTemplatesOwnedByOrganization(id, dateQuery, templateSearchQuery).AsQueryable();
 
-            var mappedQuery = _mapper.Map<List<RoleDto>>(query.ToList()).AsQueryable();
+            var mappedQuery = _mapper.Map<List<TemplateDto>>(query.ToList()).AsQueryable();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var paginatedList = PaginatedList<RoleDto>.Create(mappedQuery, pageIndex, pageSize);
+            var paginatedList = PaginatedList<TemplateDto>.Create(mappedQuery, pageIndex, pageSize);
 
             var response = new
             {
@@ -244,7 +311,19 @@ namespace backend.Controllers
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
 
-            var query = _userRepository.GetUsersByOrganization(id, dateQuery, userSearchQuery).AsQueryable();
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(id))
+                {
+                    return Unauthorized();
+                }
+            }
+
+            var query = _userRepository.GetUsersByOrganization(id, dateQuery, userSearchQuery, User).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<UserDto>>(query.ToList()).AsQueryable();
 
@@ -274,6 +353,21 @@ namespace backend.Controllers
             if(!_userRepository.UserExists(userId))
                 return NotFound();
 
+            var userRoles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (userRoles.IsNullOrEmpty() || !userRoles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !userRoles.Contains("Helfer") || !orgaIds.Contains(id))
+                {
+                    if (orgaIds.ToString().IsNullOrEmpty() || userClaimId != userId)
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
+
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
                 
@@ -286,15 +380,57 @@ namespace backend.Controllers
         }
 
         // GET: api/organization/{id}/daughter-organizations
-        [HttpGet("{id}/daughter-organizations")]
+        // [HttpGet("{id}/daughter-organizations")]
+        // [Authorize(Roles = "Admin,Leiter,Helfer")]
+        // [ProducesResponseType(200, Type = typeof(IEnumerable<Organization>))]
+        // public IActionResult GetOrganizationDaughters(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearch = null)
+        // {
+        //     if(!_organizationRepository.OrganizationExists(id))
+        //         return NotFound();
+
+        //     var query = _organizationRepository.GetOrganizationDaughters(id, dateQuery, organizationSearch).AsQueryable();
+
+        //     var mappedQuery = _mapper.Map<List<OrganizationDto>>(query.ToList()).AsQueryable();
+
+        //     if(!ModelState.IsValid)
+        //         return BadRequest(ModelState);
+
+        //     var paginatedList = PaginatedList<OrganizationDto>.Create(mappedQuery, pageIndex, pageSize);
+
+        //     var response = new
+        //     {
+        //         totalCount = paginatedList.TotalCount,
+        //         totalPages = paginatedList.TotalPages,
+        //         currentPage = paginatedList.PageIndex,
+        //         pageSize = paginatedList.PageSize,
+        //         items = paginatedList
+        //     };
+
+        //     return Ok(response);
+        // }
+
+        // GET: api/organization/{id}/all-daughter-organizations
+        [HttpGet("{id}/all-daughter-organizations")]
         [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Organization>))]
-        public IActionResult GetOrganizationDaughters(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearch = null)
+        public IActionResult GetAllOrganizationDaughters(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearch = null)
         {
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
 
-            var query = _organizationRepository.GetOrganizationDaughters(id, dateQuery, organizationSearch).AsQueryable();
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(id))
+                {
+                    return Unauthorized();
+                }
+            }
+
+            var query = _organizationRepository.GetAllOrganizationDaughters(id, dateQuery, organizationSearch).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<OrganizationDto>>(query.ToList()).AsQueryable();
 
@@ -315,16 +451,28 @@ namespace backend.Controllers
             return Ok(response);
         }
 
-        // GET: api/organization/{id}/all-daughter-organizations
-        [HttpGet("{id}/all-daughter-organizations")]
+        // GET: api/organization/{id}/all-mother-organizations
+        [HttpGet("{id}/all-mother-organizations")]
         [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Organization>))]
-        public IActionResult GetAllOrganizationDaughters(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearch = null)
+        public IActionResult GetAllOrganizationMothers(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearch = null)
         {
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
 
-            var query = _organizationRepository.GetAllOrganizationDaughters(id, dateQuery, organizationSearch).AsQueryable();
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(id))
+                {
+                    return Unauthorized();
+                }
+            }
+
+            var query = _organizationRepository.GetAllOrganizationMothers(id, dateQuery, organizationSearch).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<OrganizationDto>>(query.ToList()).AsQueryable();
 
@@ -387,6 +535,21 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
+            var motherOrgas = _organizationRepository.GetAllOrganizationMothers(organizationMap.Id, new QueryObject(), new OrganizationSearchObject()).Select(o => o.Id).ToList();
+
+            if(motherOrgas != null)
+            {
+                var motherTemplates = _templateRepository.GetTemplatesOwnedByOrganizations(motherOrgas, new QueryObject(), new TemplateSearchObject()).Select(t => t.Id).ToList();
+
+                foreach (var motherTemplate in motherTemplates)
+                {
+                    if (!_templateOrganizationRepository.TemplateOrganizationExists(motherTemplate, organizationMap.Id))
+                    {
+                        _templateOrganizationRepository.AddTemplateToOrganization(organizationMap.Id, motherTemplate);
+                    }
+                }
+            }
+
             var organization = _mapper.Map<OrganizationDto>(organizationMap);
 
             return Ok(organization);
@@ -399,12 +562,14 @@ namespace backend.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateUserOrganizationRole(long userId, long id, long roleId)
         {
+            var userRole = _roleRepository.GetRole(roleId);
+            
             var orgaIds = User.GetOrganizationIds();
             var roles = User.GetRoles();
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(id.ToString()))
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(id) || userRole.Name == "Admin")
                 {
                     return Unauthorized();
                 }
@@ -419,9 +584,9 @@ namespace backend.Controllers
             if(!_roleRepository.RoleExists(roleId))
                 return NotFound();
                 
-            if(_userRepository.UserOrganizationRoleExists(userId, id, roleId) == true)
+            if(_userRepository.UserOrganizationExists(userId, id) == true)
             {
-                ModelState.AddModelError("", "User Role in this Organization already exists.");
+                ModelState.AddModelError("", "User already has a Role in this Organization.");
                 return StatusCode(422, ModelState);
             }
 
@@ -431,7 +596,7 @@ namespace backend.Controllers
             var uor = new UserOrganizationRole
             {
                 userId = userId,
-                User = _userRepository.GetUser(userId),
+                User = _userRepository.GetUser(userId, User),
                 organizationId = id,
                 Organization = _organizationRepository.GetOrganization(id),
                 roleId = roleId,
@@ -492,38 +657,37 @@ namespace backend.Controllers
         }
 
         // DELETE: api/organization/{id}/user/{userId}/role/{roleId}
-        [HttpDelete("{id}/user/{userId}/role/{roleId}")]
+        [HttpDelete("{id}/user/{userId}")]
         [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult Delete(long id, long userId, long roleId)
-        {
-            var orgaIds = User.GetOrganizationIds();
-            var roles = User.GetRoles();
-
-            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
-            {
-                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(id.ToString()))
-                {
-                    return Unauthorized();
-                }
-            }
-            
-            if (!_userRepository.UserOrganizationRoleExists(userId, id, roleId))
+        public IActionResult Delete(long id, long userId)
+        {            
+            if (!_userRepository.UserOrganizationExists(userId, id))
             {
                 return NotFound();
             }
 
-            if(!_organizationRepository.OrganizationExists(id))
-                return NotFound();   
+            var userOrganizationRole = _userRepository.GetUserOrganizationRoleEntriesByUser(id).Where(uor => uor.organizationId == id).ToList();
 
-            var userOrganizationRole = _userRepository.GetUserOrganizationRole(userId, id, roleId);
+            var userRole = _roleRepository.GetRole(userOrganizationRole.Select(u => u.roleId).Max());
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(id) || userRole.Name == "Admin")
+                {
+                    return Unauthorized();
+                }
+            }
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!_userRepository.DeleteUserOrganizationRole(userOrganizationRole))
+            if (!_userRepository.DeleteUserOrganizationRoles(userOrganizationRole))
             {
                 ModelState.AddModelError("", "Something went wrong when deleting User Role.");
             }
@@ -537,7 +701,17 @@ namespace backend.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public IActionResult UpdateOrganization(long id, [FromBody] OrganizationDto organizationUpdate)
-        {
+        {            
+            var orgaIds = User.GetOrganizationIds();
+            var roles = User.GetRoles();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(id))
+                {
+                    return Unauthorized();
+                }
+            }
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
                 
@@ -561,7 +735,22 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return NoContent();
+            var motherOrgas = _organizationRepository.GetAllOrganizationMothers(organizationMap.Id, new QueryObject(), new OrganizationSearchObject()).Select(o => o.Id).ToList();
+
+            if(motherOrgas != null)
+            {
+                var motherTemplates = _templateRepository.GetTemplatesOwnedByOrganizations(motherOrgas, new QueryObject(), new TemplateSearchObject()).Select(t => t.Id).ToList();
+
+                foreach (var motherTemplate in motherTemplates)
+                {
+                    if (!_templateOrganizationRepository.TemplateOrganizationExists(motherTemplate, organizationMap.Id))
+                    {
+                        _templateOrganizationRepository.AddTemplateToOrganization(organizationMap.Id, motherTemplate);
+                    }
+                }
+            }
+
+            return Ok(organizationMap);
         }
     }
 }

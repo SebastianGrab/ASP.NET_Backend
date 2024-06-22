@@ -50,7 +50,7 @@ namespace backend.Controllers
         [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
         public IActionResult GetUsers([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] UserSearchObject userSearchQuery = null)
         {
-            var query = _userRepository.GetUsers(dateQuery, userSearchQuery).AsQueryable();
+            var query = _userRepository.GetUsers(dateQuery, userSearchQuery, User).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<UserDto>>(query.ToList()).AsQueryable();
 
@@ -81,7 +81,7 @@ namespace backend.Controllers
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
-            var user = _mapper.Map<UserDto>(_userRepository.GetUser(id));
+            var user = _mapper.Map<UserDto>(_userRepository.GetUser(id, User));
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -172,40 +172,40 @@ namespace backend.Controllers
         }
 
         // GET: /api/user/{id}/all-protocols
-        // [HttpGet]
-        // [Authorize(Roles = "Admin,Leiter,Helfer")]
-        // [Route("/api/user/{id}/all-protocols")]
-        // [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
-        // [ProducesResponseType(400)]
-        // public IActionResult GetProtocolsByUserAndAdditionalUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearchQuery = null)
-        // {
-        //     if(!_userRepository.UserExists(id))
-        //         return NotFound();
+        [HttpGet]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
+        [Route("/api/user/{id}/all-protocols")]
+        [ProducesResponseType(200, Type = typeof(ICollection<Protocol>))]
+        [ProducesResponseType(400)]
+        public IActionResult GetProtocolsByUserAndAdditionalUser(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearchQuery = null)
+        {
+            if(!_userRepository.UserExists(id))
+                return NotFound();
 
-        //     var queryShared = _protocolRepository.GetProtocolsByUser(id, dateQuery, protocolSearchQuery, User).ToList().AsQueryable();
-        //     var queryOwned = _protocolRepository.GetProtocolsByAdditionalUser(id, dateQuery, protocolSearchQuery, User).ToList().AsQueryable();
+            var queryShared = _protocolRepository.GetProtocolsByUser(id, dateQuery, protocolSearchQuery, User).ToList().AsQueryable();
+            var queryOwned = _protocolRepository.GetProtocolsByAdditionalUser(id, dateQuery, protocolSearchQuery, User).ToList().AsQueryable();
 
-        //     var protocolsShared = _mapper.Map<List<ProtocolDto>>(queryShared).AsQueryable();
-        //     var protocolsOwned = _mapper.Map<List<ProtocolDto>>(queryOwned).AsQueryable();
+            var protocolsShared = _mapper.Map<List<ProtocolDto>>(queryShared).AsQueryable();
+            var protocolsOwned = _mapper.Map<List<ProtocolDto>>(queryOwned).AsQueryable();
 
-        //     var mappedQuery = Enumerable.Concat(protocolsShared, protocolsOwned).ToList().DistinctBy(p => p.Id).AsQueryable();
+            var mappedQuery = Enumerable.Concat(protocolsShared, protocolsOwned).ToList().DistinctBy(p => p.Id).AsQueryable();
 
-        //     if(!ModelState.IsValid)
-        //         return BadRequest(ModelState);
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        //     var paginatedList = PaginatedList<ProtocolDto>.Create(mappedQuery, pageIndex, pageSize);
+            var paginatedList = PaginatedList<ProtocolDto>.Create(mappedQuery, pageIndex, pageSize);
 
-        //     var response = new
-        //     {
-        //         totalCount = paginatedList.TotalCount,
-        //         totalPages = paginatedList.TotalPages,
-        //         currentPage = paginatedList.PageIndex,
-        //         pageSize = paginatedList.PageSize,
-        //         items = paginatedList
-        //     };
+            var response = new
+            {
+                totalCount = paginatedList.TotalCount,
+                totalPages = paginatedList.TotalPages,
+                currentPage = paginatedList.PageIndex,
+                pageSize = paginatedList.PageSize,
+                items = paginatedList
+            };
 
-        //     return Ok(response);
-        // }
+            return Ok(response);
+        }
 
         // GET: api/user/{id}/roles
         [HttpGet("{id}/roles")]
@@ -238,7 +238,7 @@ namespace backend.Controllers
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (userId.ToString().IsNullOrEmpty() || id.ToString() != userId.ToString())
+                if (userId.ToString().IsNullOrEmpty() || id != userId)
                 {
                     return Unauthorized();
                 }
@@ -281,7 +281,7 @@ namespace backend.Controllers
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (userId.ToString().IsNullOrEmpty() || id.ToString() != userId.ToString())
+                if (userId.ToString().IsNullOrEmpty() || id != userId)
                 {
                     return Unauthorized();
                 }
@@ -321,7 +321,7 @@ namespace backend.Controllers
                 return StatusCode(422, ModelState);
             }
 
-            var userMail = _userRepository.GetUsers(new QueryObject(), new UserSearchObject())
+            var userMail = _userRepository.GetUsers(new QueryObject(), new UserSearchObject(), User)
                 .Where(o => o.Email.Trim().ToLower() == userCreate.Email.TrimEnd().ToLower())
                 .FirstOrDefault();
 
@@ -336,7 +336,7 @@ namespace backend.Controllers
 
             var userMap = _mapper.Map<User>(userCreate);
             
-            userMap.Password = BCrypt.Net.BCrypt.HashPassword(userCreate.Password); // SALT is created automatically by the method.
+            userMap.Password = BCrypt.Net.BCrypt.HashPassword(userCreate.Password);
             userMap.Email = userCreate.Email.ToLower();
 
             if(!_userRepository.CreateUser(userMap))
@@ -366,15 +366,16 @@ namespace backend.Controllers
             var roles = User.GetRoles();
             var orgaIds = User.GetOrganizationIds();
 
+            var userRole = _roleRepository.GetRole(roleId);
+
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(organizationId.ToString()))
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(organizationId) || userRole.Name == "Admin")
                 {
                     return Unauthorized();
                 }
             }
             
-
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
@@ -384,9 +385,9 @@ namespace backend.Controllers
             if(!_roleRepository.RoleExists(roleId))
                 return NotFound();
                 
-            if(_userRepository.UserOrganizationRoleExists(id, organizationId, roleId) == true)
+            if(_userRepository.UserOrganizationExists(id, organizationId) == true)
             {
-                ModelState.AddModelError("", "User Role in this Organization already exists.");
+                ModelState.AddModelError("", "User already has a Role in this Organization.");
                 return StatusCode(422, ModelState);
             }
 
@@ -396,7 +397,7 @@ namespace backend.Controllers
             var uor = new UserOrganizationRole
             {
                 userId = id,
-                User = _userRepository.GetUser(id),
+                User = _userRepository.GetUser(id, User),
                 organizationId = organizationId,
                 Organization = _organizationRepository.GetOrganization(organizationId),
                 roleId = roleId,
@@ -430,14 +431,14 @@ namespace backend.Controllers
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != id.ToString())
+                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId != id)
                 {
                     return Unauthorized();
                 }
             }
 
             var userMessagesToDelete = _userMessageRepository.GetMessagesByUser(id, new QueryObject(), new UserMessageSearchObject());
-            var userToDelete = _userRepository.GetUser(id);
+            var userToDelete = _userRepository.GetUser(id, User);
             var userOrganizationRolesToDelete = _userRepository.GetUserOrganizationRoleEntriesByUser(id);
             var additionalUsersToDelete = _additionalUserRepository.GetAdditionalUserEntriesByUser(id);
             var userLoginAttemptToDelete = _userLoginAttemptRepository.GetUserLoginAttempt(id);
@@ -486,36 +487,38 @@ namespace backend.Controllers
             return NoContent();
         }
 
-        // DELETE: api/user/{id}/organization/{organizationId}/role/{roleId}
-        [HttpDelete("{id}/organization/{organizationId}/role/{roleId}")]
+        // DELETE: api/user/{id}/organization/{organizationId}
+        [HttpDelete("{id}/organization/{organizationId}")]
         [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult Delete(long id, long organizationId, long roleId)
+        public IActionResult Delete(long id, long organizationId)
         {
-            if (!_userRepository.UserOrganizationRoleExists(id, organizationId, roleId))
+            if (!_userRepository.UserOrganizationExists(id, organizationId))
             {
                 return NotFound();
             }
+
+            var userOrganizationRole = _userRepository.GetUserOrganizationRoleEntriesByUser(id).Where(uor => uor.organizationId == organizationId).ToList();
+
+            var userRole = _roleRepository.GetRole(userOrganizationRole.Select(u => u.roleId).Max());
 
             var roles = User.GetRoles();
             var orgaIds = User.GetOrganizationIds();
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(organizationId.ToString()))
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(organizationId) || userRole.Name == "Admin")
                 {
                     return Unauthorized();
                 }
             }
 
-            var userOrganizationRole = _userRepository.GetUserOrganizationRole(id, organizationId, roleId);
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!_userRepository.DeleteUserOrganizationRole(userOrganizationRole))
+            if (!_userRepository.DeleteUserOrganizationRoles(userOrganizationRole))
             {
                 ModelState.AddModelError("", "Something went wrong when deleting User Role.");
             }
@@ -523,13 +526,13 @@ namespace backend.Controllers
             return NoContent();
         }
 
-        // UPDATE: api/user/{id}
-        [HttpPut("{id}")]
+        // UPDATE: api/user/{id}/password
+        [HttpPut("{id}/password")]
         [Authorize(Roles = "Admin,Leiter,Helfer")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateUser(long id, [FromBody] UserRegisterDto userUpdate)
+        public IActionResult UpdateUserPassword(long id, [FromBody] UserRegisterDto userUpdate)
         {
             if (!_userRepository.UserExists(id))
                 return NotFound();
@@ -539,7 +542,7 @@ namespace backend.Controllers
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != id.ToString())
+                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId != id)
                 {
                     return Unauthorized();
                 }
@@ -548,17 +551,13 @@ namespace backend.Controllers
             if (userUpdate == null)
                 return BadRequest(ModelState);
 
-            var userMail = _userRepository.GetUsers(new QueryObject(), new UserSearchObject())
-                .Where(o => o.Email.Trim().ToLower() == userUpdate.Email.TrimEnd().ToLower() && o.Id != id)
-                .FirstOrDefault();
-
             if(id != userUpdate.Id)
             {
                 ModelState.AddModelError("", "IDs do not match.");
                 return StatusCode(422, ModelState);
             }
 
-            if(userMail != null)
+            if(_userRepository.UserMailExists(id, userUpdate.Email))
             {
                 ModelState.AddModelError("", "User E-Mail already exists.");
                 return StatusCode(422, ModelState);
@@ -578,7 +577,71 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return NoContent();
+            var userToReturn = _mapper.Map<UserDto>(userMap);
+
+            return Ok(userToReturn);
+        }
+
+        // UPDATE: api/user/{id}
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateUser(long id, [FromBody] UserDto userUpdate)
+        {
+            if (!_userRepository.UserExists(id))
+                return NotFound();
+
+            var userOrgas = _userRepository.GetUserOrganizationRoleEntriesByUser(id).Select(uor => uor.organizationId).ToList();
+
+            var roles = User.GetRoles();
+            var userClaimId = User.GetUserId();
+            var orgaIds = User.GetOrganizationIds();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (roles.IsNullOrEmpty() || !roles.Contains("Leiter") || !orgaIds.Intersect(userOrgas).Any())
+                {
+                    if (roles.Contains("Helfer") && id != userClaimId)
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
+
+            if (userUpdate == null)
+                return BadRequest(ModelState);
+
+            if(id != userUpdate.Id)
+            {
+                ModelState.AddModelError("", "IDs do not match.");
+                return StatusCode(422, ModelState);
+            }
+
+            if(_userRepository.UserMailExists(id, userUpdate.Email))
+            {
+                ModelState.AddModelError("", "User E-Mail already exists.");
+                return StatusCode(422, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var userMap = _mapper.Map<User>(userUpdate);
+            
+            userMap.Password = _userRepository.GetUserAsNoTracking(id).Password;
+            userMap.Email = userUpdate.Email.ToLower();
+
+            if (!_userRepository.UpdateUser(userMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating User.");
+                return StatusCode(500, ModelState);
+            }
+
+            var userToReturn = _mapper.Map<UserDto>(userMap);
+
+            return Ok(userToReturn);
         }
     }
 }

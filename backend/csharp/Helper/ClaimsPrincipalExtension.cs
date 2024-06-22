@@ -2,7 +2,7 @@ using System.Security.Claims;
 
 public static class ClaimsPrincipalExtensions
 {
-    public static List<string> GetOrganizationIds(this ClaimsPrincipal user)
+    public static List<long> GetOrganizationIds(this ClaimsPrincipal user)
     {
         if (user == null)
         {
@@ -11,7 +11,7 @@ public static class ClaimsPrincipalExtensions
 
         var orgaIdClaim = user.Claims
             .Where(c => c.Type == "Organization")
-            .Select(c => c.Value)
+            .Select(c => long.Parse(c.Value))
             .ToList();
 
         return orgaIdClaim != null ? orgaIdClaim : throw new UnauthorizedAccessException("No Organization IDs found.");

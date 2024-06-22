@@ -12,7 +12,7 @@ public class PaginatedList<T> : List<T>
     {
         TotalCount = count;
         PageIndex = pageIndex;
-        PageSize = (pageSize > MaxPageSize) ? MaxPageSize : pageSize;
+        PageSize = pageSize; // (pageSize > MaxPageSize) ? MaxPageSize : pageSize;
         TotalPages = (int)Math.Ceiling(count / (double)pageSize);
 
         this.AddRange(items);

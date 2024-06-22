@@ -1,7 +1,9 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Data;
 using Interfaces;
 using Models;
+using Newtonsoft.Json.Linq;
 
 namespace Repository
 {
@@ -33,8 +35,7 @@ namespace Repository
             var claimRoles = claimUser.GetRoles();
             var claimOrganizationIds = claimUser.GetOrganizationIds();
             var claimUserId = claimUser.GetUserId(); 
-            var protocolOrganization = _context.Protocols.Where(p => p.Id == protocolId).Select(p => p.Organization.Id).FirstOrDefault();
-            var protocolUserId = _context.Protocols.Where(p => p.Id == protocolId).Select(p => p.User.Id).FirstOrDefault();
+            var protocolUpdateDate = _context.Protocols.Where(p => p.Id == protocolId).Select(p => p.UpdatedDate).FirstOrDefault();
             var returnProtocolContent = false;
 
             if (claimRoles.Contains("Admin"))
@@ -43,17 +44,24 @@ namespace Repository
             }
             else if (claimRoles.Contains("Leiter"))
             {
-                if ( claimOrganizationIds.Contains(protocolOrganization.ToString()))
+                var protocolOrganization = _context.Protocols.Where(p => p.Id == protocolId).Select(p => p.Organization.Id).FirstOrDefault();
+                if ( claimOrganizationIds.Contains(protocolOrganization))
                 {
                     returnProtocolContent = true;
                 }
             }
             else if (claimRoles.Contains("Helfer"))
             {
+                var protocolUserId = _context.Protocols.Where(p => p.Id == protocolId).Select(p => p.User.Id).FirstOrDefault();
                 var additionalUserIds = _context.AdditionalUsers.Where(au => au.protocolId == protocolId).Select(p => p.userId).ToList();
-                if (protocolUserId.ToString() == claimUserId.ToString() || additionalUserIds.Contains(claimUserId))
+                if (protocolUserId == claimUserId || additionalUserIds.Contains(claimUserId))
                 {
                     returnProtocolContent = true;
+                }
+
+                if (protocolUpdateDate < DateTime.UtcNow.AddDays(-42))
+                {
+                    returnProtocolContent = false;
                 }
             }
             else
@@ -69,6 +77,32 @@ namespace Repository
             }
 
             return _context.ProtocolContents.Where(pc => pc.protocolId == protocolId).FirstOrDefault();
+        }
+
+        public string GetProtocolNumber(long protocolId)
+        {
+            var protocolContent = _context.ProtocolContents.Where(p => p.protocolId == protocolId).FirstOrDefault();
+
+            if (protocolContent == null)
+            {
+                try
+                {
+                    var content = JObject.Parse(protocolContent.Content);
+
+                    var number = content["Schema"]?
+                        .Select(schema => schema["Inputs"])
+                        .OfType<JObject>()
+                        .Where(input => (string)input["Name"] == "Auftragsnummer")
+                        .Select(input => (string)input["Value"]).FirstOrDefault();
+
+                    return number;
+                }
+                catch (JsonException)
+                {
+                    return null;
+                }
+            }
+            return null;
         }
 
         public bool ProtocolContentExists(long protocolId)

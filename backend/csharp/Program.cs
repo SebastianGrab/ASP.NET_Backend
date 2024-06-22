@@ -1,6 +1,8 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
+using csharp.Interfaces;
+using csharp.Services;
 using Data;
 using Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,7 +32,8 @@ builder.Services.AddCors(options =>
                                 "https://localhost:3000",
                                 "http://localhost:8080",
                                 "https://localhost:8080")
-                                .AllowAnyHeader();
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
         });
 });
 
@@ -53,10 +56,12 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 builder.Services.AddScoped<ITemplateOrganizationRepository, TemplateOrganizationRepository>();
+builder.Services.AddScoped<ITemplateVersionRepository, TemplateVersionRepository>();
 builder.Services.AddScoped<IUserMessageRepository, UserMessageRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IPasswordGenerator, PasswordGenerator>();
 builder.Services.AddScoped<IUserLoginAttemptRepository, UserLoginAttemptRepository>();
 
 builder.Services.AddEndpointsApiExplorer();

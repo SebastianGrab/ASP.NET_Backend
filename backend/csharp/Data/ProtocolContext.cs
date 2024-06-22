@@ -1,6 +1,7 @@
 using Models;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using csharp.Models;
 
 namespace Data
 {
@@ -33,6 +34,8 @@ namespace Data
         public DbSet<UserMessage> UserMessages  { get; set; }
 
         public DbSet<UserLoginAttempt> UserLoginAttempts  { get; set; }
+
+        public DbSet<TemplateVersions> TemplateVersions  { get; set; }
 
 
 
@@ -80,47 +83,53 @@ namespace Data
             // Seeding:
             modelBuilder.Entity<Role>()
                     .HasData(
-                        new Role() { Id = 1, Name = "Helfer" },
-                        new Role() { Id = 2, Name = "Leiter" },
-                        new Role() { Id = 3, Name = "Admin" }
+                        new Role() { Id = -1, Name = "Helfer" },
+                        new Role() { Id = -2, Name = "Leiter" },
+                        new Role() { Id = -3, Name = "Admin" }
                     );
 
                     
             modelBuilder.Entity<Organization>()
                     .HasData(
-                        new Organization() { Id = 1, Name = "Deutsches Rotes Kreuz e.V.", OrganizationType = "Bundesorganisation", Address = "Carstennstraße 58", City = "Berlin", PostalCode = "12205", CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow },
-                        new Organization() { Id = 2, Name = "Test Tochter 1", OrganizationType = "Bundesorganisation", Address = "Carstennstraße 58", City = "Berlin", PostalCode = "12205", CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow },
-                        new Organization() { Id = 3, parentId = 2, Name = "Test Tochter 2", OrganizationType = "Bundesorganisation", Address = "Carstennstraße 58", City = "Berlin", PostalCode = "12205", CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow }
+                        new Organization() { Id = -1, Name = "Deutsches Rotes Kreuz e.V.", OrganizationType = "Bundesorganisation", Address = "Carstennstraße 58", City = "Berlin", PostalCode = "12205", CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow },
+                        new Organization() { Id = -2, parentId = -1, Name = "Test Tochter 1", OrganizationType = "Bundesorganisation", Address = "Carstennstraße 58", City = "Berlin", PostalCode = "12205", CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow },
+                        new Organization() { Id = -3, parentId = -2, Name = "Test Tochter 2", OrganizationType = "Bundesorganisation", Address = "Carstennstraße 58", City = "Berlin", PostalCode = "12205", CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow }
                     );
 
                     
             modelBuilder.Entity<User>()
                     .HasData(
-                        new User() { Id = 1, FirstName = "Super", LastName = "Admin", Email = "superadmin@drk.de", Password = BCrypt.Net.BCrypt.HashPassword("SuperAdminPasswort"), CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow, LastPasswordChangeDate = DateTime.UtcNow },
-                        new User() { Id = 2, FirstName = "Test", LastName = "Helfer", Email = "testhelfer@drk.de", Password = BCrypt.Net.BCrypt.HashPassword("TestHelferPasswort"), CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow, LastPasswordChangeDate = DateTime.UtcNow },
-                        new User() { Id = 3, FirstName = "Test", LastName = "Leiter", Email = "testleiter@drk.de", Password = BCrypt.Net.BCrypt.HashPassword("TestLeiterPasswort"), CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow, LastPasswordChangeDate = DateTime.UtcNow }
+                        new User() { Id = -1, FirstName = "Super", LastName = "Admin", Email = "superadmin@drk.de", Password = BCrypt.Net.BCrypt.HashPassword("SuperAdminPasswort"), CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow, LastPasswordChangeDate = DateTime.UtcNow },
+                        new User() { Id = -2, FirstName = "Test", LastName = "Helfer", Email = "testhelfer@drk.de", Password = BCrypt.Net.BCrypt.HashPassword("TestHelferPasswort"), CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow, LastPasswordChangeDate = DateTime.UtcNow },
+                        new User() { Id = -3, FirstName = "Test", LastName = "Leiter", Email = "testleiter@drk.de", Password = BCrypt.Net.BCrypt.HashPassword("TestLeiterPasswort"), CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow, LastPasswordChangeDate = DateTime.UtcNow }
                     );
 
                     
             modelBuilder.Entity<UserOrganizationRole>()
                     .HasData(
-                        new UserOrganizationRole() { Id = 1, organizationId = 1, roleId = 3, userId = 1, CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow },
-                        new UserOrganizationRole() { Id = 2, organizationId = 3, roleId = 1, userId = 2, CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow },
-                        new UserOrganizationRole() { Id = 3, organizationId = 2, roleId = 2, userId = 3, CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow }
+                        new UserOrganizationRole() { Id = -1, organizationId = -1, roleId = -3, userId = -1, CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow },
+                        new UserOrganizationRole() { Id = -2, organizationId = -3, roleId = -1, userId = -2, CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow },
+                        new UserOrganizationRole() { Id = -3, organizationId = -2, roleId = -2, userId = -3, CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow }
                     );
 
                     
             modelBuilder.Entity<UserLoginAttempt>()
                     .HasData(
-                        new UserLoginAttempt() { Id = 1, userId = 1 },
-                        new UserLoginAttempt() { Id = 2, userId = 2 },
-                        new UserLoginAttempt() { Id = 3, userId = 3 }
+                        new UserLoginAttempt() { Id = -1, userId = -1 },
+                        new UserLoginAttempt() { Id = -2, userId = -2 },
+                        new UserLoginAttempt() { Id = -3, userId = -3 }
                     );
 
                     
             modelBuilder.Entity<Template>()
                     .HasData(
-                        new Template() { Id = 1, Name = "Standard-Template", organizationId = 1, Description = "Standard-Template für alle Organisationen", TemplateContent = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Data/Seeding/DefaultTemplate.txt")), CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow }
+                        new Template() { Id = -1, Name = "Standard-Template", organizationId = -1, Description = "Standard-Template für alle Organisationen", TemplateContent = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Data/Seeding/DefaultTemplate.txt").Replace(@".Tests\bin\Debug\net7.0", "")), CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow }
+                    );
+
+                    
+            modelBuilder.Entity<TemplateVersions>()
+                    .HasData(
+                        new TemplateVersions() { Id = -1, TemplateContent = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Data/Seeding/DefaultTemplate.txt").Replace(@".Tests\bin\Debug\net7.0", "")), templateId = -1, CreatedDate = DateTime.UtcNow, UpdatedDate = DateTime.UtcNow }
                     );
         }
 
@@ -216,7 +225,8 @@ namespace Data
         {
             var builder = WebApplication.CreateBuilder();
             var configuration = builder.Configuration;
-            optionsBuilder.UseNpgsql(configuration.GetConnectionString("ConnectionString"));
+            if(!optionsBuilder.IsConfigured)
+                optionsBuilder.UseNpgsql(configuration.GetConnectionString("ConnectionString"));
         }
     }
 }

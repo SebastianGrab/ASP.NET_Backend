@@ -4,6 +4,7 @@ import { Routes, Route, Outlet, Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
+
 let pages = [
     { page: "", description: "Dashboard" },
     { page: "newProtocol", description: "Neues Protokoll" },

@@ -9,10 +9,9 @@ import {
 import AuthContext from "../API/AuthProvider";
 import { useContext, useEffect, useState } from "react";
 import { getCall } from "../API/getCall";
-import { genericPath, organization } from "../API/endpoints";
 
 export const TemplateChoice = () => {
-  const { token, userID, orgaID, setUserID, setOrgaID, setToken} = useContext(AuthContext);
+  const { token, userID, orgaID, setUserID, setOrgaID, setToken, refreshHandler} = useContext(AuthContext);
   const [templates, setTemplates] = useState(null);
 
   useEffect(() => {
@@ -22,15 +21,23 @@ export const TemplateChoice = () => {
       setOrgaID(storedloginData.organizationId);
       setUserID(storedloginData.userId);
     }
-    getCall(organization.ep + orgaID + genericPath.template, token, "Error getting templates")
-      .then((response) => {
-        setTemplates(response);
-        console.log("Get Templates successfull!");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [orgaID]);
+
+    // const getOrga = async () => {
+    //   const response = await getCall("/api/organization/1", token, "Errog orga")
+    //   console.log(response);
+    // }
+
+    // getOrga();
+
+    const getTemplates = async () => {
+      const response = await getCall("/api/organization/ "+ orgaID + "/templates?pageIndex=1&pageSize=9999999", token, "Errog orga")
+      console.log(response);
+      setTemplates(response);
+    }
+
+    getTemplates();
+
+  }, [orgaID, refreshHandler]);
 
 
 

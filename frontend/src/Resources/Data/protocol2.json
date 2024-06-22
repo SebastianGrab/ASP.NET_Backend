@@ -3,24 +3,37 @@
     "Schema": [
         {
             "Kategorie": "Schlüssel",
-            "ID": "EINSATZORT",
+            "ID": "SCHLUESSEL",
             "Inputs": [
-                {
-                    "Name": "Auftragsnummer",
-                    "Element": "input",
-                    "Type": "number",
-                    "Label": "Auftrags Nr: ",
-                    "ID": "AUFTRAGSNUMMER",
-                    "Mandatory": 1
-                },
                 {
                     "Name": "Alarmschluessel",
                     "Element": "input",
                     "Type": "text",
                     "Label": "Alarmschlüssel: ",
                     "ID": "ALARMSCHLUESSEL",
-                    "Mandatory": 1
+                    "Mandatory": 1,
+                    "Pattern": "^[123][0-9]{3}[NBnb]?$",
+                    "Placeholder": "1000N"
+                },
+                {
+                    "Name": "Auftragsnummer",
+                    "Element": "input",
+                    "Type": "number",
+                    "Label": "Auftrags Nr: ",
+                    "ID": "AUFTRAGSNUMMER",
+                    "Mandatory": 1,
+                    "DisableHandlerId": "Auftragsnummer-Mandatoryhandler",
+                      "Pattern": "^([0-9]+)$",
+                    "Placeholder": "123456"
+                },
+                {
+                    "Name": "Auftragsnummer-Mandatoryhandler",
+                    "Element": "mandatoryhandler",
+                    "Type": "mandatoryhandler",
+                    "Label": "Keine Auftragsnummer: ",
+                    "ID": "Auftragsnummer-Mandatoryhandler"
                 }
+
             ]
         },
         {
@@ -32,14 +45,15 @@
                     "Element": "input",
                     "Type": "date",
                     "Label": "Datum: ",
-                    "ID": "DATUM",
-                    "Mandatory": 1
+                    "Mandatory": 1,
+                    "ID": "DATUM"
                 },
                 {
                     "Name": "Ort",
                     "Element": "input",
                     "Type": "text",
                     "Label": "Einsatzort: ",
+                    "Mandatory": 1,
                     "ID": "EINSATZORT"
                 },
                 {
@@ -47,14 +61,8 @@
                     "Element": "input",
                     "Type": "text",
                     "Label": "Straße: ",
+                    "Mandatory": 1,
                     "ID": "EINSATSSTRASSE"
-                },
-                {
-                    "Name": "Hausnummer",
-                    "Element": "input",
-                    "Type": "number",
-                    "Label": "Hausnummer: ",
-                    "ID": "EINSATZHAUSNR"
                 },
                 {
                     "Name": "PLZ",
@@ -67,6 +75,7 @@
                     "Name": "Alarmzeit",
                     "Element": "input",
                     "Type": "time",
+                    "Mandatory": 1,
                     "Label": "Alarmzeit: ",
                     "ID": "ALARMZEIT"
                 },
@@ -74,8 +83,17 @@
                     "Name": "Ankunft_HvO",
                     "Element": "input",
                     "Type": "time",
+                    "Mandatory": 1,
                     "Label": "Ankunft HvO: ",
                     "ID": "ANKUNFT_HVO"
+                },
+                {
+                    "Name": "Einsatzende",
+                    "Element": "input",
+                    "Type": "time",
+                    "Mandatory": 1,
+                    "Label": "Einsatzende: ",
+                    "ID": "Einsatzende"
                 },
                 {
                     "Name": "RTW_NEF",
@@ -88,6 +106,7 @@
                     "Name": "Einsatzende",
                     "Element": "input",
                     "Type": "time",
+                    "Mandatory": 1,
                     "Label": "Einsatzende: ",
                     "ID": "EINSATZENDE"
                 }
@@ -134,7 +153,7 @@
                         "HELFERNAMENDD1"
                     ],
                     "HelperNames": [
-                        "Mustermann, Max"
+                        ""
                     ],
                     "ID": "HELFERNAMENDD",
                     "Location": "beim Patient"
@@ -517,6 +536,7 @@
         {
             "Kategorie": "Verletzungen",
             "ID": "EVERLETZUNGEN",
+            "MARKING": true,
             "Inputs": [
                 {
                     "Name": "unverletzt",
@@ -832,7 +852,7 @@
         },
         {
             "Kategorie": "Einsatzart",
-            "ID": "EINSATZART",
+            "ID": "EINSATZART-KATEGORIE",
             "Inputs": [
                 {
                     "Name": "Verkehrsunfall",

@@ -24,13 +24,14 @@ namespace Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IOrganizationRepository _organizationRepository;
+        private readonly IRoleRepository _roleRepository;
         private readonly ILogger<LoginController> _logger;
         private readonly IMapper _mapper;
         private readonly IEmailService _emailService;
         private readonly IPasswordGenerator _passwordGenerator;
         private readonly IAuthenticationService _authenticationService;
 
-        public LoginController(IUserRepository userRepository, IPasswordGenerator passwordGenerator, IEmailService emailService, IOrganizationRepository organizationRepository, ILogger<LoginController> logger, IMapper mapper, IAuthenticationService authenticationService)
+        public LoginController(IUserRepository userRepository, IRoleRepository roleRepository, IPasswordGenerator passwordGenerator, IEmailService emailService, IOrganizationRepository organizationRepository, ILogger<LoginController> logger, IMapper mapper, IAuthenticationService authenticationService)
         {
             _userRepository = userRepository;
             _logger = logger;
@@ -39,6 +40,7 @@ namespace Controllers
             _organizationRepository = organizationRepository;
             _emailService = emailService;
             _passwordGenerator = passwordGenerator;
+            _roleRepository = roleRepository;
         }
 
         [HttpPost]
@@ -68,12 +70,33 @@ namespace Controllers
 
             var LoginUser = _userRepository.GetUserByEmail(loginObject.Email);
             var LoginUserOrganization = _organizationRepository.GetOrganizationsByUser(LoginUser.Id, new QueryObject(), new OrganizationSearchObject()).FirstOrDefault();
+            var LoginUserRole = _roleRepository.GetRolesByUser(LoginUser.Id).FirstOrDefault();
+            
+            if(LoginUserOrganization == null)
+            {
+                return BadRequest(new { message = "no Role assigned yet." });
+            }
+
+            var LoginUserOrganizationId = (long)0;
+
+            if (LoginUserOrganization == null)
+            {
+                LoginUserOrganizationId = (long)0;
+            }
+            else 
+            {
+                LoginUserOrganizationId = LoginUserOrganization.Id;
+            }
+
+            var UserRoles = _userRepository.GetUserOrganizationRoleEntriesByUser(LoginUser.Id).ToList();
 
             var loginReturn = new LoginReturnObject ()
             {
                 Token = token,
                 userId = LoginUser.Id,
-                organizationId = LoginUserOrganization.Id
+                organizationId = LoginUserOrganizationId,
+                role = LoginUserRole.Name.ToString(),
+                uor = UserRoles
             };
 
             _logger.LogInformation("User with the Id " + LoginUser.Id + " logged in successfully.");
@@ -97,19 +120,18 @@ namespace Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var updateUser = new UserRegisterDto() 
+            if(!_emailService.SendResetEmail(user.FirstName + " " + user.LastName, user.Email, user.Password))
             {
-                Email = user.Email,
-                Password = _passwordGenerator.GetRandomAlphanumericString(12),
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Id = user.Id
-            };
+                ModelState.AddModelError("", "Something went wrong sending the mail.");
+                return StatusCode(301, ModelState);
+            }
 
-            var userMap = _mapper.Map<User>(updateUser);
+            user.Password = _passwordGenerator.GetRandomAlphanumericString(12);
+
+            var userMap = _mapper.Map<User>(user);
             
-            userMap.Password = BCrypt.Net.BCrypt.HashPassword(updateUser.Password); // SALT is created automatically by the method.
-            userMap.Email = updateUser.Email.ToLower();
+            userMap.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); // SALT is created automatically by the method.
+            userMap.Email = user.Email.ToLower();
 
             if (!_userRepository.UpdateUser(userMap))
             {
@@ -117,15 +139,7 @@ namespace Controllers
                 return StatusCode(500, ModelState);
             }
 
-            if(!_emailService.SendResetEmail(updateUser.FirstName + " " + updateUser.LastName, updateUser.Email, updateUser.Password))
-            {
-                ModelState.AddModelError("", "Saving was successful. Something went wrong sending the mail.");
-                return StatusCode(301, ModelState);
-            }
-
-            var userToReturn = _mapper.Map<UserDto>(userMap);
-
-            return Ok(userToReturn);
+            return Ok();
         }
     }
 }

@@ -14,6 +14,7 @@ export const postCall = async (data, endpoint, errorMessage, token) => {
     console.log('Erfolgreich');
     return response.data;
 
+
   } catch (error) {
     if (error.response) {
       // Server hat mit einem Statuscode geantwortet, der außerhalb des Bereichs 2xx liegt

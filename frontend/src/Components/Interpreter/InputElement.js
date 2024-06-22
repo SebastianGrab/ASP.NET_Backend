@@ -2,10 +2,41 @@ import { useState } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
 
+import Switch from '@mui/material/Switch';
+
+export const TextInput = (schemaObject) => {
+
+    return(
+        <input type="text" ></input>
+    )
+
+}
+
+export const Mandatoryhandler = ({schemaObject}) => {
+    return(
+        <div className="row">
+        <label  htmlFor={schemaObject.ID}>{schemaObject.Label}</label>
+        <div>
+        <Switch 
+        name={schemaObject.ID}
+        id={schemaObject.ID}
+        ></Switch>
+        </div>
+        </div>
+        
+
+
+        // <input type="checkbox" id={schemaObject.ID}>
+        // </input>
+
+    )
 
 
 
-export default function InputElement({ schemaObject }) {
+}
+
+
+export const InputElement = ({ schemaObject, disabled, handleChange }) => {
 
     const [editInput, setEditInput] = useState(true)
 
@@ -16,10 +47,12 @@ export default function InputElement({ schemaObject }) {
 
 
 
+
+
     return (
         <>
             <div className="row">
-                <label htmlFor={schemaObject.ID}>{schemaObject.Label}</label>
+                <label  htmlFor={schemaObject.ID}>{schemaObject.Label} {schemaObject.Mandatory === 1 && <span style={{ color: 'red' }}>*</span>}</label>
 
 
                 <div>
@@ -28,7 +61,7 @@ export default function InputElement({ schemaObject }) {
                      */}
 
                     {schemaObject.Value && editInput && <FontAwesomeIcon className="edit-icon" icon={faPen} onClick={handelEditClick} />}
-                    <input id={schemaObject.ID} type={schemaObject.Type}
+                    <input id={schemaObject.ID} type={schemaObject.Type} disabled={disabled} onChange={handleChange} pattern={schemaObject.Pattern} name={schemaObject.Name} placeholder={schemaObject.Placeholder}
                     
                         {...(schemaObject.Value && editInput &&
                             (schemaObject.Type === "text" || schemaObject.Type === "number" || schemaObject.Type === "time" || schemaObject.Type === "date") &&

@@ -1,3 +1,4 @@
+using csharp.Models;
 using Data;
 using Helper;
 using Helper.SearchObjects;
@@ -27,7 +28,18 @@ namespace Repository
                 Template = template
             };
 
+            var templateVersion = new TemplateVersions()
+            {
+                TemplateContent = template.TemplateContent,
+                templateId = template.Id,
+                Template = template,
+                CreatedDate = DateTime.Now,
+                UpdatedDate = DateTime.Now
+            };
+
             _context.Add(templateOrganization);
+
+            _context.Add(templateVersion);
 
             _context.Add(template);
 
@@ -76,12 +88,12 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(templateSearch.Name))
             {
-                templates = templates.Where(o => o.Name.Contains(templateSearch.Name));
+                templates = templates.Where(o => o.Name.ToLower().Contains(templateSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(templateSearch.Description))
             {
-                templates = templates.Where(o => o.Description.Contains(templateSearch.Description));
+                templates = templates.Where(o => o.Description.ToLower().Contains(templateSearch.Description.ToLower()));
             }
 
             return templates.OrderByDescending(p => p.Id).ToList();
@@ -113,12 +125,12 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(templateSearch.Name))
             {
-                templates = templates.Where(o => o.Name.Contains(templateSearch.Name));
+                templates = templates.Where(o => o.Name.ToLower().Contains(templateSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(templateSearch.Description))
             {
-                templates = templates.Where(o => o.Description.Contains(templateSearch.Description));
+                templates = templates.Where(o => o.Description.ToLower().Contains(templateSearch.Description.ToLower()));
             }
 
             return templates.OrderByDescending(p => p.Id).ToList();
@@ -150,12 +162,12 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(templateSearch.Name))
             {
-                templates = templates.Where(o => o.Name.Contains(templateSearch.Name));
+                templates = templates.Where(o => o.Name.ToLower().Contains(templateSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(templateSearch.Description))
             {
-                templates = templates.Where(o => o.Description.Contains(templateSearch.Description));
+                templates = templates.Where(o => o.Description.ToLower().Contains(templateSearch.Description.ToLower()));
             }
 
             return templates.OrderByDescending(p => p.Id).ToList();
@@ -174,8 +186,56 @@ namespace Repository
 
         public bool UpdateTemplate(Template template)
         {
+            var templateVersion = new TemplateVersions()
+            {
+                TemplateContent = template.TemplateContent,
+                templateId = template.Id,
+                Template = template,
+                CreatedDate = DateTime.Now,
+                UpdatedDate = DateTime.Now
+            };
+
+            _context.Add(templateVersion);
+            
             _context.Update(template);
             return Save();
+        }
+
+        public ICollection<Template> GetTemplatesOwnedByOrganizations(List<long> organizationId, QueryObject dateQuery, TemplateSearchObject templateSearch)
+        {
+            var templates = _context.Templates.Where(t => organizationId.Contains(t.Organization.Id)).AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minCreatedDateTime.ToString()))
+            {
+                templates = templates.Where(o => o.CreatedDate >= dateQuery.minCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxCreatedDateTime.ToString()))
+            {
+                templates = templates.Where(o => o.CreatedDate <= dateQuery.maxCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minUpdatedDateTime.ToString()))
+            {
+                templates = templates.Where(o => o.UpdatedDate >= dateQuery.minUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxUpdatedDateTime.ToString()))
+            {
+                templates = templates.Where(o => o.UpdatedDate <= dateQuery.maxUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(templateSearch.Name))
+            {
+                templates = templates.Where(o => o.Name.ToLower().Contains(templateSearch.Name.ToLower()));
+            }
+
+            if(!string.IsNullOrWhiteSpace(templateSearch.Description))
+            {
+                templates = templates.Where(o => o.Description.ToLower().Contains(templateSearch.Description.ToLower()));
+            }
+
+            return templates.OrderByDescending(p => p.Id).ToList();
         }
     }
 }

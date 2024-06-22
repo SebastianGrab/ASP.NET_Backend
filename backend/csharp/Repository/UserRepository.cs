@@ -1,8 +1,10 @@
+using System.Security.Claims;
 using Data;
 using Helper;
 using Helper.SearchObjects;
 using Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Repository
@@ -97,12 +99,12 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(userSearch.Email))
             {
-                users = users.Where(o => o.Email.Contains(userSearch.Email));
+                users = users.Where(o => o.Email.ToLower().Contains(userSearch.Email.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(userSearch.Username))
             {
-                users = users.Where(o => o.Username.Contains(userSearch.Username));
+                users = users.Where(o => (o.FirstName + " " + o.LastName).ToLower().Contains(userSearch.Username.ToLower()));
             }
 
             return users.OrderByDescending(p => p.Id).ToList();
@@ -113,17 +115,65 @@ namespace Repository
             return _context.UserOrganizationRoles.Where(au => au.User.Id == id).ToList();
         }
 
-        public User GetUser(long id)
+        public User GetUser(long id, ClaimsPrincipal claimUser)
         {
-            return _context.Users.Where(u => u.Id == id).FirstOrDefault();
+            var users = _context.Users.Where(u => u.Id == id).ToList();
+            
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+
+            if (claimRoles.Contains("Admin"))
+            {
+                users = users;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || u.UserOrganizationRoles.Count() == 0).ToList();
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var userOrga = _context.UserOrganizationRoles.Where(uor => uor.userId == claimUserId).Select(uor => uor.organizationId).ToList();
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => userOrga.Contains(uor.organizationId))).ToList();
+            }
+            else
+            {
+                users = null;
+            }
+
+            return users.FirstOrDefault();
         }
 
-        public User GetUserByProtocol(long protocolId)
+        public User GetUserByProtocol(long protocolId, ClaimsPrincipal claimUser)
         {
-            return _context.Protocols.Where(p => p.Id == protocolId).Select(u => u.User).FirstOrDefault();
+            var users = _context.Protocols.Where(p => p.Id == protocolId).Select(u => u.User).ToList();
+            
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+
+            if (claimRoles.Contains("Admin"))
+            {
+                users = users;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || u.UserOrganizationRoles.Count() == 0).ToList();
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var userOrga = _context.UserOrganizationRoles.Where(uor => uor.userId == claimUserId).Select(uor => uor.organizationId).ToList();
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => userOrga.Contains(uor.organizationId))).ToList();
+            }
+            else
+            {
+                users = null;
+            }
+
+            return users.FirstOrDefault();
         }
 
-        public ICollection<User> GetUsers(QueryObject dateQuery, UserSearchObject userSearch)
+        public ICollection<User> GetUsers(QueryObject dateQuery, UserSearchObject userSearch, ClaimsPrincipal claimUser)
         {
             var users = _context.Users.OrderByDescending(u => u.Id).AsQueryable();
 
@@ -149,18 +199,40 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(userSearch.Email))
             {
-                users = users.Where(o => o.Email.Contains(userSearch.Email));
+                users = users.Where(o => o.Email.ToLower().Contains(userSearch.Email.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(userSearch.Username))
             {
-                users = users.Where(o => o.Username.Contains(userSearch.Username));
+                users = users.Where(o => (o.FirstName + " " + o.LastName).ToLower().Contains(userSearch.Username.ToLower()));
+            }
+            
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+
+            if (claimRoles.Contains("Admin"))
+            {
+                users = users;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || u.UserOrganizationRoles.Count() == 0).AsQueryable();
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var userOrga = _context.UserOrganizationRoles.Where(uor => uor.userId == claimUserId).Select(uor => uor.organizationId).ToList();
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => userOrga.Contains(uor.organizationId))).AsQueryable();
+            }
+            else
+            {
+                users = null;
             }
 
             return users.OrderByDescending(p => p.Id).ToList();
         }
 
-        public ICollection<User> GetUsersByOrganization(long organizationId, QueryObject dateQuery, UserSearchObject userSearch)
+        public ICollection<User> GetUsersByOrganization(long organizationId, QueryObject dateQuery, UserSearchObject userSearch, ClaimsPrincipal claimUser)
         {
             var users = _context.UserOrganizationRoles.Where(uor => uor.Organization.Id == organizationId).Select(u => u.User).OrderByDescending(u => u.Id).AsQueryable();
 
@@ -186,12 +258,34 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(userSearch.Email))
             {
-                users = users.Where(o => o.Email.Contains(userSearch.Email));
+                users = users.Where(o => o.Email.ToLower().Contains(userSearch.Email.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(userSearch.Username))
             {
-                users = users.Where(o => o.Username.Contains(userSearch.Username));
+                users = users.Where(o => (o.FirstName + " " + o.LastName).ToLower().Contains(userSearch.Username.ToLower()));
+            }
+            
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+
+            if (claimRoles.Contains("Admin"))
+            {
+                users = users;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || u.UserOrganizationRoles.Count() == 0).AsQueryable();
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var userOrga = _context.UserOrganizationRoles.Where(uor => uor.userId == claimUserId).Select(uor => uor.organizationId).ToList();
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => userOrga.Contains(uor.organizationId))).AsQueryable();
+            }
+            else
+            {
+                users = null;
             }
 
             return users.OrderByDescending(p => p.Id).ToList();
@@ -234,9 +328,50 @@ namespace Repository
             return _context.Users.Where(u => u.Email.ToLower() == email.ToLower()).FirstOrDefault();
         }
 
-        public List<User> GetUsersByOrganizationAndRole(long organizationId, long roleId)
+        public List<User> GetUsersByOrganizationAndRole(long organizationId, long roleId, ClaimsPrincipal claimUser)
         {
-            return _context.UserOrganizationRoles.Where(au => au.organizationId == organizationId && au.roleId == roleId).Select(au => au.User).ToList();
+            var users = _context.UserOrganizationRoles.Where(au => au.organizationId == organizationId && au.roleId == roleId).Select(au => au.User).ToList();
+
+            var claimRoles = claimUser.GetRoles();
+            var claimOrganizationIds = claimUser.GetOrganizationIds();
+            var claimUserId = claimUser.GetUserId(); 
+
+            if (claimRoles.Contains("Admin"))
+            {
+                users = users;
+            }
+            else if (claimRoles.Contains("Leiter"))
+            {
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || u.UserOrganizationRoles.Count() == 0).ToList();
+            }
+            else if (claimRoles.Contains("Helfer"))
+            {
+                var userOrga = _context.UserOrganizationRoles.Where(uor => uor.userId == claimUserId).Select(uor => uor.organizationId).ToList();
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => userOrga.Contains(uor.organizationId))).ToList();
+            }
+            else
+            {
+                users = null;
+            }
+
+            return users;
+        }
+
+        public bool UserMailExists(long id, string email)
+        {
+            var userMailCount = _context.Users.Where(o => o.Email.ToLower() == email.ToLower() && o.Id != id).Count();
+
+            return userMailCount > 0;
+        }
+
+        public User GetUserAsNoTracking(long id)
+        {
+            return _context.Users.AsNoTracking().FirstOrDefault(u => u.Id == id);
+        }
+
+        public bool UserOrganizationExists(long userId, long organizationId)
+        {
+            return _context.UserOrganizationRoles.Any(u => u.User.Id == userId && u.Organization.Id == organizationId);
         }
     }
 }

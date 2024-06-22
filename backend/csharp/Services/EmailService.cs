@@ -25,7 +25,7 @@ public class EmailService : IEmailService
 
             var appendToBody = @"
             
-            Protokoll abrufbar unter: " + _configuration["EmailSettings:FrontendUrl"] + "/" + user.Id.ToString() + "/protocols/" + protocolId.ToString() + @"
+            Protokoll abrufbar unter: " + _configuration["EmailSettings:FrontendUrl"] + "/" + user.Id.ToString() + "/archive/" + protocolId.ToString() + @"
             ";
             
             var builder = new BodyBuilder { TextBody = content };

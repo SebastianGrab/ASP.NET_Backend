@@ -1,67 +1,256 @@
-// import { Routes, Route, Outlet, Link } from "react-router-dom";
-// import { useState } from 'react'
-// import {FlexibleXYPlot, LineSeries,VerticalBarSeries, XAxis, YAxis, VerticalGridLines, HorizontalGridLines} from 'react-vis';
+import * as React from 'react';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { BarChart } from '@mui/x-charts/BarChart';
+import Typography from '@mui/material/Typography';
+import { PieChart } from '@mui/x-charts/PieChart';
+import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import TextField from '@mui/material/TextField';
+import dayjs from 'dayjs';
 
-// function Stats() {
-//     // Daten für das erste Linien-Diagramm
-//     const data1 = [
-//         { x: 0, y: 10 },
-//         { x: 1, y: 15 },
-//         { x: 2, y: 20 },
-//         { x: 3, y: 25 },
-//         { x: 4, y: 30 }
-//     ];
+export default function Stats() {
+    const [startDate, setStartDate] = useState(dayjs().subtract(1, 'month'));
+    const [endDate, setEndDate] = useState(dayjs());
+    const [data, setData] = useState([]);
+    const [userData, setUserData] = useState([]);
+    const [token, setToken] = useState('');
+    const [orgaID, setOrgaID] = useState('');
+    const [userID, setUserID] = useState('');
+    const [totalProtocols, setTotalProtocols] = useState(0);
+    const [yearlyData, setYearlyData] = useState([]);
+    const [placeData, setPlaceData] = useState([]);
+    const [organizationData, setOrganizationData] = useState([]);
+    const [typeData, setTypeData] = useState([]);
 
-//     // Daten für das zweite Linien-Diagramm
-//     const data2 = [
-//         { x: 0, y: 8 },
-//         { x: 1, y: 12 },
-//         { x: 2, y: 16 },
-//         { x: 3, y: 20 },
-//         { x: 4, y: 24 }
-//     ];
+    useEffect(() => {
+        const storedloginData = JSON.parse(localStorage.getItem('loginData'));
+        if (storedloginData) {
+            setToken(storedloginData.token);
+            setOrgaID(storedloginData.organizationId);
+            setUserID(storedloginData.userId);
+        }
 
-//     return (
-//         <>
-//             <div style={{ display: 'flex' }}>
-//                {/* Erste Kachel */}
-//                 <div className="tile-diagram" style={{ flex: '1', marginRight: '10px' }}>
-//                     <FlexibleXYPlot height={250}>
-//                         <LineSeries data={data1} />
-//                         <VerticalGridLines />
-//                         <HorizontalGridLines />
-//                         <XAxis />
-//                         <YAxis />
-//                     </FlexibleXYPlot>
-//                 </div>
-//                 <div className="tile-diagram" style={{ flex: '1' }}>
-//                     <FlexibleXYPlot  height={250}>
-//                         <VerticalBarSeries data={data2} />
-//                         <XAxis />
-//                         <YAxis />
-//                     </FlexibleXYPlot>
-//                 </div>
-//             </div>
-//             <div style={{ display: 'flex' }}>
-//                 {/* Erste Kachel */ }
-//                <div className="tile-diagram" style={{ flex: '1', marginRight: '10px' }}>
-//                     <FlexibleXYPlot height={250}>
-//                         <VerticalBarSeries data={data1} />
-//                         <XAxis />
-//                         <YAxis />
-//                     </FlexibleXYPlot>
-//                 </div>
-//                 <div className="tile-diagram" style={{ flex: '1' }}>
-//                     <FlexibleXYPlot  height={250}>
-//                         <LineSeries data={data2} />
-//                         <XAxis />
-//                         <YAxis />
-//                     </FlexibleXYPlot>
-//                 </div>
-//             </div>
-//         </>
-//     );
-// }
+        if (storedloginData && storedloginData.token) {
+            fetchData(storedloginData.token, startDate, endDate);
+        }
+    }, [startDate, endDate]);
 
-// export default Stats;
+    const fetchData = async (token, date) => {
+        const minDate = date.format('YYYY-MM-DD');
+        const startOfYear = dayjs().startOf('year').format('YYYY-MM-DD');
+        const maxDate = date.format('YYYY-MM-DD');
+        try {
+            const response1 = await getCall(`/api/statistics/number-of-protocols-by-date?minDate=${minDate}`, token, "Error getting data");
+            setData(response1);
 
+            const response2 = await getCall(`/api/statistics/number-of-protocols-by-user?minDate=${minDate}`, token, "Error getting user data");
+            setUserData(response2);
+
+            const response3 = await getCall(`/api/statistics/number-of-protocols??minDate=${startOfYear}`, token, "Error getting total protocols");
+            setTotalProtocols(response3);
+
+            const response4 = await getCall(`/api/statistics/number-of-protocols-by-year`, token, "Error getting yearly data");
+            setYearlyData(response4);
+
+            const response5 = await getCall(`/api/statistics/number-of-protocols-by-place?minDate=${minDate}`, token, "Error getting place data");
+            setPlaceData(response5);
+
+            const response6 = await getCall(`/api/statistics/number-of-protocols-by-organization?minDate=${minDate}`, token, "Error getting organization data");
+            setOrganizationData(response6);
+
+            const response7 = await getCall(`/api/statistics/number-of-protocols-by-type?minDate=${minDate}`, token, "Error getting type data");
+            setTypeData(response7);
+
+            console.log("Get Data successful!");
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const getCall = (url, token, errorMessage) => {
+        return fetch(url, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then(response => response.json())
+            .catch(error => {
+                console.error(errorMessage, error);
+                throw error;
+            });
+    };
+
+    const chartData = data.map(item => item.count);
+    const chartLabels = data.map(item => item.date);
+
+    const pieChartData = userData.map(item => ({
+        id: item.user.id,
+        value: item.count,
+        label: item.user.username
+    }));
+
+    const yearlyChartData = yearlyData.map(item => item.count);
+    const yearlyChartLabels = yearlyData.map(item => item.year.toString());
+
+    const placeChartData = placeData.map((item, index) => ({
+        id: index,
+        value: item.count,
+        label: item.place
+    }));
+
+    const organizationChartData = organizationData.map((item, index) => ({
+        id: index,
+        value: item.count,
+        label: item.organization.name
+    }));
+
+    const typeChartData = typeData.map((item, index) => ({
+        id: index,
+        value: item.count,
+        label: item.type
+    }));
+
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ marginLeft: '20px' }}>
+
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                        label="Startdatum"
+                        value={startDate}
+                        onChange={(newValue) => setStartDate(newValue)}
+                        renderInput={(params) => <TextField {...params}  />}
+                    />
+                </LocalizationProvider>
+                </div>
+                <div style={{ marginLeft: '20px' }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                        label="Enddatum"
+                        value={endDate}
+                        onChange={(newValue) => setEndDate(newValue)}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                </LocalizationProvider>
+
+                </div>
+            </div>
+            <div className="tile-diagram" style={{ flex: '1', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography variant="h6" style={{ textAlign: 'center' }}>
+                    {totalProtocols}
+                </Typography>
+                <Typography variant="caption">
+                    Anzahl der Einsätze in diesem Jahr
+                </Typography>
+            </div>
+
+            <Link to="chart/bar1">
+                <div className="tile-diagram" style={{ flex: '1' }}>
+                    <h4 className={"chart-title"}>Anzahl Einsätze nach Tag</h4>
+                    <BarChart
+                        xAxis={[
+                            {
+                                id: 'barCategories',
+                                data: chartLabels,
+                                scaleType: 'band',
+                            },
+                        ]}
+                        series={[
+                            {
+                                data: chartData,
+                            },
+                        ]}
+                        width={500}
+                        height={300}
+                    />
+                </div>
+            </Link>
+
+            <Link to="chart/pie1">
+                <div className="tile-diagram" style={{ flex: '1' }}>
+                    <h4 className={"chart-title"}>Anzahl Einsätze nach Helfer</h4>
+                    <PieChart
+                        series={[
+                            {
+                                data: pieChartData,
+                            },
+                        ]}
+                        width={500}
+                        height={200}
+                    />
+                </div>
+            </Link>
+
+            <Link to="chart/bar2">
+                <div className="tile-diagram" style={{ flex: '1', marginBottom: '5px' }}>
+                    <h4 className={"chart-title"}>Anzahl Einsätze nach Jahren</h4>
+                    <BarChart
+                        xAxis={[
+                            {
+                                id: 'barCategories',
+                                data: yearlyChartLabels,
+                                scaleType: 'band',
+                                tickLabelInterval: () => true,
+                            },
+                        ]}
+                        series={[
+                            {
+                                data: yearlyChartData,
+                            },
+                        ]}
+                        width={500}
+                        height={300}
+                    />
+                </div>
+            </Link>
+
+            <Link to="chart/pie2">
+                <div className="tile-diagram" style={{ flex: '1' }}>
+                    <h4 className={"chart-title"}>Anzahl Einsätze nach Ort</h4>
+                    <PieChart
+                        series={[
+                            {
+                                data: placeChartData,
+                            },
+                        ]}
+                        width={500}
+                        height={200}
+                    />
+                </div>
+            </Link>
+
+            <Link to="chart/pie3">
+                <div className="tile-diagram" style={{ flex: '1' }}>
+                    <h4 className={"chart-title"}>Anzahl Einsätze nach Organisation</h4>
+                    <PieChart
+                        series={[
+                            {
+                                data: organizationChartData,
+                            },
+                        ]}
+                        width={500}
+                        height={200}
+                    />
+                </div>
+            </Link>
+            <Link to="chart/pie4">
+                <div className="tile-diagram" style={{ flex: '1' }}>
+                    <h4 className={"chart-title"}>Anzahl Einsätze nach Einsatzart</h4>
+                    <PieChart
+                        series={[
+                            {
+                                data: typeChartData,
+                            },
+                        ]}
+                        width={500}
+                        height={200}
+                    />
+                </div>
+            </Link>
+        </div>
+    );
+}

@@ -41,12 +41,12 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(organizationSearch.Name))
             {
-                orgas = orgas.Where(o => o.Name.Contains(organizationSearch.Name));
+                orgas = orgas.Where(o => o.Name.ToLower().Contains(organizationSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(organizationSearch.OrganizationType))
             {
-                orgas = orgas.Where(o => o.OrganizationType.Contains(organizationSearch.OrganizationType));
+                orgas = orgas.Where(o => o.OrganizationType.ToLower().Contains(organizationSearch.OrganizationType.ToLower()));
             }
 
             return orgas.OrderByDescending(p => p.Id).ToList();
@@ -88,12 +88,12 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(organizationSearch.Name))
             {
-                orgas = orgas.Where(o => o.Name.Contains(organizationSearch.Name));
+                orgas = orgas.Where(o => o.Name.ToLower().Contains(organizationSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(organizationSearch.OrganizationType))
             {
-                orgas = orgas.Where(o => o.OrganizationType.Contains(organizationSearch.OrganizationType));
+                orgas = orgas.Where(o => o.OrganizationType.ToLower().Contains(organizationSearch.OrganizationType.ToLower()));
             }
 
             return orgas.OrderByDescending(p => p.Id).ToList();
@@ -125,12 +125,12 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(organizationSearch.Name))
             {
-                orgas = orgas.Where(o => o.Name.Contains(organizationSearch.Name));
+                orgas = orgas.Where(o => o.Name.ToLower().Contains(organizationSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(organizationSearch.OrganizationType))
             {
-                orgas = orgas.Where(o => o.OrganizationType.Contains(organizationSearch.OrganizationType));
+                orgas = orgas.Where(o => o.OrganizationType.ToLower().Contains(organizationSearch.OrganizationType.ToLower()));
             }
 
             return orgas.OrderByDescending(p => p.Id).ToList();
@@ -201,12 +201,12 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(organizationSearch.Name))
             {
-                orgas = orgas.Where(o => o.Name.Contains(organizationSearch.Name));
+                orgas = orgas.Where(o => o.Name.ToLower().Contains(organizationSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(organizationSearch.OrganizationType))
             {
-                orgas = orgas.Where(o => o.OrganizationType.Contains(organizationSearch.OrganizationType));
+                orgas = orgas.Where(o => o.OrganizationType.ToLower().Contains(organizationSearch.OrganizationType.ToLower()));
             }
 
             return orgas.OrderByDescending(p => p.Id).ToList();
@@ -254,12 +254,66 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(organizationSearch.Name))
             {
-                orgas = orgas.Where(o => o.Name.Contains(organizationSearch.Name));
+                orgas = orgas.Where(o => o.Name.ToLower().Contains(organizationSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(organizationSearch.OrganizationType))
             {
-                orgas = orgas.Where(o => o.OrganizationType.Contains(organizationSearch.OrganizationType));
+                orgas = orgas.Where(o => o.OrganizationType.ToLower().Contains(organizationSearch.OrganizationType.ToLower()));
+            }
+
+            return orgas.OrderByDescending(p => p.Id).ToList();
+        }
+
+        public List<Organization> GetMothersRecursive(long organizationId)
+        {
+            var orga = _context.Organizations.Where(o => o.Id == organizationId).FirstOrDefault();
+            var parentOrganisations = new List<Organization>();
+            while (orga.parentId.HasValue)
+            {
+                var parent = _context.Organizations.Find(orga.parentId.Value);
+                if (parent == null)
+                {
+                    break;
+                }
+                parentOrganisations.Add(parent);
+                orga = parent;
+            }
+            return parentOrganisations.ToList();
+        }
+
+        public ICollection<Organization> GetAllOrganizationMothers(long organizationId, QueryObject dateQuery, OrganizationSearchObject organizationSearch)
+        {
+            var orgas = GetMothersRecursive(organizationId).OrderByDescending(o => o.Id).AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minCreatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.CreatedDate >= dateQuery.minCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxCreatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.CreatedDate <= dateQuery.maxCreatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.minUpdatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.UpdatedDate >= dateQuery.minUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(dateQuery.maxUpdatedDateTime.ToString()))
+            {
+                orgas = orgas.Where(o => o.UpdatedDate <= dateQuery.maxUpdatedDateTime);
+            }
+
+            if(!string.IsNullOrWhiteSpace(organizationSearch.Name))
+            {
+                orgas = orgas.Where(o => o.Name.ToLower().Contains(organizationSearch.Name.ToLower()));
+            }
+
+            if(!string.IsNullOrWhiteSpace(organizationSearch.OrganizationType))
+            {
+                orgas = orgas.Where(o => o.OrganizationType.ToLower().Contains(organizationSearch.OrganizationType.ToLower()));
             }
 
             return orgas.OrderByDescending(p => p.Id).ToList();

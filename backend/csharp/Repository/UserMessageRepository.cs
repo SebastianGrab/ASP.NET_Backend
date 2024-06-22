@@ -64,17 +64,17 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(userMessageSearch.Subject))
             {
-                userMessages = userMessages.Where(o => o.Subject.Contains(userMessageSearch.Subject));
+                userMessages = userMessages.Where(o => o.Subject.ToLower().Contains(userMessageSearch.Subject.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(userMessageSearch.SentFrom))
             {
-                userMessages = userMessages.Where(o => o.SentFrom.Contains(userMessageSearch.SentFrom));
+                userMessages = userMessages.Where(o => o.SentFrom.ToLower().Contains(userMessageSearch.SentFrom.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(userMessageSearch.MessageContent))
             {
-                userMessages = userMessages.Where(o => o.MessageContent.Contains(userMessageSearch.MessageContent));
+                userMessages = userMessages.Where(o => o.MessageContent.ToLower().Contains(userMessageSearch.MessageContent.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(userMessageSearch.IsArchived.ToString()))
@@ -116,17 +116,17 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(userMessageSearch.Subject))
             {
-                userMessages = userMessages.Where(o => o.Subject.Contains(userMessageSearch.Subject));
+                userMessages = userMessages.Where(o => o.Subject.ToLower().Contains(userMessageSearch.Subject.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(userMessageSearch.SentFrom))
             {
-                userMessages = userMessages.Where(o => o.SentFrom.Contains(userMessageSearch.SentFrom));
+                userMessages = userMessages.Where(o => o.SentFrom.ToLower().Contains(userMessageSearch.SentFrom.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(userMessageSearch.MessageContent))
             {
-                userMessages = userMessages.Where(o => o.MessageContent.Contains(userMessageSearch.MessageContent));
+                userMessages = userMessages.Where(o => o.MessageContent.ToLower().Contains(userMessageSearch.MessageContent.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(userMessageSearch.IsArchived.ToString()))

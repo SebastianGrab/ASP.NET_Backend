@@ -1,24 +1,33 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle, faEnvelope as envelopeSolid } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelopeOpen as envelopeRegular } from '@fortawesome/free-regular-svg-icons';
 import {useNavigate} from "react-router-dom";
 
-export default function TileMessages({heading, status, pagePath}) {
-    const head = {heading};
-    const statuss = {status};
+export default function TileMessages({heading, reviewComment, pagePath, statusClass, payload, isClicked,
+                                         onClick}) {
+
     const navigate = useNavigate();
-
-    let message = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren';
-
     const [showMessageBody, setShowMessageBody] = useState(false);
 
+    function editProtocol() {
+        if(payload === null){
+            navigate(pagePath);
+        } else {
+            navigate(pagePath, { state: {payload}});
+        }
 
-
-    function handlePiP() {
-        navigate(pagePath);
     }
+
+    function clickedProtocolHandler() {
+        onClick();
+    }
+
+
     function clickHandler() {
         setShowMessageBody(!showMessageBody);
+        clickedProtocolHandler();
     }
 
 
@@ -26,21 +35,36 @@ export default function TileMessages({heading, status, pagePath}) {
         <>
             <div className="tile-message">
                 <div className="message-head" onClick={clickHandler}>
-                    <h3> {heading} </h3>
+                    <h3>
+                        {payload && payload.isClosed ? (
+                            <FontAwesomeIcon
+                                icon={faInfoCircle}
+                                style={{ marginRight: '10px' }}
+                            />
+                        ) : (
+                            <FontAwesomeIcon
+                                icon={isClicked ? envelopeRegular : envelopeSolid}
+                                style={{ marginRight: '10px' }}
+                            />
+                        )}
+                        {heading}{' '}
+                         </h3>
 
                     <label>
                         Status: 
 
-                    <FontAwesomeIcon icon={faCircle} size="2x" className={status}/>
+                    <FontAwesomeIcon icon={faCircle} size="2x" className={statusClass}/>
                     </label>
 
 
                 </div>
 
-                <div className={`message-body ${showMessageBody ? 'open' : ''}`} onClick={clickHandler}>
-                    {message}
+                <div className={`message-body ${showMessageBody ? 'open' : ''}`} onClick={clickHandler} >
+                    <p>
+                        {reviewComment}
+                    </p>
                 </div>
-                <button className="button" onClick={handlePiP}>Zum Protokoll</button>
+                <button className="button" onClick={editProtocol}>Zum Protokoll</button>
 
             </div>
 

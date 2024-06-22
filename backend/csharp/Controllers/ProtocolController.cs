@@ -8,6 +8,8 @@ using Helper;
 using Helper.SearchObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using Repository;
+using csharp.Interfaces;
 
 namespace backend.Controllers
 {
@@ -25,8 +27,9 @@ namespace backend.Controllers
         private readonly IAdditionalUserRepository _additionalUserRepository;
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
+        private readonly ITemplateVersionRepository _templateVersionRepository;
 
-        public ProtocolController(IProtocolRepository protocolRepository, IOrganizationRepository organizationRepository, IProtocolContentRepository protocolContentRepository, IProtocolPdfFileRepository protocolPdfFileRepository, ITemplateRepository templateRepository, IUserRepository userRepository, IAdditionalUserRepository additionalUserRepository, IEmailService emailService, IMapper mapper)
+        public ProtocolController(ITemplateVersionRepository templateVersionRepository, IProtocolRepository protocolRepository, IOrganizationRepository organizationRepository, IProtocolContentRepository protocolContentRepository, IProtocolPdfFileRepository protocolPdfFileRepository, ITemplateRepository templateRepository, IUserRepository userRepository, IAdditionalUserRepository additionalUserRepository, IEmailService emailService, IMapper mapper)
         {
             _protocolRepository = protocolRepository;
             _organizationRepository = organizationRepository;
@@ -37,10 +40,12 @@ namespace backend.Controllers
             _additionalUserRepository = additionalUserRepository;
             _emailService = emailService;
             _mapper = mapper;
+            _templateVersionRepository = templateVersionRepository;
         }
 
         // GET: api/protocols
         [HttpGet]
+        [Authorize(Roles = "Admin,Leiter,Helfer")]
         [Route("/api/protocols")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Protocol>))]
         public IActionResult GetProtocols([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] ProtocolSearchObject protocolSearchQuery = null)
@@ -94,6 +99,25 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
+            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
+            var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Leiter") || !orgaIds.Contains(protocolOrga.Id))
+                {
+                    if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Helfer") || !protocolAdditionalUserIds.Contains(userClaimId))
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
+
             var organization = _mapper.Map<OrganizationDto>(_organizationRepository.GetOrganizationByProtocol(id));
 
             if(!ModelState.IsValid)
@@ -111,6 +135,25 @@ namespace backend.Controllers
         {            
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
+
+            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
+            var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Leiter") || !orgaIds.Contains(protocolOrga.Id))
+                {
+                    if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Helfer") || !protocolAdditionalUserIds.Contains(userClaimId))
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
 
             var content = _mapper.Map<ProtocolContentDto>(_protocolContentRepository.GetProtocolContent(id, User));
 
@@ -130,6 +173,25 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
+            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
+            var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Leiter") || !orgaIds.Contains(protocolOrga.Id))
+                {
+                    if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Helfer") || !protocolAdditionalUserIds.Contains(userClaimId))
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
+
             var pdf = _mapper.Map<ProtocolPdfFileDto>(_protocolPdfFileRepository.GetProtocolPdfFile(id, User));
 
             if(!ModelState.IsValid)
@@ -148,14 +210,38 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
+            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
+            var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Leiter") || !orgaIds.Contains(protocolOrga.Id))
+                {
+                    if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Helfer") || !protocolAdditionalUserIds.Contains(userClaimId))
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
+
             var pdf = _mapper.Map<ProtocolPdfFileDto>(_protocolPdfFileRepository.GetProtocolPdfFile(id, User));
+
+            if(pdf == null)
+                return NotFound();
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var number = _protocolContentRepository.GetProtocolNumber(id);
+
             byte[] fileBytes = Convert.FromBase64String(pdf.Content);
 
-            return File(fileBytes, "application/pdf", "DRK_Protocol.pdf");
+            return File(fileBytes, "application/pdf", "Protocol_" + number + "_" + pdf.CreatedDate.Year.ToString() + ".pdf");
         }
 
         // GET: api/protocol/{id}/template
@@ -167,6 +253,25 @@ namespace backend.Controllers
         {
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
+
+            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
+            var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Leiter") || !orgaIds.Contains(protocolOrga.Id))
+                {
+                    if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Helfer") || !protocolAdditionalUserIds.Contains(userClaimId))
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
 
             var template = _mapper.Map<TemplateDto>(_templateRepository.GetTemplateByProtocol(id));
 
@@ -186,7 +291,26 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var user = _mapper.Map<UserDto>(_userRepository.GetUserByProtocol(id));
+            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
+            var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Leiter") || !orgaIds.Contains(protocolOrga.Id))
+                {
+                    if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Helfer") || !protocolAdditionalUserIds.Contains(userClaimId))
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
+
+            var user = _mapper.Map<UserDto>(_userRepository.GetUserByProtocol(id, User));
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -203,6 +327,25 @@ namespace backend.Controllers
         {
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
+
+            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
+            var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
+
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+            var userClaimId = User.GetUserId();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Leiter") || !orgaIds.Contains(protocolOrga.Id))
+                {
+                    if (orgaIds.ToString().IsNullOrEmpty() || !roles.Contains("Helfer") || !protocolAdditionalUserIds.Contains(userClaimId))
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
 
             var users = _mapper.Map<List<UserDto>>(_userRepository.GetAdditionalUsersByProtocol(id, dateQuery, userSearchQuery));
 
@@ -237,14 +380,14 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var protocolUser = _userRepository.GetUserByProtocol(id);
+            var protocolUser = _userRepository.GetUserByProtocol(id, User);
 
             var roles = User.GetRoles();
             var userId = User.GetUserId();
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (userId.ToString().IsNullOrEmpty() || userId.ToString() != protocolUser.Id.ToString())
+                if (userId.ToString().IsNullOrEmpty() || userId != protocolUser.Id)
                 {
                     return Unauthorized();
                 }
@@ -272,6 +415,20 @@ namespace backend.Controllers
 
             protocolContentMap.Protocol = _protocolRepository.GetProtocol(id, User);
             protocolContentMap.protocolId = id;
+            protocolContentMap.Id = id;
+
+            var templateId = _templateRepository.GetTemplateByProtocol(id);
+
+            if(templateId == null)
+                return NotFound();
+
+            var templateVersions = _templateVersionRepository.GetVersions(templateId.Id).Select(tv => tv.TemplateContent).ToList();
+
+            if (!ProtocolValidationService.IsValidProtocol(templateVersions, protocolContentCreate.Content))
+            {
+                ModelState.AddModelError("", "JSON Content does not match with a Template.");
+                return StatusCode(400, ModelState);
+            }
 
             if (!_protocolContentRepository.CreateProtocolContent(protocolContentMap))
             {
@@ -291,14 +448,14 @@ namespace backend.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateProtocolPdfFile(long id, [FromBody] ProtocolPdfFileDto protocolPdfFileCreate)
         {
-            var protocolUser = _userRepository.GetUserByProtocol(id);
+            var protocolUser = _userRepository.GetUserByProtocol(id, User);
 
             var roles = User.GetRoles();
             var userId = User.GetUserId();
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (userId.ToString().IsNullOrEmpty() || userId.ToString() != protocolUser.Id.ToString())
+                if (userId.ToString().IsNullOrEmpty() || userId != protocolUser.Id)
                 {
                     return Unauthorized();
                 }
@@ -325,6 +482,7 @@ namespace backend.Controllers
 
             protocolPdfFileMap.Protocol = _protocolRepository.GetProtocol(id, User);
             protocolPdfFileMap.protocolId = id;
+            protocolPdfFileMap.Id = id;
 
             if (!_protocolPdfFileRepository.CreateProtocolPdfFile(protocolPdfFileMap))
             {
@@ -351,7 +509,7 @@ namespace backend.Controllers
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(organizationId.ToString()) || userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != userId.ToString())
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(organizationId) || userClaimId.ToString().IsNullOrEmpty() || userClaimId != userId)
                 {
                     return Unauthorized();
                 }
@@ -382,7 +540,7 @@ namespace backend.Controllers
 
             protocolMap.Template = _templateRepository.GetTemplate(templateId);
             protocolMap.Organization = _organizationRepository.GetOrganization(organizationId);
-            protocolMap.User = _userRepository.GetUser(userId);
+            protocolMap.User = _userRepository.GetUser(userId, User);
 
             if (!_protocolRepository.CreateProtocol(additionalUserIds, protocolMap))
             {
@@ -390,9 +548,9 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            if (!protocolMap.IsDraft && !protocolMap.IsClosed && protocolMap.emailSubject != null && protocolMap.emailContent != null)
+            if (!protocolMap.IsDraft && !protocolMap.IsClosed && protocolMap.sendEmail == true && protocolMap.emailSubject != null && protocolMap.emailContent != null)
             {
-                var mailReceivers = _userRepository.GetUsersByOrganizationAndRole(protocolMap.Organization.Id, 2);
+                var mailReceivers = _userRepository.GetUsersByOrganizationAndRole(protocolMap.Organization.Id, -2, User);
                 List<User> emailUsers = mailReceivers.Where(p => p.Id != userClaimId).ToList();
 
                 _emailService.SendEmailFromProtocol(emailUsers, protocolMap.emailSubject, protocolMap.emailContent, protocolMap.Id);
@@ -426,13 +584,13 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            var protocolUser = _userRepository.GetUserByProtocol(id);
+            var protocolUser = _userRepository.GetUserByProtocol(id, User);
             var roles = User.GetRoles();
             var userClaimId = User.GetUserId();
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (protocolUser == null || userClaimId.ToString() == null || userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != protocolUser.Id.ToString())
+                if (protocolUser == null || userClaimId.ToString() == null || userClaimId.ToString().IsNullOrEmpty() || userClaimId != protocolUser.Id)
                 {
                     return Unauthorized();
                 }
@@ -443,6 +601,10 @@ namespace backend.Controllers
             var protocolsToDelete = _protocolRepository.GetProtocol(id, User);
             var additionalUsersToDelete = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id);
 
+            if (protocolsToDelete.IsClosed) 
+            {
+                ModelState.AddModelError("", "Can't delete a closed protocol.");
+            }
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -490,13 +652,13 @@ namespace backend.Controllers
                 return NotFound();
             }
             
-            var protocolUser = _userRepository.GetUserByProtocol(id);
+            var protocolUser = _userRepository.GetUserByProtocol(id, User);
             var roles = User.GetRoles();
             var userClaimId = User.GetUserId();
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != protocolUser.Id.ToString())
+                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId != protocolUser.Id)
                 {
                     return Unauthorized();
                 }
@@ -529,7 +691,7 @@ namespace backend.Controllers
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (protocolOrga.Id.ToString().IsNullOrEmpty() || orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(protocolOrga.Id.ToString()))
+                if (protocolOrga.Id.ToString().IsNullOrEmpty() || orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(protocolOrga.Id))
                 {
                     return Unauthorized();
                 }
@@ -567,7 +729,7 @@ namespace backend.Controllers
             var protocolMap = _mapper.Map<Protocol>(protocolUpdate);
 
             var protocolOrganisation = _organizationRepository.GetOrganizationByProtocol(id);
-            var protocolUser = _userRepository.GetUserByProtocol(id);
+            var protocolUser = _userRepository.GetUserByProtocol(id, User);
             var protocolTemplate = _templateRepository.GetTemplateByProtocol(id);
 
             protocolMap.Organization = protocolOrganisation;
@@ -591,15 +753,16 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            if (!protocolMap.IsDraft && !protocolMap.IsClosed && protocolMap.emailSubject != null && protocolMap.emailContent != null)
+            if (!protocolMap.IsDraft && !protocolMap.IsClosed && protocolMap.sendEmail == true && protocolMap.emailSubject != null && protocolMap.emailContent != null)
             {
-                var mailReceivers = _userRepository.GetUsersByOrganizationAndRole(protocolMap.Organization.Id, 2);
+                var mailReceivers = _userRepository.GetUsersByOrganizationAndRole(protocolMap.Organization.Id, -2, User);
                 List<User> emailUsers = mailReceivers.Where(p => p.Id != closingUserId).ToList();
 
                 _emailService.SendEmailFromProtocol(emailUsers, protocolMap.emailSubject, protocolMap.emailContent, id);
             }
 
-            return NoContent();
+
+            return Ok(protocolMap);
         }
 
         [HttpPut("{id}/content")]
@@ -615,13 +778,13 @@ namespace backend.Controllers
             if (!_protocolContentRepository.ProtocolContentExists(id))
                 return NotFound();
 
-            var protocolUser = _userRepository.GetUserByProtocol(id);
+            var protocolUser = _userRepository.GetUserByProtocol(id, User);
             var roles = User.GetRoles();
             var userClaimId = User.GetUserId();
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != protocolUser.Id.ToString())
+                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId != protocolUser.Id)
                 {
                     return Unauthorized();
                 }
@@ -639,10 +802,32 @@ namespace backend.Controllers
                 return StatusCode(400, ModelState);
             }
 
+            var protocol = _protocolRepository.GetProtocol(id, User);
+
+            if (protocol == null || protocol.IsClosed)
+            {
+                ModelState.AddModelError("", "Cannot update a closed protocol.");
+                return StatusCode(400, ModelState);
+            }
+
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var protocolContentMap = _mapper.Map<ProtocolContent>(protocolContentUpdate);
+            protocolContentMap.Id = id;
+
+            var templateId = _templateRepository.GetTemplateByProtocol(id);
+
+            if(templateId == null)
+                return NotFound();
+
+            var templateVersions = _templateVersionRepository.GetVersions(templateId.Id).Select(tv => tv.TemplateContent).ToList();
+
+            if (!ProtocolValidationService.IsValidProtocol(templateVersions, protocolContentUpdate.Content))
+            {
+                ModelState.AddModelError("", "JSON Content does not match with a Template.");
+                return StatusCode(400, ModelState);
+            }
 
             if (!_protocolContentRepository.UpdateProtocolContent(protocolContentMap))
             {
@@ -650,7 +835,7 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return NoContent();
+            return Ok(protocolContentMap);
         }
 
         [HttpPut("{id}/pdf")]
@@ -666,13 +851,13 @@ namespace backend.Controllers
             if (!_protocolContentRepository.ProtocolContentExists(id))
                 return NotFound();
 
-            var protocolUser = _userRepository.GetUserByProtocol(id);
+            var protocolUser = _userRepository.GetUserByProtocol(id, User);
             var roles = User.GetRoles();
             var userClaimId = User.GetUserId();
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId.ToString() != protocolUser.Id.ToString())
+                if (userClaimId.ToString().IsNullOrEmpty() || userClaimId != protocolUser.Id)
                 {
                     return Unauthorized();
                 }
@@ -687,10 +872,19 @@ namespace backend.Controllers
             if (!_protocolPdfFileRepository.ProtocolPdfFileExists(id))
                 return NotFound();
 
+            var protocol = _protocolRepository.GetProtocol(id, User);
+
+            if (protocol == null || protocol.IsClosed)
+            {
+                ModelState.AddModelError("", "Cannot update a closed protocol.");
+                return StatusCode(400, ModelState);
+            }
+
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var protocolPdfFileMap = _mapper.Map<ProtocolPdfFile>(protocolPdfFileUpdate);
+            protocolPdfFileMap.Id = id;
 
             if (!_protocolPdfFileRepository.UpdateProtocolPdfFile(protocolPdfFileMap))
             {
@@ -698,7 +892,7 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return NoContent();
+            return Ok(protocolPdfFileMap);
         }
     }
 }

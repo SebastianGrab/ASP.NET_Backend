@@ -34,14 +34,3 @@ docker-compose up -d csharp_backend
 Login:
 - Email: superadmin@drk.de
 - Password: SuperAdminPasswort
-
-
-## To-Do's
-
-- Statistiken
-- Authentication für Protokolle testen
-
-Nach Fertigstellung:
-- Seeding anpassen
-- Environment zu Production
-- SendMailFromProtocol URL-Pfad anpassen

@@ -59,12 +59,12 @@ namespace Repository
             }
             else if (claimRoles.Contains("Leiter"))
             {
-                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id));
             }
             else if (claimRoles.Contains("Helfer"))
             {
-                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
-                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId == claimUserId).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id == claimUserId || additionalUserProtocolIds.Contains(p.Id));
             }
             else
             {
@@ -88,12 +88,13 @@ namespace Repository
             }
             else if (claimRoles.Contains("Leiter"))
             {
-                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id));
             }
             else if (claimRoles.Contains("Helfer"))
             {
-                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
-                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId == claimUserId).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id == claimUserId || additionalUserProtocolIds.Contains(p.Id));
+                protocols = protocols.Where(p => p.UpdatedDate >= DateTime.UtcNow.AddDays(-42));
             }
             else
             {
@@ -129,32 +130,32 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.Name))
             {
-                protocols = protocols.Where(o => o.Name.Contains(protocolSearch.Name));
+                protocols = protocols.Where(o => o.Name.ToLower().Contains(protocolSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.ReviewComment))
             {
-                protocols = protocols.Where(o => o.ReviewComment.Contains(protocolSearch.ReviewComment));
+                protocols = protocols.Where(o => o.ReviewComment.ToLower().Contains(protocolSearch.ReviewComment.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.ProtocolContent))
             {
-                protocols = protocols.Where(o => o.ProtocolContent.Content.Contains(protocolSearch.ProtocolContent));
+                protocols = protocols.Where(o => o.ProtocolContent.Content.ToLower().Contains(protocolSearch.ProtocolContent.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.OwnerName))
             {
-                protocols = protocols.Where(o => o.User.Username.Contains(protocolSearch.OwnerName));
+                protocols = protocols.Where(o => (o.User.FirstName + " " + o.User.LastName).ToLower().Contains(protocolSearch.OwnerName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.OrganizationName))
             {
-                protocols = protocols.Where(o => o.Organization.Name.Contains(protocolSearch.OrganizationName));
+                protocols = protocols.Where(o => o.Organization.Name.ToLower().Contains(protocolSearch.OrganizationName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.UserName))
             {
-                protocols = protocols.Where(o => o.AdditionalUser.Select(u => u.User.Username).Contains(protocolSearch.UserName));
+                protocols = protocols.Where(o => o.AdditionalUser.Select(u => u.User.FirstName.ToLower() + " " + u.User.LastName.ToLower()).Contains(protocolSearch.UserName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.IsClosed.ToString()))
@@ -177,12 +178,13 @@ namespace Repository
             }
             else if (claimRoles.Contains("Leiter"))
             {
-                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id));
             }
             else if (claimRoles.Contains("Helfer"))
             {
-                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
-                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId == claimUserId).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id == claimUserId || additionalUserProtocolIds.Contains(p.Id));
+                protocols = protocols.Where(p => p.UpdatedDate >= DateTime.UtcNow.AddDays(-42));
             }
             else
             {
@@ -218,32 +220,32 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.Name))
             {
-                protocols = protocols.Where(o => o.Name.Contains(protocolSearch.Name));
+                protocols = protocols.Where(o => o.Name.ToLower().Contains(protocolSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.ReviewComment))
             {
-                protocols = protocols.Where(o => o.ReviewComment.Contains(protocolSearch.ReviewComment));
+                protocols = protocols.Where(o => o.ReviewComment.ToLower().Contains(protocolSearch.ReviewComment.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.ProtocolContent))
             {
-                protocols = protocols.Where(o => o.ProtocolContent.Content.Contains(protocolSearch.ProtocolContent));
+                protocols = protocols.Where(o => o.ProtocolContent.Content.ToLower().Contains(protocolSearch.ProtocolContent.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.OwnerName))
             {
-                protocols = protocols.Where(o => o.User.Username.Contains(protocolSearch.OwnerName));
+                protocols = protocols.Where(o => (o.User.FirstName + " " + o.User.LastName).ToLower().Contains(protocolSearch.OwnerName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.OrganizationName))
             {
-                protocols = protocols.Where(o => o.Organization.Name.Contains(protocolSearch.OrganizationName));
+                protocols = protocols.Where(o => o.Organization.Name.ToLower().Contains(protocolSearch.OrganizationName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.UserName))
             {
-                protocols = protocols.Where(o => o.AdditionalUser.Select(u => u.User.Username).Contains(protocolSearch.UserName));
+                protocols = protocols.Where(o => o.AdditionalUser.Select(u => u.User.FirstName.ToLower() + " " + u.User.LastName.ToLower()).Contains(protocolSearch.UserName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.IsClosed.ToString()))
@@ -266,12 +268,13 @@ namespace Repository
             }
             else if (claimRoles.Contains("Leiter"))
             {
-                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id));
             }
             else if (claimRoles.Contains("Helfer"))
             {
-                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
-                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId == claimUserId).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id == claimUserId || additionalUserProtocolIds.Contains(p.Id));
+                protocols = protocols.Where(p => p.UpdatedDate >= DateTime.UtcNow.AddDays(-42));
             }
             else
             {
@@ -307,32 +310,32 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.Name))
             {
-                protocols = protocols.Where(o => o.Name.Contains(protocolSearch.Name));
+                protocols = protocols.Where(o => o.Name.ToLower().Contains(protocolSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.ReviewComment))
             {
-                protocols = protocols.Where(o => o.ReviewComment.Contains(protocolSearch.ReviewComment));
+                protocols = protocols.Where(o => o.ReviewComment.ToLower().Contains(protocolSearch.ReviewComment.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.ProtocolContent))
             {
-                protocols = protocols.Where(o => o.ProtocolContent.Content.Contains(protocolSearch.ProtocolContent));
+                protocols = protocols.Where(o => o.ProtocolContent.Content.ToLower().Contains(protocolSearch.ProtocolContent.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.OwnerName))
             {
-                protocols = protocols.Where(o => o.User.Username.Contains(protocolSearch.OwnerName));
+                protocols = protocols.Where(o => (o.User.FirstName + " " + o.User.LastName).ToLower().Contains(protocolSearch.OwnerName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.OrganizationName))
             {
-                protocols = protocols.Where(o => o.Organization.Name.Contains(protocolSearch.OrganizationName));
+                protocols = protocols.Where(o => o.Organization.Name.ToLower().Contains(protocolSearch.OrganizationName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.UserName))
             {
-                protocols = protocols.Where(o => o.AdditionalUser.Select(u => u.User.Username).Contains(protocolSearch.UserName));
+                protocols = protocols.Where(o => o.AdditionalUser.Select(u => u.User.FirstName.ToLower() + " " + u.User.LastName.ToLower()).Contains(protocolSearch.UserName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.IsClosed.ToString()))
@@ -355,12 +358,13 @@ namespace Repository
             }
             else if (claimRoles.Contains("Leiter"))
             {
-                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id));
             }
             else if (claimRoles.Contains("Helfer"))
             {
-                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
-                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId == claimUserId).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id == claimUserId || additionalUserProtocolIds.Contains(p.Id));
+                protocols = protocols.Where(p => p.UpdatedDate >= DateTime.UtcNow.AddDays(-42));
             }
             else
             {
@@ -396,32 +400,32 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.Name))
             {
-                protocols = protocols.Where(o => o.Name.Contains(protocolSearch.Name));
+                protocols = protocols.Where(o => o.Name.ToLower().Contains(protocolSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.ReviewComment))
             {
-                protocols = protocols.Where(o => o.ReviewComment.Contains(protocolSearch.ReviewComment));
+                protocols = protocols.Where(o => o.ReviewComment.ToLower().Contains(protocolSearch.ReviewComment.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.ProtocolContent))
             {
-                protocols = protocols.Where(o => o.ProtocolContent.Content.Contains(protocolSearch.ProtocolContent));
+                protocols = protocols.Where(o => o.ProtocolContent.Content.ToLower().Contains(protocolSearch.ProtocolContent.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.OwnerName))
             {
-                protocols = protocols.Where(o => o.User.Username.Contains(protocolSearch.OwnerName));
+                protocols = protocols.Where(o => (o.User.FirstName + " " + o.User.LastName).ToLower().Contains(protocolSearch.OwnerName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.OrganizationName))
             {
-                protocols = protocols.Where(o => o.Organization.Name.Contains(protocolSearch.OrganizationName));
+                protocols = protocols.Where(o => o.Organization.Name.ToLower().Contains(protocolSearch.OrganizationName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.UserName))
             {
-                protocols = protocols.Where(o => o.AdditionalUser.Select(u => u.User.Username).Contains(protocolSearch.UserName));
+                protocols = protocols.Where(o => o.AdditionalUser.Select(u => u.User.FirstName.ToLower() + " " + u.User.LastName.ToLower()).Contains(protocolSearch.UserName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.IsClosed.ToString()))
@@ -444,12 +448,13 @@ namespace Repository
             }
             else if (claimRoles.Contains("Leiter"))
             {
-                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id));
             }
             else if (claimRoles.Contains("Helfer"))
             {
-                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
-                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId == claimUserId).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id == claimUserId || additionalUserProtocolIds.Contains(p.Id));
+                protocols = protocols.Where(p => p.UpdatedDate >= DateTime.UtcNow.AddDays(-42));
             }
             else
             {
@@ -485,32 +490,32 @@ namespace Repository
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.Name))
             {
-                protocols = protocols.Where(o => o.Name.Contains(protocolSearch.Name));
+                protocols = protocols.Where(o => o.Name.ToLower().Contains(protocolSearch.Name.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.ReviewComment))
             {
-                protocols = protocols.Where(o => o.ReviewComment.Contains(protocolSearch.ReviewComment));
+                protocols = protocols.Where(o => o.ReviewComment.ToLower().Contains(protocolSearch.ReviewComment.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.ProtocolContent))
             {
-                protocols = protocols.Where(o => o.ProtocolContent.Content.Contains(protocolSearch.ProtocolContent));
+                protocols = protocols.Where(o => o.ProtocolContent.Content.ToLower().Contains(protocolSearch.ProtocolContent.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.OwnerName))
             {
-                protocols = protocols.Where(o => o.User.Username.Contains(protocolSearch.OwnerName));
+                protocols = protocols.Where(o => (o.User.FirstName + " " + o.User.LastName).ToLower().Contains(protocolSearch.OwnerName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.OrganizationName))
             {
-                protocols = protocols.Where(o => o.Organization.Name.Contains(protocolSearch.OrganizationName));
+                protocols = protocols.Where(o => o.Organization.Name.ToLower().Contains(protocolSearch.OrganizationName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.UserName))
             {
-                protocols = protocols.Where(o => o.AdditionalUser.Select(u => u.User.Username).Contains(protocolSearch.UserName));
+                protocols = protocols.Where(o => o.AdditionalUser.Select(u => u.User.FirstName.ToLower() + " " + u.User.LastName.ToLower()).Contains(protocolSearch.UserName.ToLower()));
             }
 
             if(!string.IsNullOrWhiteSpace(protocolSearch.IsClosed.ToString()))
@@ -533,12 +538,13 @@ namespace Repository
             }
             else if (claimRoles.Contains("Leiter"))
             {
-                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id.ToString()));
+                protocols = protocols.Where(p => claimOrganizationIds.Contains(p.Organization.Id));
             }
             else if (claimRoles.Contains("Helfer"))
             {
-                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId.ToString() == claimUserId.ToString()).Select(p => p.protocolId).ToList();
-                protocols = protocols.Where(p => p.User.Id.ToString() == claimUserId.ToString() || additionalUserProtocolIds.ToString().Contains(p.Id.ToString()));
+                var additionalUserProtocolIds = _context.AdditionalUsers.Where(au => au.userId == claimUserId).Select(p => p.protocolId).ToList();
+                protocols = protocols.Where(p => p.User.Id == claimUserId || additionalUserProtocolIds.Contains(p.Id));
+                protocols = protocols.Where(p => p.UpdatedDate >= DateTime.UtcNow.AddDays(-42));
             }
             else
             {

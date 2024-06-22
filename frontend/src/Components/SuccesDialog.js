@@ -1,31 +1,26 @@
-import { useState, useEffect } from "react";
-import SchemaOff from "../Resources/Data/ProtocollInProgress/protocol3.json";
-
+import React from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Routes, Route, Outlet, Link } from "react-router-dom";
-import Interpreter from '../Components/Interpreter/Interpreter';
 
-export default function PiPdialog({ header, text }) {
+export default function SuccessDialog({ open, handleClose, header, text }) {
     const navigate = useNavigate();
 
-    function Ok() {
-        navigate("..");
-    }
-
-
+    const handleOk = () => {
+        handleClose(); // Schließe den Dialog
+        navigate('..'); // Navigiere zur vorherigen Seite
+    };
 
     return (
-
-        <>
-
-            <div className="dialog">
-                <h2>{header}</h2>
+        <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>{header}</DialogTitle>
+            <DialogContent>
                 <p>{text}</p>
-                <div className="row">
-                    <button className="button" onClick={Ok}>Ok</button>
-                </div>
-
-            </div>
-        </>
-    )
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleOk} variant="contained" color="primary">
+                    Ok
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
 }

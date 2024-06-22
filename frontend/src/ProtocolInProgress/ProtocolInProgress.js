@@ -14,27 +14,27 @@ export default function ProtocolInProgress(){
 
     const { token, userID, orgaID, setUserID, setOrgaID, setToken} = useContext(AuthContext);
 
-  
+
     useEffect(() => {
       const storedloginData = JSON.parse(localStorage.getItem('loginData'));
-      console.log(storedloginData);
+      //console.log(storedloginData);
       if (storedloginData) {
         setToken(storedloginData.token);
         setOrgaID(storedloginData.organizationId);
         setUserID(storedloginData.userId);
       }
-      getCall("/api/user/" + userID + "/all-protocols?pageIndex=1&pageSize=50", token, "Error getting templates")
+      getCall("/api/user/" + userID + "/creator-protocols?pageIndex=1&pageSize=9999999&IsDraft=true&IsClosed=false", token, "Error getting Protocol in Progress for user with ID + " + userID)
         .then((response) => {
           setProtocols(response);
           console.log("Get Templates successfull!");
-          console.log(response.items[0].id);
+          //console.log(response.items[0].id);
         })
         .catch((error) => {
           console.error(error);
         });
     }, [orgaID]);
 
-    console.log(protocols);
+    //console.log(protocols);
 
     return(
         <>
@@ -43,13 +43,15 @@ export default function ProtocolInProgress(){
 
         {protocols !== null
         ? protocols.items.map((protocol) => (
-          
+
             <Tile
               pagePath={String(protocol.id)}
               icon={faPenToSquare}
-              description={`Protokoll vom: ${protocol.createdDate.substring(0, 10)}`}
+              description={`Protokoll ${protocol.id}`}
+              info={`Protokoll erstellt am: ${protocol.createdDate.substring(0, 10)}`}
               payload={protocol}
               key={protocol.id}
+              highlight={protocol.isInReview}
             />
           ))
         : null}

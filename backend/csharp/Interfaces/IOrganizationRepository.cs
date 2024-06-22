@@ -15,6 +15,8 @@ namespace Interfaces
         ICollection<Organization> GetOrganizationDaughters(long organizationId, QueryObject dateQuery, OrganizationSearchObject organizationSearch);
         public List<Organization> GetDaughtersRecursive(long organizationId);
         ICollection<Organization> GetAllOrganizationDaughters(long organizationId, QueryObject dateQuery, OrganizationSearchObject organizationSearch);
+        ICollection<Organization> GetAllOrganizationMothers(long organizationId, QueryObject dateQuery, OrganizationSearchObject organizationSearch);
+        public List<Organization> GetMothersRecursive(long organizationId);
         public ICollection<UserOrganizationRole> GetUserOrganizationRoleEntriesByOrganization(long id);
         Organization GetOrganizationByProtocol(long protocolId);
         bool CreateOrganization(Organization organization);

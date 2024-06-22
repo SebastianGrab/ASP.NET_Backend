@@ -33,7 +33,7 @@ namespace backend.Controllers
 
         // GET: api/templates
         [HttpGet]
-        [Authorize(Roles = "Admin,Leiter,Helfer")]
+        [Authorize(Roles = "Admin,Leiter")]
         [Route("/api/templates")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Template>))]
         public IActionResult GetTemplates([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] TemplateSearchObject templateSearchQuery = null)
@@ -79,7 +79,7 @@ namespace backend.Controllers
 
         // GET: api/template/{id}/organizations
         [HttpGet("{id}/organizations")]
-        [Authorize(Roles = "Admin,Leiter,Helfer")]
+        [Authorize(Roles = "Admin,Leiter")]
         [ProducesResponseType(200, Type = typeof(ICollection<Organization>))]
         [ProducesResponseType(400)]
         public IActionResult GetOrganizationsByTemplate(long id, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] QueryObject dateQuery = null, [FromQuery] OrganizationSearchObject organizationSearchQuery = null)
@@ -152,7 +152,7 @@ namespace backend.Controllers
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(organizationId.ToString()))
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(organizationId))
                 {
                     return Unauthorized();
                 }
@@ -176,6 +176,12 @@ namespace backend.Controllers
                 ModelState.AddModelError("", "JSON Content is not formatted properly.");
                 return StatusCode(400, ModelState);
             }
+
+            if (!TemplateValidationService.IsValidTamplate(templateCreate.TemplateContent))
+            {
+                ModelState.AddModelError("", "Template must at least contain a Name and a Schema that contains a 'Kategorie', 'ID' and 'Inputs' entry for each object.");
+                return StatusCode(400, ModelState);
+            }
                 
             if(!_organizationRepository.OrganizationExists(organizationId))
                 return NotFound();
@@ -183,14 +189,30 @@ namespace backend.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var orga = _organizationRepository.GetOrganization(organizationId);
+
             var templateMap = _mapper.Map<Template>(templateCreate);
-            templateMap.Organization = _organizationRepository.GetOrganization(organizationId);
+            templateMap.Organization = orga;
+            templateMap.Name = templateCreate.Name + " - " + orga.Name;
 
 
             if (!_templateRepository.CreateTemplate(organizationId, templateMap))
             {
                 ModelState.AddModelError("", "Something went wrong while saving.");
                 return StatusCode(500, ModelState);
+            }
+
+            var daughterOrgaIds = _organizationRepository.GetAllOrganizationDaughters(organizationId, new QueryObject(), new OrganizationSearchObject()).Select(o => o.Id).ToList();
+
+            foreach (var orgaId in daughterOrgaIds)
+            {
+                if ( orgaId != organizationId)
+                {
+                    if (!_templateOrganizationRepository.TemplateOrganizationExists(templateMap.Id, orgaId))
+                    {
+                        _templateOrganizationRepository.AddTemplateToOrganization(orgaId, templateMap.Id);
+                    }
+                }
             }
 
             var templateToReturn = _mapper.Map<TemplateDto>(templateMap);
@@ -206,6 +228,17 @@ namespace backend.Controllers
         [ProducesResponseType(400)]
         public IActionResult AddTemplateToOrganization(long id, long organizationId)
         {
+            var roles = User.GetRoles();
+            var orgaIds = User.GetOrganizationIds();
+
+            if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
+            {
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(organizationId))
+                {
+                    return Unauthorized();
+                }
+            }
+            
             if(_templateRepository.TemplateExists(id) == false)
             {
                 ModelState.AddModelError("", "Template does not exists.");
@@ -260,7 +293,7 @@ namespace backend.Controllers
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(templateToDelete.organizationId.ToString()))
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(templateToDelete.organizationId))
                 {
                     return Unauthorized();
                 }
@@ -305,7 +338,7 @@ namespace backend.Controllers
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(organizationId.ToString()))
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(organizationId))
                 {
                     return Unauthorized();
                 }
@@ -348,7 +381,7 @@ namespace backend.Controllers
 
             if (roles.IsNullOrEmpty() || !roles.Contains("Admin"))
             {
-                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.ToString().Contains(templateOrganization.Id.ToString()))
+                if (orgaIds.ToString().IsNullOrEmpty() || !orgaIds.Contains(templateOrganization.Id))
                 {
                     return Unauthorized();
                 }
@@ -360,9 +393,9 @@ namespace backend.Controllers
                 return StatusCode(400, ModelState);
             }
 
-            if (_organizationRepository.OrganizationExists(_templateRepository.GetTemplate(id).Organization.Id))
+            if (!TemplateValidationService.IsValidTamplate(templateUpdate.TemplateContent))
             {
-                ModelState.AddModelError("", "Owning Organization not found.");
+                ModelState.AddModelError("", "Template must at least contain a Name and a Schema that contains a 'Kategorie', 'ID' and 'Inputs' entry for each object.");
                 return StatusCode(400, ModelState);
             }
 
@@ -372,6 +405,14 @@ namespace backend.Controllers
             var templateMap = _mapper.Map<Template>(templateUpdate);
 
             templateMap.Organization = templateOrganization;
+            if (templateMap.Name.Contains(templateOrganization.Name))
+            {
+                templateMap.Name = templateMap.Name;
+            }
+            else 
+            {
+                templateMap.Name = templateMap.Name + " - " + templateOrganization.Name;
+            }
 
             if (!_templateRepository.UpdateTemplate(templateMap))
             {
@@ -379,7 +420,7 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return NoContent();
+            return Ok(templateMap);
         }
     }
 }
