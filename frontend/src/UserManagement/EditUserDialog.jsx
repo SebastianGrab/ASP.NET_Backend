@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -17,9 +16,6 @@ import { AdditionalOrgasForUserList } from "./AdditionalOrgasForUserList";
 
 import {
   getRoles,
-  postUser,
-  buildUserData,
-  findRoleIdByName,
   roleInformationAsArrays,
   updateUser,
 } from "./UserManagementService";
@@ -27,7 +23,7 @@ import { deleteCall } from "../API/deleteCall";
 import { getCall } from "../API/getCall";
 
 export const EditUserDialog = ({ open, handleDialog, user }) => {
-  const { token, setToken, userID, orgaID, setRefreshHandler, refreshHander } =
+  const { token, setRefreshHandler, refreshHander } =
     useContext(AuthContext);
   const [roles, setRoles] = useState(null);
   const [roleNames, setRoleNames] = useState(null);
@@ -41,11 +37,9 @@ export const EditUserDialog = ({ open, handleDialog, user }) => {
   const [showAddOrga, setShowAddOrga] = useState(false);
   const [showAdditionalOrgas, setShowAdditionalOrgas] = useState(false);
   const handleSubmit = async (data, userId) => {
-    console.log(data);
     try {
       const response = await updateUser(token, data, userId);
       setRefreshHandler(response);
-      console.log(response);
 
       if (response) {
         handleDialog();
@@ -63,7 +57,6 @@ export const EditUserDialog = ({ open, handleDialog, user }) => {
         token
       );
       setRefreshHandler(response);
-      console.log(response);
 
       if (response) {
         handleDialog();
@@ -84,11 +77,8 @@ export const EditUserDialog = ({ open, handleDialog, user }) => {
           token,
           "Error getting Organizations"
         );
-
-        console.log(result);
         setOrgas(result.items);
         setOrgaNames(buildOrgaNameArray(result.items));
-        console.log(result);
       } catch (error) {
         console.error("Error fetching roles:", error);
       }
@@ -100,9 +90,6 @@ export const EditUserDialog = ({ open, handleDialog, user }) => {
         const roleInformationAsArray = roleInformationAsArrays(result);
         setRoleNames(roleInformationAsArray.roleNames);
         setRoleNames(roleNames.filter((role) => role !== "Admin"));
-        console.log(roleNames);
-
-        console.log(result);
       } catch (error) {
         console.error("Error fetching roles:", error);
       }
@@ -115,7 +102,6 @@ export const EditUserDialog = ({ open, handleDialog, user }) => {
     try {
       const result = await getCall("/api/user/" + user.id +  "/organizations", token, "Error getting Organisation for a User");
       setUserOrgas(result);
-      console.log(result);
     } catch (error) {
       console.error("Error getting Organisation for a User:", error);
     }
@@ -147,7 +133,6 @@ export const EditUserDialog = ({ open, handleDialog, user }) => {
         "Error adding new Orgas to the user",
         token
       );
-      console.log(response);
       if (response) {
         handleLeaveDialog();
         setRefreshHandler(response);
@@ -168,7 +153,6 @@ export const EditUserDialog = ({ open, handleDialog, user }) => {
   }
 
   const handleShowAdditionalOrgas= () => {
-    console.log(userOrgas);
     if(showAddOrga){
       setShowAdditionalOrgas(!showAdditionalOrgas);
       setShowAddOrga(!showAddOrga);
@@ -193,7 +177,6 @@ export const EditUserDialog = ({ open, handleDialog, user }) => {
           event.preventDefault();
           const formData = new FormData(event.currentTarget);
           const formJson = Object.fromEntries(formData.entries());
-          console.log(formJson);
           handleSubmit(formJson, user.id);
         },
       }}

@@ -13,15 +13,15 @@ export const getCall = async (endpoint, token, errorMessage) => {
 
   } catch (error) {
     if (error.response) {
-      // Server hat mit einem Statuscode geantwortet, der außerhalb des Bereichs 2xx liegt
+
       console.error('Fehlerhafte Antwort vom Server:', error.response.data);
       throw new Error(errorMessage || `Failed to fetch data: ${error.response.data}`);
     } else if (error.request) {
-      // Anfrage wurde gesendet, aber es kam keine Antwort zurück
+
       console.error('Keine Antwort vom Server:', error.request);
       throw new Error(errorMessage || 'Failed to fetch data: No response from server');
     } else {
-      // Etwas anderes hat den Fehler verursacht
+
       console.error('Fehler:', error.message);
       throw new Error(errorMessage || `Failed to fetch data: ${error.message}`);
     }

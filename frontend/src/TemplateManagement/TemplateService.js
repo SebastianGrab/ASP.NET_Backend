@@ -15,10 +15,6 @@ export const handleFileUpload = (e, setTemplate) => {
 };
 
 
-const handleCreateTemplate = async (template) => {
-
- 
-};
 
 export const buildTemplateData = (template, name, description) => {
     const data = {

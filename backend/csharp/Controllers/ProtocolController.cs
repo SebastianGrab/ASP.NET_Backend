@@ -99,7 +99,7 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolUserId = _userRepository.GetUserByProtocol(id).Id;
             var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
             var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
 
@@ -136,7 +136,7 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolUserId = _userRepository.GetUserByProtocol(id).Id;
             var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
             var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
 
@@ -173,7 +173,7 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolUserId = _userRepository.GetUserByProtocol(id).Id;
             var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
             var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
 
@@ -210,7 +210,7 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolUserId = _userRepository.GetUserByProtocol(id).Id;
             var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
             var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
 
@@ -254,7 +254,7 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolUserId = _userRepository.GetUserByProtocol(id).Id;
             var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
             var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
 
@@ -291,7 +291,7 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolUserId = _userRepository.GetUserByProtocol(id).Id;
             var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
             var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
 
@@ -310,7 +310,7 @@ namespace backend.Controllers
                 }
             }
 
-            var user = _mapper.Map<UserDto>(_userRepository.GetUserByProtocol(id, User));
+            var user = _mapper.Map<UserDto>(_userRepository.GetUserByProtocol(id));
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -328,7 +328,7 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var protocolUserId = _userRepository.GetUserByProtocol(id, User).Id;
+            var protocolUserId = _userRepository.GetUserByProtocol(id).Id;
             var protocolAdditionalUserIds = _additionalUserRepository.GetAdditionalUserEntriesByProtocol(id).Select(au => au.userId).ToList().Append(protocolUserId);
             var protocolOrga = _organizationRepository.GetOrganizationByProtocol(id);
 
@@ -380,7 +380,7 @@ namespace backend.Controllers
             if(!_protocolRepository.ProtocolExists(id))
                 return NotFound();
 
-            var protocolUser = _userRepository.GetUserByProtocol(id, User);
+            var protocolUser = _userRepository.GetUserByProtocol(id);
 
             var roles = User.GetRoles();
             var userId = User.GetUserId();
@@ -448,7 +448,7 @@ namespace backend.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateProtocolPdfFile(long id, [FromBody] ProtocolPdfFileDto protocolPdfFileCreate)
         {
-            var protocolUser = _userRepository.GetUserByProtocol(id, User);
+            var protocolUser = _userRepository.GetUserByProtocol(id);
 
             var roles = User.GetRoles();
             var userId = User.GetUserId();
@@ -540,7 +540,7 @@ namespace backend.Controllers
 
             protocolMap.Template = _templateRepository.GetTemplate(templateId);
             protocolMap.Organization = _organizationRepository.GetOrganization(organizationId);
-            protocolMap.User = _userRepository.GetUser(userId, User);
+            protocolMap.User = _userRepository.GetUser(userId);
 
             if (!_protocolRepository.CreateProtocol(additionalUserIds, protocolMap))
             {
@@ -584,7 +584,7 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            var protocolUser = _userRepository.GetUserByProtocol(id, User);
+            var protocolUser = _userRepository.GetUserByProtocol(id);
             var roles = User.GetRoles();
             var userClaimId = User.GetUserId();
 
@@ -652,7 +652,7 @@ namespace backend.Controllers
                 return NotFound();
             }
             
-            var protocolUser = _userRepository.GetUserByProtocol(id, User);
+            var protocolUser = _userRepository.GetUserByProtocol(id);
             var roles = User.GetRoles();
             var userClaimId = User.GetUserId();
 
@@ -729,7 +729,7 @@ namespace backend.Controllers
             var protocolMap = _mapper.Map<Protocol>(protocolUpdate);
 
             var protocolOrganisation = _organizationRepository.GetOrganizationByProtocol(id);
-            var protocolUser = _userRepository.GetUserByProtocol(id, User);
+            var protocolUser = _userRepository.GetUserByProtocol(id);
             var protocolTemplate = _templateRepository.GetTemplateByProtocol(id);
 
             protocolMap.Organization = protocolOrganisation;
@@ -778,7 +778,7 @@ namespace backend.Controllers
             if (!_protocolContentRepository.ProtocolContentExists(id))
                 return NotFound();
 
-            var protocolUser = _userRepository.GetUserByProtocol(id, User);
+            var protocolUser = _userRepository.GetUserByProtocol(id);
             var roles = User.GetRoles();
             var userClaimId = User.GetUserId();
 
@@ -851,7 +851,7 @@ namespace backend.Controllers
             if (!_protocolContentRepository.ProtocolContentExists(id))
                 return NotFound();
 
-            var protocolUser = _userRepository.GetUserByProtocol(id, User);
+            var protocolUser = _userRepository.GetUserByProtocol(id);
             var roles = User.GetRoles();
             var userClaimId = User.GetUserId();
 

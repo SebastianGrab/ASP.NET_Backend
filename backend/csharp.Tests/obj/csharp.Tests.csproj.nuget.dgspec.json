@@ -1,17 +1,167 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\SebastianGrab\\source\\repos\\csharp.Tests\\csharp.Tests\\csharp.Tests.csproj": {}
+    "C:\\Users\\SebastianGrab\\OneDrive - DESIGNated Accessoires UG\\Desktop\\projekt-digitalisierung\\backend\\csharp.Tests\\csharp.Tests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\SebastianGrab\\source\\repos\\csharp.Tests\\csharp.Tests\\csharp.Tests.csproj": {
+    "C:\\Users\\SebastianGrab\\OneDrive - DESIGNated Accessoires UG\\Desktop\\projekt-digitalisierung\\backend\\csharp.Tests\\csharp.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\SebastianGrab\\source\\repos\\csharp.Tests\\csharp.Tests\\csharp.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\SebastianGrab\\OneDrive - DESIGNated Accessoires UG\\Desktop\\projekt-digitalisierung\\backend\\csharp.Tests\\csharp.Tests.csproj",
         "projectName": "csharp.Tests",
-        "projectPath": "C:\\Users\\SebastianGrab\\source\\repos\\csharp.Tests\\csharp.Tests\\csharp.Tests.csproj",
+        "projectPath": "C:\\Users\\SebastianGrab\\OneDrive - DESIGNated Accessoires UG\\Desktop\\projekt-digitalisierung\\backend\\csharp.Tests\\csharp.Tests.csproj",
         "packagesPath": "C:\\Users\\SebastianGrab\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\SebastianGrab\\source\\repos\\csharp.Tests\\csharp.Tests\\obj\\",
+        "outputPath": "C:\\Users\\SebastianGrab\\OneDrive - DESIGNated Accessoires UG\\Desktop\\projekt-digitalisierung\\backend\\csharp.Tests\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\SebastianGrab\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\SebastianGrab\\OneDrive - DESIGNated Accessoires UG\\Desktop\\projekt-digitalisierung\\backend\\csharp\\backend.csproj": {
+                "projectPath": "C:\\Users\\SebastianGrab\\OneDrive - DESIGNated Accessoires UG\\Desktop\\projekt-digitalisierung\\backend\\csharp\\backend.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[12.0.1, )"
+            },
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
+            },
+            "MailKit": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[7.0.11, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Microsoft.EntityFrameworkCore.InMemory": {
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.7.1, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.16.1, )"
+            },
+            "NUnit": {
+              "target": "Package",
+              "version": "[4.1.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
+            "Nunit3TestAdapter": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Serilog.Settings.Configuration": {
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Serilog.Sinks.PostgreSQL": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            },
+            "coverlet.collector": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.2.0, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.4.2, )"
+            },
+            "xunit.runner.visualstudio": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.4.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\SebastianGrab\\OneDrive - DESIGNated Accessoires UG\\Desktop\\projekt-digitalisierung\\backend\\csharp\\backend.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\SebastianGrab\\OneDrive - DESIGNated Accessoires UG\\Desktop\\projekt-digitalisierung\\backend\\csharp\\backend.csproj",
+        "projectName": "backend",
+        "projectPath": "C:\\Users\\SebastianGrab\\OneDrive - DESIGNated Accessoires UG\\Desktop\\projekt-digitalisierung\\backend\\csharp\\backend.csproj",
+        "packagesPath": "C:\\Users\\SebastianGrab\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\SebastianGrab\\OneDrive - DESIGNated Accessoires UG\\Desktop\\projekt-digitalisierung\\backend\\csharp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\SebastianGrab\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -39,6 +189,58 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
+          "dependencies": {
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[12.0.1, )"
+            },
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
+            },
+            "MailKit": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[7.0.11, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Serilog.Settings.Configuration": {
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Serilog.Sinks.PostgreSQL": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -51,6 +253,9 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }

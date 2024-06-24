@@ -1,13 +1,10 @@
 import Tile from "../Components/Tile";
-import { useNavigate, Navigate, Link, redirect } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileCirclePlus, faFilePen, faEnvelope, faBoxArchive,faChartSimple, faUser, faShop, faCheckToSlot, faFileShield } from '@fortawesome/free-solid-svg-icons';
-import StoreIcon from '@mui/icons-material/Store';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import AuthContext from "../API/AuthProvider";
 
 export default function Dashboard() {
-    const { token, setToken, userID, orgaID, setRefreshHandler, role } = useContext(AuthContext);
+    const { role } = useContext(AuthContext);
 
     const adminTiles = () => {
         return(

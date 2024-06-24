@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
 
 export default function CommentPopup({ handleSendBack, handleClose }) {
     const [comment, setComment] = useState("");
-    const navigate = useNavigate();
+
 
     const handleCommentChange = (e) => {
         setComment(e.target.value);

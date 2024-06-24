@@ -202,19 +202,28 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            var daughterOrgaIds = _organizationRepository.GetAllOrganizationDaughters(organizationId, new QueryObject(), new OrganizationSearchObject()).Select(o => o.Id).ToList();
+            var daughterOrgas = _organizationRepository.GetAllOrganizationDaughters(organizationId, new QueryObject(), new OrganizationSearchObject());
 
-            foreach (var orgaId in daughterOrgaIds)
+            if (daughterOrgas != null)
             {
-                if ( orgaId != organizationId)
+                var daughterOrgaIds = daughterOrgas.Select(o => o.Id).ToList();
+
+                if (daughterOrgaIds != null)
                 {
-                    if (!_templateOrganizationRepository.TemplateOrganizationExists(templateMap.Id, orgaId))
+                    foreach (var orgaId in daughterOrgaIds)
                     {
-                        _templateOrganizationRepository.AddTemplateToOrganization(orgaId, templateMap.Id);
+                        if ( orgaId != organizationId)
+                        {
+                            if (!_templateOrganizationRepository.TemplateOrganizationExists(templateMap.Id, orgaId))
+                            {
+                                _templateOrganizationRepository.AddTemplateToOrganization(orgaId, templateMap.Id);
+                            }
+                        }
                     }
                 }
             }
 
+                
             var templateToReturn = _mapper.Map<TemplateDto>(templateMap);
 
             return Ok(templateToReturn);

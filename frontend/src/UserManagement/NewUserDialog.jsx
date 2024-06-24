@@ -1,13 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import AuthContext from "../API/AuthProvider";
-import { getRoles, postUser, buildUserData, findRoleIdByName, roleInformationAsArrays } from "./UserManagementService";
+import { getRoles, postUser, findRoleIdByName, roleInformationAsArrays } from "./UserManagementService";
 import { buildOrgaNameArray, getOrgaIdByName } from "../OrganizationManagement/OrganizationService";
 import { DropDownWithData } from "../Components/DropDownWithData";
 import { postCall } from "../API/postCall";
@@ -37,15 +36,12 @@ export const NewUserDialog = ({ open, handleDialog }) => {
           const roleInformationAsArray = roleInformationAsArrays(roles);
           setRoleNames(roleInformationAsArray.roleNames);
         }
-
-        console.log(result);
       } catch (error) {
         console.error("Error fetching roles:", error);
       }
 
       try {
         const result = await getCall("/api/organizations?pageIndex=1&pageSize=9999999", token, "Error getting Organizations");
-        console.log(result);
         setOrgaData(result.items);
         setOrgaNames(buildOrgaNameArray(result.items));
       } catch (error) {
@@ -101,7 +97,6 @@ export const NewUserDialog = ({ open, handleDialog }) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const formJson = Object.fromEntries(formData.entries());
-        console.log(formJson);
         handleSubmit(formJson);
 
       },

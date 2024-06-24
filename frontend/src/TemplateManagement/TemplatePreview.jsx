@@ -1,16 +1,16 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import AuthContext from "../API/AuthProvider";
 import { useParams, useLocation } from "react-router-dom";
 import Interpreter from "../Components/Interpreter/Interpreter";
 import { EditTemplateDialog } from "./EditTemplateDialog";
 import { deleteCall } from "../API/deleteCall";
 import { getCall } from "../API/getCall";
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 
 export default function TemplatePreview() {
 
-    const { token, userID, orgaID, setRefreshHandler} = useContext(AuthContext);
+    const { token, orgaID, setRefreshHandler} = useContext(AuthContext);
     const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const { template } = useParams();
   const location = useLocation();
@@ -38,15 +38,6 @@ const deleteTemplate = async () => {
       console.log("Fehler beim löschen des Templates", error)
     }
     navigate(-1);
-
-
-
-    // Error: One or more validation errors occurred
-
-
-    // const response = await deleteCall("/api/template/" + templateData.id, "Fehler beim löschen des Templates", token);
-    // console.log(response);
-
 
 
 }
@@ -84,11 +75,6 @@ const deleteTemplate = async () => {
                 </Button>
             </DialogActions>
         </Dialog>
-
-
-
-
-
     </>
   );
 }

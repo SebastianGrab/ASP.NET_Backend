@@ -1,6 +1,6 @@
-import { Routes, Route, Outlet, Link } from "react-router-dom";
+
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
-import { getAllProtocolsInProgress } from '../API/archive/getAllProtocolsInProgress';
+
 import AuthContext from "../API/AuthProvider";
 import { useContext, useEffect, useState } from "react";
 import { getCall } from "../API/getCall";
@@ -8,7 +8,7 @@ import TileArchive from "../Components/TileArchive";
 import TextField from '@mui/material/TextField';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'; // Import AdapterDayjs
-import dayjs from 'dayjs';
+
 
 export default function Archive() {
 

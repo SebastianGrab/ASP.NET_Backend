@@ -6,8 +6,8 @@ export default function SuccessDialog({ open, handleClose, header, text }) {
     const navigate = useNavigate();
 
     const handleOk = () => {
-        handleClose(); // Schließe den Dialog
-        navigate('..'); // Navigiere zur vorherigen Seite
+        handleClose();
+        navigate('..'); 
     };
 
     return (

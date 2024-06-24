@@ -1,4 +1,4 @@
-version: '1'
+version: '3'
 
 services:
 
@@ -39,7 +39,7 @@ services:
         ASPNETCORE_ENVIRONMENT: "Development"
         ConnectionStrings__ConnectionString: "Host=db;Database=DRK_DB;Username=db-admin;Password=DRKwebapp2024_postgres"
 
-  # DBMS System
+  # # DBMS System
   # pgadmin:
   #   image: dpage/pgadmin4
   #   container_name: pgadmin
@@ -57,8 +57,8 @@ services:
   #   depends_on:
   #     - db
 
-  # JavaScript Frontend
-  # frontend:
+  # # JavaScript Frontend
+  # js_frontend:
   #   container_name: js_frontend
   #   build:
   #     context: frontend

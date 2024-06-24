@@ -1,6 +1,4 @@
-import { Routes, Route, Outlet, Link } from "react-router-dom";
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
-import { getAllProtocolsInProgress } from '../API/archive/getAllProtocolsInProgress';
+
 import AuthContext from "../API/AuthProvider";
 import { useContext, useEffect, useState } from "react";
 import { getCall } from "../API/getCall";
@@ -79,7 +77,7 @@ export default function Messages() {
                         key={protocol.id}
                         heading={`Protokoll ${protocol.id}`}
                         statusClass={protocol.isClosed ? 'status-good' : 'status-bad'}
-                        pagePath={protocol.isClosed ? `/${userID}/archive/${protocol.id}` : `/${userID}/protocolInProgress/${protocol.id}`}
+                        pagePath={protocol.isClosed ? `/${userID}/${orgaID}/archive/${protocol.id}` : `/${userID}/${orgaID}/protocolInProgress/${protocol.id}`}
                         payload={protocol}
                         reviewComment={protocol.isClosed ? "Das Protokoll wurde vom Zugführer genehmigt." : protocol.reviewComment}
                         isClicked={protocol.reviewCommentIsRead}

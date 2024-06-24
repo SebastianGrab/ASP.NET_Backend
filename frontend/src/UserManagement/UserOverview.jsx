@@ -5,7 +5,6 @@ import { NewUserDialog } from "./NewUserDialog";
 import { UserTable } from "./UserTable";
 import React, { useState, useEffect, useContext } from "react";
 import AuthContext from "../API/AuthProvider";
-import { getCall } from "../API/getCall";
 
 
 
@@ -13,12 +12,10 @@ import { getCall } from "../API/getCall";
 export const UserOverview = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [orgaData, setOrgaData] = useState(null);
-    const { token, setToken, refreshHandler } = useContext(AuthContext);
 
 
     const dialogHandlerNewUser = () => {
         setOpenDialog(!openDialog);
-        console.log(openDialog);
     }
 
 

@@ -1,12 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
-import SchemaOff from "../Resources/Data/protocol2.json";
 import PiPdialog from "./PiPdialog";
 import { getData } from "../NewProtocol/NewProtocolService";
 import { putCall } from "../API/putCall";
 import { getCall } from "../API/getCall";
 import AuthContext from "../API/AuthProvider";
-import { Routes, Route, Outlet, Link } from "react-router-dom";
 import Interpreter from "../Components/Interpreter/Interpreter";
 import { UpdateProtocolButtons } from "./UpdateProtocolButtons";
 import ConfirmationDialog from "./ConfirmationDialog";
@@ -14,7 +12,7 @@ import SuccesDialog from "../Components/SuccesDialog";
 import { validateData } from "../NewProtocol/NewProtocolService";
 
 export default function UpdateProtocolInProgress() {
-  const { token, userID, orgaID, setUserID, setOrgaID, setToken } =
+  const { token, setUserID, setOrgaID, setToken } =
     useContext(AuthContext);
   const [protocolContent, setProtocolContent] = useState(null);
 
@@ -65,18 +63,11 @@ export default function UpdateProtocolInProgress() {
         token
       )
         .then((response) => {
-          console.log(response);
           setShowSuccessDialog(true);
         })
         .catch((error) => {
           console.error(error);
         });
-
-
-
- 
-
-
   };
 
   const handleSend = () => {

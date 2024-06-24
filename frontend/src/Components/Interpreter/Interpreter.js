@@ -1,9 +1,4 @@
-import Tile from '../Tile';
-import { InputElement } from './InputElement';
 import TileCategory from './TileCategory';
-import { saveProtocol } from '../../API/archive/saveProtocol';
-import { useState, useEffect } from "react";
-import { DropDownWithData } from '../DropDownWithData';
 import { Box } from '@mui/material';
 
 export default function Interpreter({ schema }) {

@@ -12,74 +12,79 @@ import { useNavigate } from "react-router-dom";
 import React, { useContext, useEffect, useState } from "react";
 import "../styles.css";
 import AuthContext from "../API/AuthProvider";
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import { useLocation } from "react-router-dom";
+import { OrgaIcon } from "../UserManagement/AdditionalOrgasForUserList";
 
 export const UserProfilChosser = () => {
-  const { orgaID, userID, setUserID, setOrgaID, setToken, setRole, role, setOrgaName, orgaName } =
-useContext(AuthContext);
+  const {
+    orgaID,
+    userID,
+    setUserID,
+    setOrgaID,
+    setToken,
+    setRole,
+    role,
+    setOrgaName,
+    orgaName,
+  } = useContext(AuthContext);
 
   const location = useLocation();
   const loginData = location.state?.response;
-console.log(loginData.uor);
-setOrgaName(loginData.uor[0].organization.name);
-    const ProfileItem = ({ orga, role }) => {
+  setOrgaName(loginData.uor[0].organization.name);
 
-      const secondaryInfo = orga.organizationType + " - " + role.name;
-        return (
-          <ListItem>
-            <ListItemButton onClick={() => setProfile({orga, role})}>
-              <ListItemAvatar>
-                <Avatar>
-                  <PersonOutlineIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={orga.name} secondary={secondaryInfo} />
-            </ListItemButton>
-          </ListItem>
-        );
-      };
 
-const navigate = useNavigate();
+  const ProfileItem = ({ orga, role }) => {
+    const secondaryInfo = orga.organizationType + " - " + role.name;
+    return (
+      <ListItem>
+        <ListItemButton onClick={() => setProfile({ orga, role })}>
+          <ListItemAvatar>
+            <Avatar>
+              <OrgaIcon type={orga.organizationType}/>
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={orga.name} secondary={secondaryInfo} />
+        </ListItemButton>
+      </ListItem>
+    );
+  };
 
-console.log(role);
+  const navigate = useNavigate();
 
-const clickHandler = () => {
-navigate(`/${userID}/${orgaID}`);
-};
+  const clickHandler = () => {
+    navigate(`/${userID}/${orgaID}`);
+  };
 
-const setProfile = ({orga, role}) => {
-    console.log(orga.id);
-    console.log(role.id);
-setOrgaID(orga.id);
-setRole(role.name);
-setOrgaName(orga.name);
+  const setProfile = ({ orga, role }) => {
+    setOrgaID(orga.id);
+    setRole(role.name);
+    setOrgaName(orga.name);
+  };
+  return (
+    <>
+      <div className="container">
+        <div>
+          <img src={DRKLogo} alt="DRK_Logo" />
+        </div>
+        <h3>Wählen Sie Ihr Profil aus.</h3>
 
-}
-return (
-<>
-<div className="container">
-<div>
-<img src={DRKLogo} alt="DRK_Logo" />
-</div>
-<h3>Wählen Sie Ihr Profil aus.</h3>
+        <List
+          sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+        >
+          {loginData.uor.map((profile, index) => (
+            <ProfileItem
+              key={index}
+              orga={profile.organization}
+              role={profile.role}
+            />
+          ))}
+        </List>
 
-    <List
-      sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
-    >
-      {loginData.uor.map((profile, index) => (
-        <ProfileItem
-          key={index}
-          orga={profile.organization}
-          role={profile.role}
-        />
-      ))}
-    </List>
-
-    <Button variant="outlined" onClick={clickHandler}>
-      Als {role} für {orgaName} fortfahren.
-    </Button>
-  </div>
-</>
-);
+        <Button variant="outlined" onClick={clickHandler}>
+          Als {role} für {orgaName} fortfahren.
+        </Button>
+      </div>
+    </>
+  );
 };

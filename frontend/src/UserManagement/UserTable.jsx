@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { IconButton, TextField } from "@mui/material";
+import { IconButton} from "@mui/material";
 import { useContext, useState, useEffect } from "react";
 import AuthContext from "../API/AuthProvider";
 import { buildTableData, getUsers } from "./UserManagementService";
@@ -8,8 +8,6 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { EditUserDialog } from "./EditUserDialog";
-import { getCall } from "../API/getCall";
-
 export const UserTable = () => {
   const columnsFullScreen = [
     {
@@ -54,7 +52,6 @@ export const UserTable = () => {
   const [showEditUserDialog, setShowEditUserDialog] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [globalUser, setGlobalUser] = useState(true);
-  console.log(orgaName);
 
   useEffect(() => {
     const storedLoginData = JSON.parse(localStorage.getItem("loginData"));
@@ -67,7 +64,6 @@ export const UserTable = () => {
         const result = await getUsers(token, orgaID);
         setUserData(result.items);
         setRows(buildTableData(result.items, token));
-        console.log(result.items);
       } catch (error) {
         console.error("Error fetching roles:", error);
       }
@@ -90,7 +86,6 @@ export const UserTable = () => {
 
   const changeData = () => {
 
-    console.log(globalUser);
     if(globalUser){
     const value = orgaName.toLowerCase();
     setRows(

@@ -115,62 +115,14 @@ namespace Repository
             return _context.UserOrganizationRoles.Where(au => au.User.Id == id).ToList();
         }
 
-        public User GetUser(long id, ClaimsPrincipal claimUser)
+        public User GetUser(long id)
         {
-            var users = _context.Users.Where(u => u.Id == id).ToList();
-            
-            var claimRoles = claimUser.GetRoles();
-            var claimOrganizationIds = claimUser.GetOrganizationIds();
-            var claimUserId = claimUser.GetUserId(); 
-
-            if (claimRoles.Contains("Admin"))
-            {
-                users = users;
-            }
-            else if (claimRoles.Contains("Leiter"))
-            {
-                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || u.UserOrganizationRoles.Count() == 0).ToList();
-            }
-            else if (claimRoles.Contains("Helfer"))
-            {
-                var userOrga = _context.UserOrganizationRoles.Where(uor => uor.userId == claimUserId).Select(uor => uor.organizationId).ToList();
-                users = users.Where(u => u.UserOrganizationRoles.Any(uor => userOrga.Contains(uor.organizationId))).ToList();
-            }
-            else
-            {
-                users = null;
-            }
-
-            return users.FirstOrDefault();
+            return _context.Users.Where(u => u.Id == id).FirstOrDefault();
         }
 
-        public User GetUserByProtocol(long protocolId, ClaimsPrincipal claimUser)
+        public User GetUserByProtocol(long protocolId)
         {
-            var users = _context.Protocols.Where(p => p.Id == protocolId).Select(u => u.User).ToList();
-            
-            var claimRoles = claimUser.GetRoles();
-            var claimOrganizationIds = claimUser.GetOrganizationIds();
-            var claimUserId = claimUser.GetUserId(); 
-
-            if (claimRoles.Contains("Admin"))
-            {
-                users = users;
-            }
-            else if (claimRoles.Contains("Leiter"))
-            {
-                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || u.UserOrganizationRoles.Count() == 0).ToList();
-            }
-            else if (claimRoles.Contains("Helfer"))
-            {
-                var userOrga = _context.UserOrganizationRoles.Where(uor => uor.userId == claimUserId).Select(uor => uor.organizationId).ToList();
-                users = users.Where(u => u.UserOrganizationRoles.Any(uor => userOrga.Contains(uor.organizationId))).ToList();
-            }
-            else
-            {
-                users = null;
-            }
-
-            return users.FirstOrDefault();
+            return _context.Protocols.Where(p => p.Id == protocolId).Select(u => u.User).FirstOrDefault();
         }
 
         public ICollection<User> GetUsers(QueryObject dateQuery, UserSearchObject userSearch, ClaimsPrincipal claimUser)
@@ -209,7 +161,7 @@ namespace Repository
             
             var claimRoles = claimUser.GetRoles();
             var claimOrganizationIds = claimUser.GetOrganizationIds();
-            var claimUserId = claimUser.GetUserId(); 
+            var claimUserId = claimUser.GetUserId();
 
             if (claimRoles.Contains("Admin"))
             {
@@ -217,12 +169,12 @@ namespace Repository
             }
             else if (claimRoles.Contains("Leiter"))
             {
-                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || u.UserOrganizationRoles.Count() == 0).AsQueryable();
+                users = users.Where(u => 
+                    u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || !u.UserOrganizationRoles.Any());
             }
             else if (claimRoles.Contains("Helfer"))
             {
-                var userOrga = _context.UserOrganizationRoles.Where(uor => uor.userId == claimUserId).Select(uor => uor.organizationId).ToList();
-                users = users.Where(u => u.UserOrganizationRoles.Any(uor => userOrga.Contains(uor.organizationId))).AsQueryable();
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)));
             }
             else
             {
@@ -268,7 +220,7 @@ namespace Repository
             
             var claimRoles = claimUser.GetRoles();
             var claimOrganizationIds = claimUser.GetOrganizationIds();
-            var claimUserId = claimUser.GetUserId(); 
+            var claimUserId = claimUser.GetUserId();
 
             if (claimRoles.Contains("Admin"))
             {
@@ -276,12 +228,12 @@ namespace Repository
             }
             else if (claimRoles.Contains("Leiter"))
             {
-                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || u.UserOrganizationRoles.Count() == 0).AsQueryable();
+                users = users.Where(u => 
+                    u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || !u.UserOrganizationRoles.Any());
             }
             else if (claimRoles.Contains("Helfer"))
             {
-                var userOrga = _context.UserOrganizationRoles.Where(uor => uor.userId == claimUserId).Select(uor => uor.organizationId).ToList();
-                users = users.Where(u => u.UserOrganizationRoles.Any(uor => userOrga.Contains(uor.organizationId))).AsQueryable();
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)));
             }
             else
             {
@@ -334,7 +286,7 @@ namespace Repository
 
             var claimRoles = claimUser.GetRoles();
             var claimOrganizationIds = claimUser.GetOrganizationIds();
-            var claimUserId = claimUser.GetUserId(); 
+            var claimUserId = claimUser.GetUserId();
 
             if (claimRoles.Contains("Admin"))
             {
@@ -342,12 +294,12 @@ namespace Repository
             }
             else if (claimRoles.Contains("Leiter"))
             {
-                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || u.UserOrganizationRoles.Count() == 0).ToList();
+                users = users.Where(u => 
+                    u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || !u.UserOrganizationRoles.Any()).ToList();
             }
             else if (claimRoles.Contains("Helfer"))
             {
-                var userOrga = _context.UserOrganizationRoles.Where(uor => uor.userId == claimUserId).Select(uor => uor.organizationId).ToList();
-                users = users.Where(u => u.UserOrganizationRoles.Any(uor => userOrga.Contains(uor.organizationId))).ToList();
+                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId))).ToList();
             }
             else
             {

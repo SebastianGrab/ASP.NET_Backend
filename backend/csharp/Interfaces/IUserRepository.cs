@@ -8,11 +8,11 @@ namespace Interfaces
     public interface IUserRepository
     {
         ICollection<User> GetUsers(QueryObject dateQuery, UserSearchObject userSearch, ClaimsPrincipal claimUser);
-        User GetUser(long id, ClaimsPrincipal claimUser);
+        User GetUser(long id);
         User GetUserByEmail(string email);
         bool UserExists(long id);
         ICollection<User> GetUsersByOrganization(long organizationId, QueryObject dateQuery, UserSearchObject userSearch, ClaimsPrincipal claimUser);
-        User GetUserByProtocol(long protocolId, ClaimsPrincipal claimUser);
+        User GetUserByProtocol(long protocolId);
         ICollection<User> GetAdditionalUsersByProtocol(long protocolId, QueryObject dateQuery, UserSearchObject userSearch);
         ICollection<UserOrganizationRole> GetUserOrganizationRoleEntriesByUser(long id);
         UserOrganizationRole GetUserOrganizationRole(long userId, long organizationId, long roleId);

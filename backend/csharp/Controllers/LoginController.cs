@@ -120,13 +120,13 @@ namespace Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
+            user.Password = _passwordGenerator.GetRandomAlphanumericString(12);
+
             if(!_emailService.SendResetEmail(user.FirstName + " " + user.LastName, user.Email, user.Password))
             {
                 ModelState.AddModelError("", "Something went wrong sending the mail.");
                 return StatusCode(301, ModelState);
             }
-
-            user.Password = _passwordGenerator.GetRandomAlphanumericString(12);
 
             var userMap = _mapper.Map<User>(user);
             

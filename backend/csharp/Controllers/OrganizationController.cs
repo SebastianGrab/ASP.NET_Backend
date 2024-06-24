@@ -535,17 +535,23 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            var motherOrgas = _organizationRepository.GetAllOrganizationMothers(organizationMap.Id, new QueryObject(), new OrganizationSearchObject()).Select(o => o.Id).ToList();
-
-            if(motherOrgas != null)
+            if (!organizationMap.parentId.ToString().IsNullOrEmpty())
             {
-                var motherTemplates = _templateRepository.GetTemplatesOwnedByOrganizations(motherOrgas, new QueryObject(), new TemplateSearchObject()).Select(t => t.Id).ToList();
+                var motherOrgas = _organizationRepository.GetAllOrganizationMothers(organizationMap.Id, new QueryObject(), new OrganizationSearchObject()).Select(o => o.Id).ToList();
 
-                foreach (var motherTemplate in motherTemplates)
+                if(motherOrgas != null)
                 {
-                    if (!_templateOrganizationRepository.TemplateOrganizationExists(motherTemplate, organizationMap.Id))
+                    var motherTemplates = _templateRepository.GetTemplatesOwnedByOrganizations(motherOrgas, new QueryObject(), new TemplateSearchObject()).Select(t => t.Id).ToList();
+
+                    if (motherTemplates.Any())
                     {
-                        _templateOrganizationRepository.AddTemplateToOrganization(organizationMap.Id, motherTemplate);
+                        foreach (var motherTemplate in motherTemplates)
+                        {
+                            if (!_templateOrganizationRepository.TemplateOrganizationExists(motherTemplate, organizationMap.Id))
+                            {
+                                _templateOrganizationRepository.AddTemplateToOrganization(organizationMap.Id, motherTemplate);
+                            }
+                        }
                     }
                 }
             }
@@ -596,7 +602,7 @@ namespace backend.Controllers
             var uor = new UserOrganizationRole
             {
                 userId = userId,
-                User = _userRepository.GetUser(userId, User),
+                User = _userRepository.GetUser(userId),
                 organizationId = id,
                 Organization = _organizationRepository.GetOrganization(id),
                 roleId = roleId,
@@ -712,6 +718,7 @@ namespace backend.Controllers
                     return Unauthorized();
                 }
             }
+
             if(!_organizationRepository.OrganizationExists(id))
                 return NotFound();
                 
@@ -720,9 +727,6 @@ namespace backend.Controllers
 
             if (id != organizationUpdate.Id)
                 return BadRequest(ModelState);
-
-            if (!_organizationRepository.OrganizationExists(id))
-                return NotFound();
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -735,17 +739,23 @@ namespace backend.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            var motherOrgas = _organizationRepository.GetAllOrganizationMothers(organizationMap.Id, new QueryObject(), new OrganizationSearchObject()).Select(o => o.Id).ToList();
-
-            if(motherOrgas != null)
+            if (!organizationMap.parentId.ToString().IsNullOrEmpty())
             {
-                var motherTemplates = _templateRepository.GetTemplatesOwnedByOrganizations(motherOrgas, new QueryObject(), new TemplateSearchObject()).Select(t => t.Id).ToList();
+                var motherOrgas = _organizationRepository.GetAllOrganizationMothers(organizationMap.Id, new QueryObject(), new OrganizationSearchObject()).Select(o => o.Id).ToList();
 
-                foreach (var motherTemplate in motherTemplates)
+                if(motherOrgas != null)
                 {
-                    if (!_templateOrganizationRepository.TemplateOrganizationExists(motherTemplate, organizationMap.Id))
+                    var motherTemplates = _templateRepository.GetTemplatesOwnedByOrganizations(motherOrgas, new QueryObject(), new TemplateSearchObject()).Select(t => t.Id).ToList();
+
+                    if (motherTemplates.Any())
                     {
-                        _templateOrganizationRepository.AddTemplateToOrganization(organizationMap.Id, motherTemplate);
+                        foreach (var motherTemplate in motherTemplates)
+                        {
+                            if (!_templateOrganizationRepository.TemplateOrganizationExists(motherTemplate, organizationMap.Id))
+                            {
+                                _templateOrganizationRepository.AddTemplateToOrganization(organizationMap.Id, motherTemplate);
+                            }
+                        }
                     }
                 }
             }

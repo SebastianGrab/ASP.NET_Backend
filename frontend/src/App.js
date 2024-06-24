@@ -11,7 +11,7 @@ import UpdateProtocolInProgress from "./ProtocolInProgress/UpdateProtocolInProgr
 import Stats from "./Stats/Stats";
 import FullScreenChart from "./Stats/FullScreenChart";
 import { AuthProvider } from "./API/AuthProvider";
-import { Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import ProtocolsToReview from "./Leader/ProtocolsToReview";
 import ReviewProtocol from "./Leader/ReviewProtocol";
 import ArchiveProtocol from "./Archiv/ArchiveProtocol";
@@ -20,8 +20,7 @@ import { OrganizationOverview } from "./OrganizationManagement/OrganizationsOver
 import { PrivateRoute, AdminRoute } from './PrivateRoute';
 import { UserProfilChosser } from "./LogIn/UserProfilChooser";
 import UserStats from "./Stats/UserStats";
-import React, { useContext } from 'react';
-import AuthContext from "./API/AuthProvider";
+import React from 'react';
 import TemplatePreview from "./TemplateManagement/TemplatePreview";
 import ComposeMail from "./ProtocolInProgress/ComposeMail";
 import { TemplateManagement } from "./TemplateManagement/TemplateManagement";

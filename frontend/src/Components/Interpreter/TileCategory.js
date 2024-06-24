@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircle } from "@fortawesome/free-solid-svg-icons";
 import { InputElement } from "./InputElement";
 import { DropdownElementHelper } from "./DropdownElementHelper";
 import DropdownElement from "./DropdownElement";
@@ -10,8 +8,6 @@ import { Mandatoryhandler } from "./InputElement";
 import { Divider, Box } from "@mui/material";
 
 export default function TileCategory({ category }) {
-  let message =
-    "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren";
 
   const inputIDs = [];
   const [showInputs, setShowMessageBody] = useState(false);
@@ -41,7 +37,6 @@ export default function TileCategory({ category }) {
     });
   };
 
-  const toggleMandatory = () => {};
 
   useEffect(() => {
     getInputs();

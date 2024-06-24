@@ -1,7 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
 import AuthContext from "../API/AuthProvider";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { getCall } from '../API/getCall';
 import PdfDownload from "../Pdf/PdfDownload";
@@ -10,7 +8,6 @@ export default function TileArchive({ pagePath, icon, description, info, payload
     const navigate = useNavigate();
     const { token, userID, orgaID, setUserID, setOrgaID, setToken } = useContext(AuthContext);
     const [protocolContent, setProtocolContent] = useState(null);
-    console.log(payload);
 
     useEffect(() => {
         const storedLoginData = JSON.parse(localStorage.getItem("loginData"));
@@ -32,7 +29,6 @@ export default function TileArchive({ pagePath, icon, description, info, payload
 
 
 
-    console.log(protocolContent);
 
     function clickHandler() {
         if (payload === null) {

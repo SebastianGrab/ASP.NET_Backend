@@ -1,73 +1,62 @@
 import React, { useContext, useState, useEffect } from "react";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import AuthContext from "../API/AuthProvider";
-import { DropDownWithData } from "../Components/DropDownWithData";
-import { postCall } from "../API/postCall";
-import { getCall } from "../API/getCall";
-import { handleFileUpload, buildTemplateData } from "./TemplateService";
+import { handleFileUpload } from "./TemplateService";
 import { putCall } from "../API/putCall";
 
 export const EditTemplateDialog = ({ open, handleDialog, templateData }) => {
-  const { token, setToken, userID, orgaID, setRefreshHandler } = useContext(AuthContext);
+  const { token, setToken, userID, orgaID, setRefreshHandler } =
+    useContext(AuthContext);
   const [template, setTemplate] = useState(null);
 
-  console.log(templateData);
-
-
-
-
   const handleSubmit = () => {
-
-
-
     const name = document.getElementById("templateName").value;
     const description = document.getElementById("description").value;
 
     const data = {
-        id: templateData.id,
-        name: name,
-        description: description,
-        templateContent: template
+      id: templateData.id,
+      name: name,
+      description: description,
+      templateContent: template,
     };
-
-
-
-    console.log(data);
 
     const updateTemplate = async () => {
-        const response = await putCall(data, "/api/template/" + templateData.id, "Error updating template", token);
-        console.log(response);
-        if(response) {
-            handleDialog();
-            setRefreshHandler(response);
-
-        }
-
-    }
-
-    updateTemplate();
-
+      const response = await putCall(
+        data,
+        "/api/template/" + templateData.id,
+        "Error updating template",
+        token
+      );
+      console.log(response);
+      if (response) {
+        handleDialog();
+        setRefreshHandler(response);
+      }
     };
 
-  return (
-    <Dialog open={open} onClose={handleDialog}
-    PaperProps={{
-      component: 'form',
-      onSubmit: (event) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        const formJson = Object.fromEntries(formData.entries());
-        console.log(formJson);
-        handleSubmit(formJson);
+    updateTemplate();
+  };
 
-      },
-    }}>
+  return (
+    <Dialog
+      open={open}
+      onClose={handleDialog}
+      PaperProps={{
+        component: "form",
+        onSubmit: (event) => {
+          event.preventDefault();
+          const formData = new FormData(event.currentTarget);
+          const formJson = Object.fromEntries(formData.entries());
+          console.log(formJson);
+          handleSubmit(formJson);
+        },
+      }}
+    >
       <DialogTitle>Template updaten</DialogTitle>
       <DialogContent sx={{ minWidth: "350px" }}>
         <DialogContentText></DialogContentText>
@@ -86,17 +75,15 @@ export const EditTemplateDialog = ({ open, handleDialog, templateData }) => {
         <div className="row">
           <label htmlFor="description">Datei auswählen:</label>
           <input
-                    type="file"
-                    accept=".json"
-                    onChange={(e) => handleFileUpload(e, setTemplate)}
-                />
+            type="file"
+            accept=".json"
+            onChange={(e) => handleFileUpload(e, setTemplate)}
+          />
         </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleDialog}>Abbruch</Button>
-        <Button onClick={handleSubmit}>
-          Template updaten!
-        </Button>
+        <Button onClick={handleSubmit}>Template updaten!</Button>
       </DialogActions>
     </Dialog>
   );

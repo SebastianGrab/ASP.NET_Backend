@@ -81,7 +81,38 @@ namespace backend.Controllers
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
-            var user = _mapper.Map<UserDto>(_userRepository.GetUser(id, User));
+            var userOrganizationRoles = _userRepository.GetUserOrganizationRoleEntriesByUser(id);
+            
+            var claimRoles = User.GetRoles();
+            var claimOrganizationIds = User.GetOrganizationIds();
+            var claimUserId = User.GetUserId();
+
+            if (!claimRoles.Contains("Admin"))
+            {
+                if (!claimRoles.Contains("Leiter"))
+                {
+                    if (!claimRoles.Contains("Helfer"))
+                    {
+                        return Unauthorized();
+                    }
+                    else
+                    {
+                        if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)))
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) && userOrganizationRoles.Any())
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
+
+            var user = _mapper.Map<UserDto>(_userRepository.GetUser(id));
 
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -98,6 +129,37 @@ namespace backend.Controllers
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
+
+            var userOrganizationRoles = _userRepository.GetUserOrganizationRoleEntriesByUser(id);
+            
+            var claimRoles = User.GetRoles();
+            var claimOrganizationIds = User.GetOrganizationIds();
+            var claimUserId = User.GetUserId();
+
+            if (!claimRoles.Contains("Admin"))
+            {
+                if (!claimRoles.Contains("Leiter"))
+                {
+                    if (!claimRoles.Contains("Helfer"))
+                    {
+                        return Unauthorized();
+                    }
+                    else
+                    {
+                        if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)))
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) && userOrganizationRoles.Any())
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
 
             var organizations = _mapper.Map<List<OrganizationDto>>(_organizationRepository.GetOrganizationsByUser(id, dateQuery, organizationSearchQuery));
 
@@ -117,6 +179,37 @@ namespace backend.Controllers
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
+
+            var userOrganizationRoles = _userRepository.GetUserOrganizationRoleEntriesByUser(id);
+            
+            var claimRoles = User.GetRoles();
+            var claimOrganizationIds = User.GetOrganizationIds();
+            var claimUserId = User.GetUserId();
+
+            if (!claimRoles.Contains("Admin"))
+            {
+                if (!claimRoles.Contains("Leiter"))
+                {
+                    if (!claimRoles.Contains("Helfer"))
+                    {
+                        return Unauthorized();
+                    }
+                    else
+                    {
+                        if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)))
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) && userOrganizationRoles.Any())
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
 
             var query = _protocolRepository.GetProtocolsByUser(id, dateQuery, protocolSearchQuery, User).AsQueryable();
 
@@ -150,6 +243,37 @@ namespace backend.Controllers
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
+            var userOrganizationRoles = _userRepository.GetUserOrganizationRoleEntriesByUser(id);
+            
+            var claimRoles = User.GetRoles();
+            var claimOrganizationIds = User.GetOrganizationIds();
+            var claimUserId = User.GetUserId();
+
+            if (!claimRoles.Contains("Admin"))
+            {
+                if (!claimRoles.Contains("Leiter"))
+                {
+                    if (!claimRoles.Contains("Helfer"))
+                    {
+                        return Unauthorized();
+                    }
+                    else
+                    {
+                        if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)))
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) && userOrganizationRoles.Any())
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
+
             var query = _protocolRepository.GetProtocolsByAdditionalUser(id, dateQuery, protocolSearchQuery, User).AsQueryable();
 
             var mappedQuery = _mapper.Map<List<ProtocolDto>>(query.ToList()).AsQueryable();
@@ -181,6 +305,37 @@ namespace backend.Controllers
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
+
+            var userOrganizationRoles = _userRepository.GetUserOrganizationRoleEntriesByUser(id);
+            
+            var claimRoles = User.GetRoles();
+            var claimOrganizationIds = User.GetOrganizationIds();
+            var claimUserId = User.GetUserId();
+
+            if (!claimRoles.Contains("Admin"))
+            {
+                if (!claimRoles.Contains("Leiter"))
+                {
+                    if (!claimRoles.Contains("Helfer"))
+                    {
+                        return Unauthorized();
+                    }
+                    else
+                    {
+                        if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)))
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) && userOrganizationRoles.Any())
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
 
             var queryShared = _protocolRepository.GetProtocolsByUser(id, dateQuery, protocolSearchQuery, User).ToList().AsQueryable();
             var queryOwned = _protocolRepository.GetProtocolsByAdditionalUser(id, dateQuery, protocolSearchQuery, User).ToList().AsQueryable();
@@ -216,6 +371,37 @@ namespace backend.Controllers
             if(!_userRepository.UserExists(id))
                 return NotFound();
 
+            var userOrganizationRoles = _userRepository.GetUserOrganizationRoleEntriesByUser(id);
+            
+            var claimRoles = User.GetRoles();
+            var claimOrganizationIds = User.GetOrganizationIds();
+            var claimUserId = User.GetUserId();
+
+            if (!claimRoles.Contains("Admin"))
+            {
+                if (!claimRoles.Contains("Leiter"))
+                {
+                    if (!claimRoles.Contains("Helfer"))
+                    {
+                        return Unauthorized();
+                    }
+                    else
+                    {
+                        if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)))
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) && userOrganizationRoles.Any())
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
+
             var roles = _mapper.Map<List<RoleDto>>(_roleRepository.GetRolesByUser(id));
 
             if(!ModelState.IsValid)
@@ -232,6 +418,37 @@ namespace backend.Controllers
         {
             if(!_userRepository.UserExists(id))
                 return NotFound();
+
+            var userOrganizationRoles = _userRepository.GetUserOrganizationRoleEntriesByUser(id);
+            
+            var claimRoles = User.GetRoles();
+            var claimOrganizationIds = User.GetOrganizationIds();
+            var claimUserId = User.GetUserId();
+
+            if (!claimRoles.Contains("Admin"))
+            {
+                if (!claimRoles.Contains("Leiter"))
+                {
+                    if (!claimRoles.Contains("Helfer"))
+                    {
+                        return Unauthorized();
+                    }
+                    else
+                    {
+                        if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)))
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) && userOrganizationRoles.Any())
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
 
             var userId = User.GetUserId();
             var roles = User.GetRoles();
@@ -271,6 +488,40 @@ namespace backend.Controllers
         [ProducesResponseType(200, Type = typeof(int))]
         public IActionResult GetNumberOfProtocolsPerUser(long id)
         {
+            if(!_userRepository.UserExists(id))
+                return NotFound();
+
+            var userOrganizationRoles = _userRepository.GetUserOrganizationRoleEntriesByUser(id);
+            
+            var claimRoles = User.GetRoles();
+            var claimOrganizationIds = User.GetOrganizationIds();
+            var claimUserId = User.GetUserId();
+
+            if (!claimRoles.Contains("Admin"))
+            {
+                if (!claimRoles.Contains("Leiter"))
+                {
+                    if (!claimRoles.Contains("Helfer"))
+                    {
+                        return Unauthorized();
+                    }
+                    else
+                    {
+                        if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)))
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    if (!userOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) && userOrganizationRoles.Any())
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
+
             var numberOfUnreadMessagesPerUser = _userMessageRepository.GetNumberOfUnreadMessagesPerUser(id);
 
             if(!ModelState.IsValid)
@@ -397,7 +648,7 @@ namespace backend.Controllers
             var uor = new UserOrganizationRole
             {
                 userId = id,
-                User = _userRepository.GetUser(id, User),
+                User = _userRepository.GetUser(id),
                 organizationId = organizationId,
                 Organization = _organizationRepository.GetOrganization(organizationId),
                 roleId = roleId,
@@ -438,7 +689,7 @@ namespace backend.Controllers
             }
 
             var userMessagesToDelete = _userMessageRepository.GetMessagesByUser(id, new QueryObject(), new UserMessageSearchObject());
-            var userToDelete = _userRepository.GetUser(id, User);
+            var userToDelete = _userRepository.GetUser(id);
             var userOrganizationRolesToDelete = _userRepository.GetUserOrganizationRoleEntriesByUser(id);
             var additionalUsersToDelete = _additionalUserRepository.GetAdditionalUserEntriesByUser(id);
             var userLoginAttemptToDelete = _userLoginAttemptRepository.GetUserLoginAttempt(id);

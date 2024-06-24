@@ -1,10 +1,8 @@
 import { useState, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
-import { getData } from "../NewProtocol/NewProtocolService";
-import { putCall } from "../API/putCall";
 import { getCall } from "../API/getCall";
 import AuthContext from "../API/AuthProvider";
-import ReviewInterpreter from "../Leader/ReviewInterpreter/ReviewInterpreter"; // Import the new ReviewInterpreter
+import ReviewInterpreter from "../Leader/ReviewInterpreter/ReviewInterpreter"; 
 
 export default function ArchiveProtocol() {
     const { token, userID, orgaID, setUserID, setOrgaID, setToken } = useContext(AuthContext);

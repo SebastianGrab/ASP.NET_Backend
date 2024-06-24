@@ -3,7 +3,7 @@ import AuthContext from "../../API/AuthProvider";
 import { getCall } from "../../API/getCall";
 
 export const DropdownElementHelper = ({ schemaObject }) => {
-    const { token, userID, orgaID, setRefreshHandler} = useContext(AuthContext);
+    const { token, orgaID} = useContext(AuthContext);
 
     const [HelferList, setHelferList] = useState({});
     const [AnzahlHelfer, setAnzahlHelfer] = useState(schemaObject.HelperCollection.length);

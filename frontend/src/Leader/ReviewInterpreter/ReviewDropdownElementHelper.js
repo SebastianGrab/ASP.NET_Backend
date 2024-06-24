@@ -4,26 +4,34 @@ import AuthContext from '../../API/AuthProvider';
 
 export default function ReviewDropdownElementHelper({ schemaObject }) {
     const { token, orgaID } = useContext(AuthContext);
-    const [HelferList, setHelferList] = useState({});
+    const [HelferList, setHelferList] = useState([]);
     const [DropdownCollection, setDropdownCollection] = useState(schemaObject.HelperCollection);
 
     useEffect(() => {
         const getHelpers = async () => {
-            const response = await getCall(`/api/organization/${orgaID}/users?pageIndex=1&pageSize=100`, token, "Error getting Users");
-            setHelferList(response);
+            try {
+                const response = await getCall(`/api/organization/${orgaID}/users?pageIndex=1&pageSize=100`, token, "Error getting Users");
+                setHelferList(response.items);
+            } catch (error) {
+                console.error(error);
+            }
         };
         getHelpers();
     }, [token, orgaID]);
 
     return (
         <>
-            {DropdownCollection.map((valD) => (
+            {DropdownCollection.map((valD, index) => (
                 <div className="row" key={valD}>
                     <label htmlFor={valD}>{schemaObject.Label}</label>
-                    {HelferList.items ? (
+                    {HelferList.length > 0 ? (
                         <select id={valD} name={schemaObject.Element} disabled>
-                            {HelferList.items.map((val) => (
-                                <option key={val.id} value={val.username} selected={schemaObject.HelperNames && schemaObject.HelperNames[parseInt(valD.match(/\d+$/)[0]) - 1] === val.username}>
+                            {HelferList.map((val) => (
+                                <option
+                                    key={val.id}
+                                    value={val.username}
+                                    selected={schemaObject.HelperNames && schemaObject.HelperNames[index] === val.username}
+                                >
                                     {val.username}
                                 </option>
                             ))}
