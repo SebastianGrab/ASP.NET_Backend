@@ -18,7 +18,6 @@ export default function Messages() {
         console.log(storedloginData);
         if (storedloginData) {
             setToken(storedloginData.token);
-            setOrgaID(storedloginData.organizationId);
             setUserID(storedloginData.userId);
         }
         if (token && userID) {

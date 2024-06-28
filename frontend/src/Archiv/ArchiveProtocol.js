@@ -16,7 +16,6 @@ export default function ArchiveProtocol() {
         const storedLoginData = JSON.parse(localStorage.getItem("loginData"));
         if (storedLoginData) {
             setToken(storedLoginData.token);
-            setOrgaID(storedLoginData.organizationId);
             setUserID(storedLoginData.userId);
         }
 

@@ -23,9 +23,9 @@ export const NewUserDialog = ({ open, handleDialog }) => {
 
   useEffect(() => {
     const storedloginData = JSON.parse(localStorage.getItem("loginData"));
-    if (storedloginData) {
-      setToken(storedloginData.token);
-    }
+    // if (storedloginData) {
+    //   setToken(storedloginData.token);
+    // }
     setErrorMessage("");
 
     const fetchRoles = async () => {

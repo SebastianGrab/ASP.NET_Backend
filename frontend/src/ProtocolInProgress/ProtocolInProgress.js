@@ -18,7 +18,6 @@ export default function ProtocolInProgress(){
       //console.log(storedloginData);
       if (storedloginData) {
         setToken(storedloginData.token);
-        setOrgaID(storedloginData.organizationId);
         setUserID(storedloginData.userId);
       }
       getCall("/api/user/" + userID + "/creator-protocols?pageIndex=1&pageSize=9999999&IsDraft=true&IsClosed=false", token, "Error getting Protocol in Progress for user with ID + " + userID)

@@ -136,7 +136,7 @@ class PdfViewer extends React.Component {
   render() {
     return (
       <div>
-        <input className="button" value="Als PDF anzeigen" type="button" onClick={() => this.handleConvertToPdf(this.props.protocol)}></input>
+        <input className="button" value="Als PDF anzeigen" type="button" onClick={() => this.handleConvertToPdf(this.props.protocol)} style={{marginLeft: "5.5%"}}></input>
         {this.state.pdfUrl && (
           <div style={{ position: 'relative', width: '100%', height: '600px' }}>
             <div

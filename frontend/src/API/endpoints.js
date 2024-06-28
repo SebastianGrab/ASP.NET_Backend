@@ -27,4 +27,3 @@ const genericPath = {
 
 export { logInEP, organization, protocol, genericQuery, genericPath };
 
-//postCall(initialPostBody, "/api/protocols?templateId=" + templateID + "&organizationId=" + orgaID + "&userId=" + userID, "Error posting a new protocol", token)

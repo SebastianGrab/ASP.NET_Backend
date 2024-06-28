@@ -13,7 +13,6 @@ export default function TileArchive({ pagePath, icon, description, info, payload
         const storedLoginData = JSON.parse(localStorage.getItem("loginData"));
         if (storedLoginData) {
             setToken(storedLoginData.token);
-            setOrgaID(storedLoginData.organizationId);
             setUserID(storedLoginData.userId);
         }
 

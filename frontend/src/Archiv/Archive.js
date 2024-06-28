@@ -25,7 +25,6 @@ export default function Archive() {
         console.log(storedloginData);
         if (storedloginData) {
             setToken(storedloginData.token);
-            setOrgaID(storedloginData.organizationId);
             setUserID(storedloginData.userId);
         }
 

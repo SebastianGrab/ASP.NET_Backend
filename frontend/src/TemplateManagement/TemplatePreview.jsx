@@ -5,13 +5,18 @@ import Interpreter from "../Components/Interpreter/Interpreter";
 import { EditTemplateDialog } from "./EditTemplateDialog";
 import { deleteCall } from "../API/deleteCall";
 import { getCall } from "../API/getCall";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export default function TemplatePreview() {
-
-    const { token, orgaID, setRefreshHandler} = useContext(AuthContext);
-    const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const { token, orgaID, setRefreshHandler } = useContext(AuthContext);
+  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const { template } = useParams();
   const location = useLocation();
   const templateData = location.state?.payload;
@@ -21,60 +26,77 @@ export default function TemplatePreview() {
   const navigate = useNavigate();
 
   const dialogUpdateHandler = () => {
-    setOpenUpdateDialog(!openUpdateDialog)
+    setOpenUpdateDialog(!openUpdateDialog);
 
     console.log(openUpdateDialog);
+  };
 
-}
-
-const deleteTemplate = async () => {
-    const orgas = await getCall("/api/template/" + templateData.id + "/organizations?pageIndex=1&pageSize=9999999", token, "Fehler beim getten der ORgas");
+  const deleteTemplate = async () => {
+    const orgas = await getCall(
+      "/api/template/" +
+        templateData.id +
+        "/organizations?pageIndex=1&pageSize=9999999",
+      token,
+      "Fehler beim getten der ORgas"
+    );
     console.log(orgas);
-    try{
-      const response = await deleteCall("/api/template/" + templateData.id + "/remove-from-organization/" + orgaID,"Fehler beim löschen des Templates", token);
+    try {
+      const response = await deleteCall(
+        "/api/template/" +
+          templateData.id +
+          "/remove-from-organization/" +
+          orgaID,
+        "Fehler beim löschen des Templates",
+        token
+      );
       setRefreshHandler(response + 1);
-
-    } catch(error){
-      console.log("Fehler beim löschen des Templates", error)
+    } catch (error) {
+      console.log("Fehler beim löschen des Templates", error);
     }
     navigate(-1);
-
-
-}
-
-
+  };
 
   return (
     <>
       <h1>Template Vorschau: {templateData.name}</h1>
 
-<div className="row">
-<button className="button-scnd" onClick={dialogUpdateHandler}>Bearbeiten</button>
-<button className="button" onClick={deleteTemplate}>Löschen</button>
+      <div className="row">
+        <button className="button-scnd" onClick={dialogUpdateHandler}>
+          Bearbeiten
+        </button>
+        <button className="button" onClick={deleteTemplate}>
+          Löschen
+        </button>
+      </div>
 
-</div>
+      <EditTemplateDialog
+        open={openUpdateDialog}
+        handleDialog={dialogUpdateHandler}
+        templateData={templateData}
+      ></EditTemplateDialog>
 
-      <EditTemplateDialog open={openUpdateDialog} handleDialog={dialogUpdateHandler} templateData={templateData}></EditTemplateDialog>
+      <Interpreter schema={templateContent} />
 
-
-
-
-        <Interpreter schema={templateContent} />
-
-        <Dialog open={open} onClose={() => setOpen(false)}>
-            <DialogTitle>Prüfung</DialogTitle>
-            <DialogContent>
-                <p>Wollen Sie dieses Template wirklich für Ihre Organisation entfernen?</p>
-            </DialogContent>
-            <DialogActions>
-                <Button variant="contained" color="primary" onClick={deleteTemplate}>
-                    Löschen
-                </Button>
-                <Button variant="contained" color="primary" onClick={() => setOpen(false)}>
-                    Abbrechen
-                </Button>
-            </DialogActions>
-        </Dialog>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>Prüfung</DialogTitle>
+        <DialogContent>
+          <p>
+            Wollen Sie dieses Template wirklich für Ihre Organisation entfernen?
+          </p>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="primary" onClick={deleteTemplate}>
+            Löschen
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setOpen(false)}
+          >
+            Abbrechen
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

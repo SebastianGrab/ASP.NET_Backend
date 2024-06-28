@@ -280,33 +280,9 @@ namespace Repository
             return _context.Users.Where(u => u.Email.ToLower() == email.ToLower()).FirstOrDefault();
         }
 
-        public List<User> GetUsersByOrganizationAndRole(long organizationId, long roleId, ClaimsPrincipal claimUser)
+        public List<User> GetUsersByOrganizationAndRole(long organizationId, long roleId)
         {
-            var users = _context.UserOrganizationRoles.Where(au => au.organizationId == organizationId && au.roleId == roleId).Select(au => au.User).ToList();
-
-            var claimRoles = claimUser.GetRoles();
-            var claimOrganizationIds = claimUser.GetOrganizationIds();
-            var claimUserId = claimUser.GetUserId();
-
-            if (claimRoles.Contains("Admin"))
-            {
-                users = users;
-            }
-            else if (claimRoles.Contains("Leiter"))
-            {
-                users = users.Where(u => 
-                    u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId)) || !u.UserOrganizationRoles.Any()).ToList();
-            }
-            else if (claimRoles.Contains("Helfer"))
-            {
-                users = users.Where(u => u.UserOrganizationRoles.Any(uor => claimOrganizationIds.Contains(uor.organizationId))).ToList();
-            }
-            else
-            {
-                users = null;
-            }
-
-            return users;
+            return _context.UserOrganizationRoles.Where(au => au.organizationId == organizationId && au.roleId == roleId).Select(au => au.User).ToList();
         }
 
         public bool UserMailExists(long id, string email)

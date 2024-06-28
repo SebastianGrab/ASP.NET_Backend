@@ -550,10 +550,17 @@ namespace backend.Controllers
 
             if (!protocolMap.IsDraft && !protocolMap.IsClosed && protocolMap.sendEmail == true && protocolMap.emailSubject != null && protocolMap.emailContent != null)
             {
-                var mailReceivers = _userRepository.GetUsersByOrganizationAndRole(protocolMap.Organization.Id, -2, User);
-                List<User> emailUsers = mailReceivers.Where(p => p.Id != userClaimId).ToList();
+                var mailReceivers = _userRepository.GetUsersByOrganizationAndRole(protocolMap.Organization.Id, -2);
 
-                _emailService.SendEmailFromProtocol(emailUsers, protocolMap.emailSubject, protocolMap.emailContent, protocolMap.Id);
+                if (mailReceivers != null)
+                {
+                    List<User> emailUsers = mailReceivers.Where(p => p.Id != userClaimId).ToList();
+
+                    if (emailUsers != null)
+                    {
+                        _emailService.SendEmailFromProtocol(emailUsers, protocolMap.emailSubject, protocolMap.emailContent, protocolMap.Id);
+                    }
+                }
             }
 
             try 
@@ -755,10 +762,17 @@ namespace backend.Controllers
 
             if (!protocolMap.IsDraft && !protocolMap.IsClosed && protocolMap.sendEmail == true && protocolMap.emailSubject != null && protocolMap.emailContent != null)
             {
-                var mailReceivers = _userRepository.GetUsersByOrganizationAndRole(protocolMap.Organization.Id, -2, User);
-                List<User> emailUsers = mailReceivers.Where(p => p.Id != closingUserId).ToList();
+                var mailReceivers = _userRepository.GetUsersByOrganizationAndRole(protocolMap.Organization.Id, -2);
 
-                _emailService.SendEmailFromProtocol(emailUsers, protocolMap.emailSubject, protocolMap.emailContent, id);
+                if (mailReceivers != null)
+                {
+                    List<User> emailUsers = mailReceivers.Where(p => p.Id != closingUserId).ToList();
+
+                    if (emailUsers != null)
+                    {
+                        _emailService.SendEmailFromProtocol(emailUsers, protocolMap.emailSubject, protocolMap.emailContent, id);
+                    }
+                }                
             }
 
 

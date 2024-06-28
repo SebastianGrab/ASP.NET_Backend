@@ -28,11 +28,10 @@ export default function UpdateProtocolInProgress() {
 
   useEffect(() => {
     const storedloginData = JSON.parse(localStorage.getItem("loginData"));
-    if (storedloginData) {
-      setToken(storedloginData.token);
-      setOrgaID(storedloginData.organizationId);
-      setUserID(storedloginData.userId);
-    }
+    // if (storedloginData) {
+    //   setToken(storedloginData.token);
+    //   setUserID(storedloginData.userId);
+    // }
     getCall(
       "/api/protocol/" + protocolID + "/content",
       token,

@@ -16,7 +16,7 @@ namespace Interfaces
         ICollection<User> GetAdditionalUsersByProtocol(long protocolId, QueryObject dateQuery, UserSearchObject userSearch);
         ICollection<UserOrganizationRole> GetUserOrganizationRoleEntriesByUser(long id);
         UserOrganizationRole GetUserOrganizationRole(long userId, long organizationId, long roleId);
-        List<User> GetUsersByOrganizationAndRole(long organizationId, long roleId, ClaimsPrincipal claimUser);
+        List<User> GetUsersByOrganizationAndRole(long organizationId, long roleId);
         bool CreateUser(User user);
         bool CreateUserOrganizationRole(UserOrganizationRole userOrganizationRole);
         bool DeleteUserOrganizationRole(UserOrganizationRole userOrganizationRole);

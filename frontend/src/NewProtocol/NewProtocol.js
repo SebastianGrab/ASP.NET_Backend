@@ -21,6 +21,7 @@ export default function NewProtocol() {
   const [protocol, setProtocol] = useState(templateContent);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
+  const [savedProtocolId, setSavedProtocolId] = useState(null);
 
   const handleDialog = () => {
     setShowSuccessDialog(!showSuccessDialog);
@@ -93,6 +94,8 @@ export default function NewProtocol() {
   const saveProtocolContent = async (protocolMetadata, showDialog) => {
     const protocolData = getData(protocol);
     const data = buildProtocolContentData(protocolMetadata.id, protocolData);
+    setSavedProtocolId(protocolMetadata.id);
+
 
     try {
       const response = await postCall(
@@ -177,19 +180,19 @@ export default function NewProtocol() {
         {showConfirmation && (
             <ConfirmationDialog
                 handleShowConfirmation={handleShowConfirmation}
-                protocolID=""
+                protocolID={savedProtocolId}
                 isInReview=""
             />
         )}
         <PiPdialog open={showDialog} handleClose={handleShowDialog} handleSend={handleSend} />
-        {showSuccessDialog && (
+     
             <SuccessDialog
                 open={showSuccessDialog}
                 handleClose={handleSuccessDialogClose}
                 header="Protokoll wurde erfolgreich gespeichert!"
-                text="Protokoll wurde erfolgreich gespeichert!"
+                text="Das Protokoll wurde erfolgreich gespeichert. Sie finden es zur weiteren Bearbeitung unter: Protokolle in Bearbeitung."
             />
-        )}
+
       </>
   );
 }

@@ -54,12 +54,11 @@ export const ListAllTemplates = () => {
 
   useEffect(() => {
     const storedLoginData = JSON.parse(localStorage.getItem("loginData"));
-    if (storedLoginData) {
-      setToken(storedLoginData.token);
-      setOrgaID(storedLoginData.organizationId);
-      setRole(storedLoginData.role);
-      setUserID(storedLoginData.userId);
-    }
+    // if (storedLoginData) {
+    //   setToken(storedLoginData.token);
+    //   setRole(storedLoginData.role);
+    //   setUserID(storedLoginData.userId);
+    // }
 
     const fetchUsers = async () => {
       try {

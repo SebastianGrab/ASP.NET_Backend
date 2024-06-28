@@ -31,7 +31,6 @@ export const UserProfilChosser = () => {
 
   const location = useLocation();
   const loginData = location.state?.response;
-  setOrgaName(loginData.uor[0].organization.name);
 
 
   const ProfileItem = ({ orga, role }) => {
@@ -53,11 +52,14 @@ export const UserProfilChosser = () => {
   const navigate = useNavigate();
 
   const clickHandler = () => {
+    console.log(userID, "prga: ", orgaID);
     navigate(`/${userID}/${orgaID}`);
   };
 
   const setProfile = ({ orga, role }) => {
     setOrgaID(orga.id);
+    //console.log(orga.id);
+    console.log(orgaID);
     setRole(role.name);
     setOrgaName(orga.name);
   };
@@ -74,7 +76,7 @@ export const UserProfilChosser = () => {
         >
           {loginData.uor.map((profile, index) => (
             <ProfileItem
-              key={index}
+            key={index}
               orga={profile.organization}
               role={profile.role}
             />

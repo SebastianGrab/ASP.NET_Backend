@@ -16,7 +16,6 @@ export default function ProtocolsToReview() {
         console.log(storedloginData);
         if (storedloginData) {
             setToken(storedloginData.token);
-            setOrgaID(storedloginData.organizationId);
             setUserID(storedloginData.userId);
         }
         getCall("/api/protocols?pageIndex=1&pageSize=9999999&IsDraft=false&IsClosed=false", token, "Error getting templates")

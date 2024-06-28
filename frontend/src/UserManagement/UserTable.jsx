@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { IconButton} from "@mui/material";
+import { IconButton } from "@mui/material";
 import { useContext, useState, useEffect } from "react";
 import AuthContext from "../API/AuthProvider";
 import { buildTableData, getUsers } from "./UserManagementService";
@@ -44,7 +44,8 @@ export const UserTable = () => {
     { field: "username", headerName: "Nutzer", width: 250 },
   ];
 
-  const { token, setToken, orgaID, refreshHandler, orgaName } = useContext(AuthContext);
+  const { token, setToken, orgaID, refreshHandler, orgaName } =
+    useContext(AuthContext);
   const [view, setView] = useState("mobile");
   const [columns, setColumns] = useState(columnsMobile);
   const [userData, setUserData] = useState([]);
@@ -55,9 +56,11 @@ export const UserTable = () => {
 
   useEffect(() => {
     const storedLoginData = JSON.parse(localStorage.getItem("loginData"));
-    if (storedLoginData) {
-      setToken(storedLoginData.token);
-    }
+    // if (storedLoginData) {
+    //   setToken(storedLoginData.token);
+    // }
+
+    console.log(token);
 
     const fetchUsers = async () => {
       try {
@@ -85,20 +88,19 @@ export const UserTable = () => {
   };
 
   const changeData = () => {
-
-    if(globalUser){
-    const value = orgaName.toLowerCase();
-    setRows(
+    if (globalUser) {
+      const value = orgaName.toLowerCase();
+      setRows(
         userData.filter((row) =>
-            Object.values(row).join("").toLowerCase().includes(value)
-    ));
-    setGlobalUser(!globalUser);
-  } else {
-    setRows(userData);
-    setGlobalUser(!globalUser);
-  }
-  }
-
+          Object.values(row).join("").toLowerCase().includes(value)
+        )
+      );
+      setGlobalUser(!globalUser);
+    } else {
+      setRows(userData);
+      setGlobalUser(!globalUser);
+    }
+  };
 
   const handleRowClick = (param) => {
     setShowEditUserDialog(true);
@@ -110,17 +112,15 @@ export const UserTable = () => {
   };
 
   const filter = (event) => {
-
-      const value = event.target.value.toLowerCase();
-      setRows(
-        value
-          ? userData.filter((row) =>
-              Object.values(row).join("").toLowerCase().includes(value)
-            )
-          : userData
-      );
-      setGlobalUser(!globalUser);
-
+    const value = event.target.value.toLowerCase();
+    setRows(
+      value
+        ? userData.filter((row) =>
+            Object.values(row).join("").toLowerCase().includes(value)
+          )
+        : userData
+    );
+    setGlobalUser(!globalUser);
   };
 
   return (
@@ -143,16 +143,18 @@ export const UserTable = () => {
           onChange={filter}
         />
 
-<FormControlLabel
+        <FormControlLabel
           label="Alle Nutzer anzeigen"
-          control={<Switch onChange={changeData} color="secondary" defaultChecked />}
-           labelPlacement="start"
+          control={
+            <Switch onChange={changeData} color="secondary" defaultChecked />
+          }
+          labelPlacement="start"
         />
 
         <FormControlLabel
           label="Ansicht wechseln"
           control={<Switch onChange={toggleView} color="secondary" />}
-           labelPlacement="start"
+          labelPlacement="start"
         />
       </div>
 

@@ -23,9 +23,9 @@ export const TemplateManagement = () => {
 
   useEffect(() => {
     const storedloginData = JSON.parse(localStorage.getItem("loginData"));
-    if (storedloginData) {
-      setToken(storedloginData.token);
-    }
+    // if (storedloginData) {
+    //   setToken(storedloginData.token);
+    // }
     getCall(
       "/api/organization/" + orgaID + "/templates?pageIndex=1&pageSize=999999",
       token,

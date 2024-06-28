@@ -22,11 +22,10 @@ export default function FullScreenChart() {
 
     useEffect(() => {
         const storedloginData = JSON.parse(localStorage.getItem('loginData'));
-        if (storedloginData) {
-            setToken(storedloginData.token);
-            setOrgaID(storedloginData.organizationId);
-            setUserID(storedloginData.userId);
-        }
+        // if (storedloginData) {
+        //     setToken(storedloginData.token);
+        //     setUserID(storedloginData.userId);
+        // }
 
         if (storedloginData.token) {
             const fetchData = async () => {

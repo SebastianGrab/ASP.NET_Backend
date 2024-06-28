@@ -6,6 +6,7 @@ import AuthContext from '../API/AuthProvider';
 import { postCall } from "../API/postCall";
 import { logInEP } from '../API/endpoints';
 import { ResetPassword } from './ResetPassword';
+import { Button, Box } from '@mui/material';
 
 export const LogInPage = () => {
     const navigate = useNavigate();
@@ -46,10 +47,11 @@ export const LogInPage = () => {
     }, [authData]);
 
     const handleLogInResponse = (response) => {
+        console.log(response);
         if (response.token !== "Wrong username or password.") {
             localStorage.setItem('loginData', JSON.stringify(response));
             setToken(response.token);
-            setOrgaID(response.organizationId);
+            setOrgaID(response.uor[0].organizationId);
             setUserID(response.userId);
             setRole(response.role);
             navigate(`${response.userId}` + "/chooseProfile", { state: {response}});
@@ -76,7 +78,9 @@ export const LogInPage = () => {
                 {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                 <input className="button" value="Anmelden" type="button" onClick={logIn} />
 
-                <div className='row' onClick={handleDialog}>Passwort zurücksetzen</div>
+                <Box mb={10}/>
+
+                <Button onClick={handleDialog} sx={{color: "#b4b4b4", fontSize: "12px"}}> Passwort zurücksetzen</Button>
             </div>
 
             

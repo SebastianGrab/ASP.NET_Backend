@@ -84,7 +84,6 @@ export default function ReviewProtocol() {
         const storedLoginData = JSON.parse(localStorage.getItem("loginData"));
         if (storedLoginData) {
             setToken(storedLoginData.token);
-            setOrgaID(storedLoginData.organizationId);
             setUserID(storedLoginData.userId);
         }
 
@@ -123,9 +122,9 @@ export default function ReviewProtocol() {
             <h1>Protokoll {protocolID}</h1> <PdfViewer protocol={protocolContent}></PdfViewer>
             <div className={isHeaderFixed ? 'button-fixed' : 'button-notfixed'}>
             <div className="row" style={{marginBottom: "10px"}}>
-            <button className="button" style={{background: "green", marginRight: `8.333%`, display: "flex",
+            <button className="button" style={{background: "green", marginLeft: `4.333%`, display: "flex",
         justifyContent: "flex-start",}} onClick={handleSaveToArchive}>Protokoll genehmigen und archivieren!</button>
-            <button className="button" style={{marginRight: `8.333%`}} onClick={() => setShowDialog(true)}>Protokoll an Ersteller zur Überarbeitung zurücksenden!</button>
+            <button className="button" style={{marginLeft: "10px", marginRight: `8.333%`}} onClick={() => setShowDialog(true)}>Protokoll an Ersteller zur Überarbeitung zurücksenden!</button>
             </div>
             </div>
 
